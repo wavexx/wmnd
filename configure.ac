@@ -66,7 +66,7 @@ AC_ARG_WITH(drivers,
 
 # driver detection block: skip this block if the user manually specify
 # drivers on the command line
-if test "$ac_drivers" == "auto";
+if test "$ac_drivers" = "auto";
 then
 	# reset the state variable
 	ac_drivers=""
