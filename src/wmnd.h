@@ -51,25 +51,25 @@
 
 struct Devices
 {
-  struct Devices* next;         /* ptr to next structure */
-  char* name;                   /* device name from /proc/net/dev */
-  void* drvdata;                /* driver data used by the driver */
-  int drvnum;                   /* driver number */
-  int online;                   /* 0 for online, 1 for offline */
-  time_t devstart;              /* device activity start, 0 for unavaible */
+  struct Devices* next;     /* ptr to next structure */
+  char* name;               /* device name from /proc/net/dev */
+  void* drvdata;            /* driver data used by the driver */
+  int drvnum;               /* driver number */
+  int online;               /* 0 for online, 1 for offline */
+  time_t devstart;          /* device activity start, 0 for unavaible */
 
-  unsigned long int avg[4];     /* average sampling - last samples */
-  unsigned long int avgBuf[4];  /* average sampling - buffers */
+  unsigned long avg[4];     /* average sampling - last samples */
+  unsigned long avgBuf[4];  /* average sampling - buffers */
 
-  unsigned long int his[59][4];
-  unsigned long int ib_stat_last;
-  unsigned long int ob_stat_last;
-  unsigned long int ip_stat_last;
-  unsigned long int op_stat_last;
-  unsigned long int ib_max_his; /* maximum input bytes in history */
-  unsigned long int ob_max_his; /* maximum output bytes in history */
-  unsigned long int ip_max_his; /* maximum input packets in history */
-  unsigned long int op_max_his; /* maximum output packets in history */
+  unsigned long his[59][4];
+  unsigned long ib_stat_last;
+  unsigned long ob_stat_last;
+  unsigned long ip_stat_last;
+  unsigned long op_stat_last;
+  unsigned long ib_max_his; /* maximum input bytes in history */
+  unsigned long ob_max_his; /* maximum output bytes in history */
+  unsigned long ip_max_his; /* maximum input packets in history */
+  unsigned long op_max_his; /* maximum output packets in history */
 };
 
 struct var
