@@ -301,7 +301,8 @@ conf_write(char *filename)
   struct var *vp;
 
   fp = fopen(filename, "w");
-  if(!fp) {
+  if(!fp)
+  {
     msg_err("can't open '%s' for writing", filename);
     exit(1);
   }
@@ -798,7 +799,7 @@ int main(int argc, char **argv)
   add_mr(4, 3, 54, 58, 7);  /* user script? huh wtf does that do */
 
   /* updates should begin immediately */
-  beats = wmnd.scroll * 10;
+  beats = wmnd.scroll * 100000 / wmnd.refresh;
 
   /* clear the number of remaining steps */
   wmnd.avgRSteps = 1;
@@ -811,7 +812,7 @@ int main(int argc, char **argv)
   draw_interface();
 
   msg_dbg(__POSITION__, "looping");
-  XSync(dockapp.d, False);	/* kick off X11 queue */
+  XSync(dockapp.d, False); /* kick off X11 queue */
 
   /* loop forever */
   for(;;)
@@ -851,17 +852,17 @@ int main(int argc, char **argv)
       ptr->ip_max_his = MAX(ptr->ip_max_his, ptr->his[57][2]);
       ptr->op_max_his = MAX(ptr->op_max_his, ptr->his[57][3]);
 
-      if(ptr == wmnd.curdev) {	/* displayed */
-        if(ptr->ib_stat_last == ib) {
+      if(ptr == wmnd.curdev)
+      {
+        if(ptr->ib_stat_last == ib)
           led_control(LED_RX, 0);
-        } else {
+        else
           led_control(LED_RX, 1);
-        }
-        if(ptr->ob_stat_last == ob) {
+
+        if(ptr->ob_stat_last == ob)
           led_control(LED_TX, 0);
-        } else {
+        else
           led_control(LED_TX, 1);
-        }
       }
       ptr->ib_stat_last = ib;
       ptr->ob_stat_last = ob;
@@ -879,16 +880,18 @@ int main(int argc, char **argv)
       /* drift the average stats */
       if(!--wmnd.avgRSteps)
       {
+        float div = 1. / wmnd.avgSteps;
+
         for(ptr = devices; ptr; ptr = ptr->next)
         {
-          ptr->avg[0] = ib - ptr->avgBuf[0];
-          ptr->avg[1] = ob - ptr->avgBuf[1];
-          ptr->avg[2] = ip - ptr->avgBuf[2];
-          ptr->avg[3] = op - ptr->avgBuf[3];
-          ptr->avgBuf[0] = ib;
-          ptr->avgBuf[1] = ob;
-          ptr->avgBuf[2] = ip;
-          ptr->avgBuf[3] = op;
+          ptr->avg[0] = div * (ptr->ib_stat_last - ptr->avgBuf[0]);
+          ptr->avg[1] = div * (ptr->ob_stat_last - ptr->avgBuf[1]);
+          ptr->avg[2] = div * (ptr->ip_stat_last - ptr->avgBuf[2]);
+          ptr->avg[3] = div * (ptr->op_stat_last - ptr->avgBuf[3]);
+          ptr->avgBuf[0] = ptr->ib_stat_last;
+          ptr->avgBuf[1] = ptr->ob_stat_last;
+          ptr->avgBuf[2] = ptr->ip_stat_last;
+          ptr->avgBuf[3] = ptr->op_stat_last;
         }
         wmnd.avgRSteps = wmnd.avgSteps;
       }
@@ -985,9 +988,10 @@ binary_scale(unsigned char sign, unsigned long value, char *buf)
   else
     scale = ' ';
 
-  sprintf(buf, "%c%lu", sign, value);		/* to string */
+  sprintf(buf, "%c%lu", sign, value);
   r = buf;
   r++;
+
   for(i = 3; i > 0 && *r != '\0'; i--)
   {
     if(*r == '+' || *r == '-' || *r == '.')
@@ -1007,21 +1011,33 @@ metric_scale(unsigned char sign, unsigned long value, char *buf)
   char *r;
 
   f = (float) value;
-  if(value > 999999999) {	/* scale in giga */
+  if(value > 999999999)
+  {
+    /* scale in giga */
     f /= 1000000000;
     scale = 'G';
-  } else if(value > 999999) {	/* scale in mega */
+  }
+  else
+  if(value > 999999)
+  {
+    /* scale in mega */
     f /= 1000000;
     scale = 'M';
-  } else if(value > 999) {	/* scale in kilo */
+  }
+  else
+  if(value > 999)
+  {
+    /* scale in kilo */
     f /= 1000;
     scale = 'K';
-  } else {
-    scale = ' ';
   }
+  else
+    scale = ' ';
+
   sprintf(buf, "%c%f", sign, f);	/* to string */
   r = buf;
   r++;
+
   for(i = 3; i > 0 && *r != '\0'; i--)
   {
     if(*r == '+' || *r == '-' || *r == '.')
@@ -1097,10 +1113,13 @@ draw_string(const char *buf, unsigned int x, unsigned int y)
     if(*r == '+')
     {
       w = 6;
-      if(bit_get(CFG_MAXSCREEN)) {
+      if(bit_get(CFG_MAXSCREEN))
+      {
         sx = 133;
         sy = 93;
-      } else {
+      }
+      else
+      {
         sx = 66;
         sy = 46;
       }
@@ -1110,10 +1129,13 @@ draw_string(const char *buf, unsigned int x, unsigned int y)
     if(*r == '-')
     {
       w = 6;
-      if(bit_get(CFG_MAXSCREEN)) {
+      if(bit_get(CFG_MAXSCREEN))
+      {
         sx = 139;
         sy = 93;
-      } else {
+      }
+      else
+      {
         sx = 72;
         sy = 46;
       }
@@ -1123,10 +1145,13 @@ draw_string(const char *buf, unsigned int x, unsigned int y)
     if(*r == '*')
     {
       w = 6;
-      if(bit_get(CFG_MAXSCREEN)) {
+      if(bit_get(CFG_MAXSCREEN))
+      {
         sx = 145;
         sy = 93;
-      } else {
+      }
+      else
+      {
         sx = 78;
         sy = 46;
       }
@@ -1136,10 +1161,13 @@ draw_string(const char *buf, unsigned int x, unsigned int y)
     if(*r == '#')
     {
       w = 6;
-      if(bit_get(CFG_MAXSCREEN)) {
+      if(bit_get(CFG_MAXSCREEN))
+      {
         sx = 151;
         sy = 93;
-      } else {
+      }
+      else
+      {
         sx = 84;
         sy = 46;
       }
@@ -1204,12 +1232,17 @@ draw_stats(struct Devices *ptr)
   else
     size = 41;		/* without max bar */
 
-  if(bit_get(CFG_MODE)) {	/* bytes mode */
+  if(bit_get(CFG_MODE))
+  {
+    /* bytes mode */
     in = 0;
     out = 1;
     rx_max_his = ptr->ib_max_his;
     tx_max_his = ptr->ob_max_his;
-  } else {			/* packets mode */
+  }
+  else
+  {
+    /* packets mode */
     in = 2;
     out = 3;
     rx_max_his = ptr->ip_max_his;
@@ -1219,22 +1252,20 @@ draw_stats(struct Devices *ptr)
   /* find maximum value in screen history */
   rx_max = tx_max = 0;
   p = (unsigned long *) ptr->his;
-  for(k = 0; k < 58; k++) {
+  for(k = 0; k < 58; k++)
+  {
     rx_max = MAX(rx_max, p[in]);
     tx_max = MAX(tx_max, p[out]);
     p += 4;
   }
-  if((max = rx_max + tx_max) > size) {
+  if((max = rx_max + tx_max) > size)
+  {
     bpp = max / size;
-    if((max % size) > 0) {
+    if((max % size) > 0)
       ++bpp;
-    }
   }
 
   /* draw rx/tx rate */
-  /* TODO
-  p -= 4; sets p to his[58] or so
-  draw_rate(p[in], p[out]); */
   p = ptr->avg;
   draw_rate(p[in], p[out]);
 
@@ -1247,9 +1278,8 @@ draw_stats(struct Devices *ptr)
   (*drwFuncs[wmnd.wavemode].funcPtr)(p, in, out, size, bpp, rx_max, tx_max);
 
   /* copy PPP connection time over the graph */
-  if(bit_get(CFG_SHOWTIME) && wmnd.curdev->devstart) {
+  if(bit_get(CFG_SHOWTIME) && wmnd.curdev->devstart)
     copy_xpm_area(70, 36, 23, 7, 37, 46);
-  }
 }
 
 static void
@@ -1259,33 +1289,44 @@ led_control(const unsigned char led, const unsigned char mode)
   switch (led) {
   case LED_POWER:
     switch (bit_get(CFG_MODE)) {
-    case 1:		/* bytes */
-      if(mode) {		/* on-line */
-        copy_xpm_area(116, 64, 5, 7, 55, 4);
-      } else {		/* off-line */
+    case 1:
+      /* bytes */
+      if(mode)
+        /* on-line */
+        copy_xpm_area(116, 64, 5, 7, 55, 4)
+      else
+        /* off-line */
         copy_xpm_area(122, 64, 5, 7, 55, 4);
-      }
       break;
-    case 0:		/* packets */
-      if(mode) {		/* on-line */
-        copy_xpm_area(128, 64, 5, 7, 55, 4);
-      } else {		/* off-line */
+    case 0:
+      /* packets */
+      if(mode)
+        /* on-line */
+        copy_xpm_area(128, 64, 5, 7, 55, 4)
+      else
+        /* off-line */
         copy_xpm_area(134, 64, 5, 7, 55, 4);
-      }
       break;
     }
     break;
   case LED_RX:
-    if(mode) {		/* turn on */
-      if(bit_get(LED_RX)) {
+    if(mode)
+    {
+      /* turn on */
+      if(bit_get(LED_RX))
+      {
         msg_dbg(__POSITION__, "RX led already on");
         return;		/* already on */
       }
       copy_xpm_area(86, 69, 5, 4, 41, 4);
       bit_set(LED_RX);
       msg_dbg(__POSITION__, "RX led on");
-    } else {		/* turn off */
-      if(!bit_get(LED_RX)) {
+    }
+    else
+    {
+      /* turn off */
+      if(!bit_get(LED_RX))
+      {
         msg_dbg(__POSITION__, "RX led already off");
         return;
       }
@@ -1295,16 +1336,23 @@ led_control(const unsigned char led, const unsigned char mode)
     }
     break;
   case LED_TX:
-    if(mode) {		/* turn on */
-      if(bit_get(LED_TX)) {
+    if(mode)
+    {
+      /* turn on */
+      if(bit_get(LED_TX))
+      {
         msg_dbg(__POSITION__, "TX led already on");
         return;		/* already on */
       }
       copy_xpm_area(86, 64, 5, 4, 48, 4);
       bit_set(LED_TX);
       msg_dbg(__POSITION__, "TX led on");
-    } else {		/* turn off */
-      if(!bit_get(LED_TX)) {
+    }
+    else
+    {
+      /* turn off */
+      if(!bit_get(LED_TX))
+      {
         msg_dbg(__POSITION__, "TX led already off");
         return;
       }
