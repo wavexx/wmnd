@@ -8,6 +8,8 @@ planned features:
 	* wave++: per-display options (scroll speed, etc)
 	* wave++: the driver subsystem really needs a rewrite to support
 	these new concepts.
+	* wave++: snmp driver could use a single session instance. I need
+	per-driver termination handlers.
 
 completed since release 0.4.3:
 
