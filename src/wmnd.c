@@ -598,7 +598,7 @@ click_event(unsigned int region, unsigned int button)
 void
 smooth(unsigned long* stat, const unsigned long last, const float smooth)
 {
-  *stat = (long)(last + smooth * (*stat - last));
+  *stat = ((unsigned long)(last + (smooth * (*stat - last))));
 }
 
 
@@ -621,7 +621,7 @@ int main(int argc, char* *argv)
   int parse_conf = 1;
   char* conf_file = NULL;
   struct Devices* ptr;
-  unsigned long int ib, ob, ip, op;
+  unsigned long ib, ob, ip, op;
   int ch;
   unsigned btn = 0;
   int rgn = -1;
@@ -874,28 +874,25 @@ int main(int argc, char* *argv)
         ptr->op_stat_last = op;
 
       /*
-       * smoothing is performed before led setup, in order to let
-       * them blink even when the graph is smoothed. this approach is,
-       * however, still unperfect: we compare smoothed actual values 
-       * where we should store real values for later use.
+       * smoothing is performed before led setup and only on bytes, in order to
+       * let leds blink even when the graph is smoothed. Smoothing packets has
+       * no sense.
        */
       if(wmnd.smooth)
       {
         smooth(&ib, ptr->ib_stat_last, wmnd.smooth);
         smooth(&ob, ptr->ob_stat_last, wmnd.smooth);
-        smooth(&ip, ptr->ip_stat_last, wmnd.smooth);
-        smooth(&op, ptr->op_stat_last, wmnd.smooth);
       }
 
       /* setup leds */
       if(ptr == wmnd.curdev)
       {
-        if(ptr->ib_stat_last == ib)
+        if(ptr->ip_stat_last == ip)
           led_control(LED_RX, 0);
         else
           led_control(LED_RX, 1);
 
-        if(ptr->ob_stat_last == ob)
+        if(ptr->op_stat_last == op)
           led_control(LED_TX, 0);
         else
           led_control(LED_TX, 1);
@@ -940,7 +937,7 @@ int main(int argc, char* *argv)
 
       /* Do not use the instant time gap for averaging, it's useless */
       if(wmnd.avgSteps != 1)
-        beat_gap = 10;
+        beat_gap = wmnd.scroll;
 #endif
 
       /* drift the average stats */
@@ -1138,9 +1135,9 @@ scale(char* rx_buf, char* tx_buf, unsigned long rx,
   }
 
   /* return the speed in bps */
-  if(wmnd.scroll != 10 || gap != 10)
+  if(gap != 10)
   {
-    float div = (float)gap / wmnd.scroll;
+    float div = 10. / gap;
     tx = (unsigned long)(div * tx);
     rx = (unsigned long)(div * rx);
   }
@@ -1287,7 +1284,7 @@ draw_max(unsigned long rx, unsigned long tx)
   /* put rx/tx numbers into strings, scaling them. Scale now acceps the median
    * time in microseconds to scale the values correctly; as we don't have the
    * median time for all samples, use a reasonable default */
-  scale(rx_buf, tx_buf, rx, tx, 10);
+  scale(rx_buf, tx_buf, rx, tx, wmnd.scroll);
 
   /* draw rx/tx strings */
   draw_string(rx_buf, 3, 11);
