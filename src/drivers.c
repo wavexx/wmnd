@@ -17,6 +17,16 @@
  * _term: eventually deallocate drvdata and close fds
  */
 
+/* helper functions */
+struct Devices*
+devices_append(struct Devices* list, struct Devices* src)
+{
+  list->next = src;
+  src->next = NULL;
+
+  return src;
+}
+
 #ifdef USE_SOLARIS_FPPPD
 #undef drName
 #define drName USE_SOLARIS_FPPPD
@@ -29,7 +39,7 @@
  * to manage correctly the status of the device without messing the graph
  */
 
-// some needed headers
+/* some needed headers */
 #include <sys/stropts.h>
 #include "ppp_defs.h"
 #include "pppio.h"
@@ -852,6 +862,349 @@ irix_pcp_term(struct Devices* dev)
 #endif /* USE_IRIX_PCP */
 
 
+/* Generic SNMP driver for net-snmp >= 5 */
+#ifdef USE_GENERIC_SNMP
+#undef drName
+#define drName USE_GENERIC_SNMP
+
+/* NET-SNMP API headers */
+#include <net-snmp/net-snmp-config.h>
+#include <net-snmp/net-snmp-includes.h>
+#include <string.h>
+
+/* SNMP MIB Definitions (from IF-MIB) and constants */
+#define SNMPMIB_HOST "localhost"
+#define SNMPMIB_COMN "public"
+#define SNMPMIB_NUM "ifNumber.0"
+#define SNMPMIB_DESCR "ifDescr"
+#define SNMPMIB_STATUS "ifOperStatus"
+#define SNMPMIB_IFINBDEF "ifInOctets"
+#define SNMPMIB_IFINPDEF "ifInUcastPkts"
+#define SNMPMIB_IFOUTBDEF "ifOutOctets"
+#define SNMPMIB_IFOUTPDEF "ifOutUcastPkts"
+
+struct generic_snmp_drvdata
+{
+  struct snmp_session* se;
+  int num;
+  char* operStatName;
+  oid oidOperStat[MAX_OID_LEN];
+  size_t oidOperStatLen;
+  char* bInName;
+  oid oidBIn[MAX_OID_LEN];
+  size_t oidBInLen;
+  char* pInName;
+  oid oidPIn[MAX_OID_LEN];
+  size_t oidPInLen;
+  char* bOutName;
+  oid oidBOut[MAX_OID_LEN];
+  size_t oidBOutLen;
+  char* pOutName;
+  oid oidPOut[MAX_OID_LEN];
+  size_t oidPOutLen;
+};
+
+/*
+ * Parse a specification string [community@]host[:interface].
+ * User is responsible to free community, host and interface if != NULL
+ * Returns true on parsing errors?
+ */
+int
+generic_snmp_pss(const char* str, char** community,
+    char** host, int* interface)
+{
+  char* pos;
+  size_t len;
+
+  if(!str)
+  {
+    *host = strdup(SNMPMIB_HOST);
+    *community = strdup(SNMPMIB_COMN);
+    *interface = 0;
+
+    return 0;
+  }
+
+  /* community specification */
+  if((pos = strchr(str, '@')))
+  {
+    len = pos - str;
+    *community = malloc(len + 1);
+    memcpy(*community, str, len);
+    (*community)[len] = 0;
+    str = pos + 1;
+  }
+  else
+    *community = strdup(SNMPMIB_COMN);
+
+  /* hostname */
+  if(!(pos = strchr(str, ':')))
+    pos = (char*)str + strlen(str);
+  len = pos - str;
+  *host = malloc(len + 1);
+  memcpy(*host, str, len);
+  (*host)[len] = 0;
+
+  /* interface */
+  if(*pos)
+    *interface = atoi(pos + 1);
+  else
+    *interface = 0;
+
+  return 0;
+}
+
+/* Create a new session and connect to an host */
+struct snmp_session*
+generic_snmp_session(const char* community, const char* host)
+{
+  struct snmp_session params;
+  struct snmp_session* se;
+
+  snmp_sess_init(&params);
+  params.version = SNMP_VERSION_1;
+  params.peername = strdup(host);
+  params.community = strdup(community);
+  params.community_len = strlen(community);
+
+  /* try connecting to host */
+  SOCK_STARTUP;
+  se = snmp_open(&params);
+  if(!se)
+  {
+    msg_drInfo(drName, "unable to communicate to %s@%s", community, host);
+    return NULL;
+  }
+
+  free(params.peername);
+  free(params.community);
+
+  return se;
+}
+
+char*
+generic_snmp_comp(const char* name, const int num)
+{
+  char* buf = malloc(strlen(name) + 5);
+  sprintf(buf, "%s.%d", name, num);
+  return buf;
+}
+
+char*
+generic_snmp_getDesc(struct snmp_session* se, int dev)
+{
+  struct snmp_pdu* pdu;
+  struct snmp_pdu* res;
+  oid OID[MAX_OID_LEN];
+  size_t OID_len = MAX_OID_LEN;
+  char* name = generic_snmp_comp(SNMPMIB_DESCR, dev);
+
+  pdu = snmp_pdu_create(SNMP_MSG_GET);
+  get_node(name, OID, &OID_len);
+  free(name);
+  snmp_add_null_var(pdu, OID, OID_len);
+  if(snmp_synch_response(se, pdu, &res) == STAT_SUCCESS &&
+      res->errstat == SNMP_ERR_NOERROR)
+  {
+    name = malloc(res->variables->val_len + 1);
+    memcpy(name, res->variables->val.string, res->variables->val_len);
+    name[res->variables->val_len] = 0;
+
+    snmp_free_pdu(res);
+  }
+  else
+    return NULL;
+
+  return name;
+}
+
+struct Devices*
+generic_snmp_preInit(struct Devices* list, struct snmp_session* se, int dev)
+{
+  struct Devices* ndev;
+  struct generic_snmp_drvdata* drdata;
+
+  ndev = malloc(sizeof(struct Devices));
+  if(!(ndev->name = generic_snmp_getDesc(se, dev)))
+    return NULL;
+
+  msg_drInfo(drName, "detected %s(%d)", ndev->name, dev);
+  drdata = malloc(sizeof(struct generic_snmp_drvdata));
+  drdata->num = dev;
+  drdata->se = se;
+  ndev->drvdata = (void*)drdata;
+
+  return devices_append(list, ndev);
+}
+
+int
+generic_snmp_list(const char* devname, struct Devices* list)
+{
+  char* com;
+  char* host;
+  int interf;
+  struct snmp_session* se;
+  int rad;
+  int dta;
+  struct Devices* ndev;
+  oid OID[MAX_OID_LEN];
+  size_t OIDLen = MAX_OID_LEN;
+  struct snmp_pdu* pdu;
+  struct snmp_pdu* res;
+
+  /* initialize the snmp library */
+  init_snmp(msg_prgName);
+
+  /* parse the device name */
+  generic_snmp_pss(devname, &com, &host, &interf);
+  se = generic_snmp_session(com, host);
+  if(!se)
+    return 0;
+
+  if(interf)
+  {
+    /* the inferface is specified, build a struture and return immediately */
+    ndev = generic_snmp_preInit(list, se, interf);
+    if(ndev)
+      rad = 1;
+    else
+    {
+      msg_drInfo(drName, "unable to resolve %d", interf);
+      snmp_close(se);
+      rad = 0;
+    }
+  }
+  else
+  {
+    /* query for number of interfaces */
+    get_node(SNMPMIB_NUM, OID, &OIDLen);
+    pdu = snmp_pdu_create(SNMP_MSG_GET);
+    snmp_add_null_var(pdu, OID, OIDLen);
+
+    if(snmp_synch_response(se, pdu, &res) == STAT_SUCCESS &&
+        res->errstat == SNMP_ERR_NOERROR)
+      dta = *res->variables->val.integer;
+    else
+    {
+      dta = 0;
+      msg_drInfo(drName, "unable to determine the number of interfaces");
+    }
+
+    /* close the temporary session */
+    snmp_close(se);
+
+    /* intialize devices */
+    for(rad = 0; rad != dta;)
+    {
+      se = generic_snmp_session(com, host);
+      ndev = generic_snmp_preInit(list, se, rad + 1);
+      if(!ndev)
+      {
+        snmp_close(se);
+        continue;
+      }
+
+      list = ndev;
+      ++rad;
+    }
+  }
+
+  if(com)
+    free(com);
+  if(host)
+    free(host);
+
+  return rad;
+}
+
+int
+generic_snmp_init(struct Devices* dev)
+{
+  struct generic_snmp_drvdata* drdata =
+    (struct generic_snmp_drvdata*)dev->drvdata;
+
+  /* TODO: SNMP 'should' be able to tell the last change through ifLastChange */
+  dev->devstart = 0;
+
+  drdata->operStatName = generic_snmp_comp(SNMPMIB_STATUS, drdata->num);
+  drdata->oidOperStatLen = MAX_OID_LEN;
+  get_node(drdata->operStatName, drdata->oidOperStat, &drdata->oidOperStatLen);
+  drdata->bInName = generic_snmp_comp(SNMPMIB_IFINBDEF, drdata->num);
+  drdata->oidBInLen = MAX_OID_LEN;
+  get_node(drdata->bInName, drdata->oidBIn, &drdata->oidBInLen);
+  drdata->pInName = generic_snmp_comp(SNMPMIB_IFINPDEF, drdata->num);
+  drdata->oidPInLen = MAX_OID_LEN;
+  get_node(drdata->pInName, drdata->oidPIn, &drdata->oidPInLen);
+  drdata->bOutName = generic_snmp_comp(SNMPMIB_IFOUTBDEF, drdata->num);
+  drdata->oidBOutLen = MAX_OID_LEN;
+  get_node(drdata->bOutName, drdata->oidBOut, &drdata->oidBOutLen);
+  drdata->pOutName = generic_snmp_comp(SNMPMIB_IFOUTPDEF, drdata->num);
+  drdata->oidPOutLen = MAX_OID_LEN;
+  get_node(drdata->pOutName, drdata->oidPOut, &drdata->oidPOutLen);
+
+  return 0;
+}
+
+int
+generic_snmp_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
+    unsigned long* ib, unsigned long* ob)
+{
+  /* switch to the right context */
+  struct generic_snmp_drvdata* drdata =
+    (struct generic_snmp_drvdata*)dev->drvdata;
+  
+  struct snmp_pdu* pdu;
+  struct snmp_pdu* res;
+  struct variable_list* var;
+  int stat;
+
+  pdu = snmp_pdu_create(SNMP_MSG_GET);
+  snmp_add_null_var(pdu, drdata->oidOperStat, drdata->oidOperStatLen);
+  snmp_add_null_var(pdu, drdata->oidBIn, drdata->oidBInLen);
+  snmp_add_null_var(pdu, drdata->oidPIn, drdata->oidPInLen);
+  snmp_add_null_var(pdu, drdata->oidBOut, drdata->oidBOutLen);
+  snmp_add_null_var(pdu, drdata->oidPOut, drdata->oidPOutLen);
+  
+  if(snmp_synch_response(drdata->se, pdu, &res) == STAT_SUCCESS &&
+      res->errstat == SNMP_ERR_NOERROR)
+  {
+    var = res->variables;
+    stat = (*var->val.integer != 1);
+    var = var->next_variable;
+    *ib = *var->val.integer;
+    var = var->next_variable;
+    *ip = *var->val.integer;
+    var = var->next_variable;
+    *ob = *var->val.integer;
+    var = var->next_variable;
+    *op = *var->val.integer;
+    snmp_free_pdu(res);
+  }
+  else
+    stat = 1;
+
+  return stat;
+}
+
+void
+generic_snmp_term(struct Devices* dev)
+{
+  /* free the device profile */
+  struct generic_snmp_drvdata* drdata =
+    (struct generic_snmp_drvdata*)dev->drvdata;
+
+  snmp_close(drdata->se);
+  free(drdata->operStatName);
+  free(drdata->bInName);
+  free(drdata->pInName);
+  free(drdata->bOutName);
+  free(drdata->pOutName);
+  free(dev->drvdata);
+}
+
+#endif /* USE_GENERIC_SNMP */
+
+
 /* define the drivers list */
 struct drivers_struct drivers_table[] =
 {
@@ -873,6 +1226,10 @@ struct drivers_struct drivers_table[] =
 #endif
 #ifdef USE_IRIX_PCP
   {USE_IRIX_PCP, irix_pcp_list, irix_pcp_init, irix_pcp_get, irix_pcp_term},
+#endif
+#ifdef USE_GENERIC_SNMP
+  {USE_GENERIC_SNMP, generic_snmp_list, generic_snmp_init,
+    generic_snmp_get, generic_snmp_term},
 #endif
 #ifdef USE_TESTING_DUMMY
   {USE_TESTING_DUMMY, testing_dummy_list, testing_dummy_init,
