@@ -1,5 +1,5 @@
 # enable warnings for the selected compiler
-AC_DEFUN(AC_CC_WARNINGS,
+AC_DEFUN([AC_CC_WARNINGS],
 [
 	# enable the --silent option
 	AC_ARG_ENABLE(silent,
@@ -23,7 +23,7 @@ AC_DEFUN(AC_CC_WARNINGS,
 ])
 
 # force supported compilers to be pedantic
-AC_DEFUN(AC_CC_PEDANTIC,
+AC_DEFUN([AC_CC_PEDANTIC],
 [
 	# enable the --pedantic option
 	AC_ARG_ENABLE(pedantic,
@@ -49,7 +49,7 @@ AC_DEFUN(AC_CC_PEDANTIC,
 ])
 
 # enable production releases by default
-AC_DEFUN(AC_CC_DEBUG,
+AC_DEFUN([AC_CC_DEBUG],
 [
 	# enable the --debug option
 	AC_ARG_ENABLE(debug,
@@ -66,7 +66,7 @@ AC_DEFUN(AC_CC_DEBUG,
 # check for a size type
 # note how I use the returning value of AC_RUN_IFELSE(ac_status),
 # as there's NO other way of capturing a test's output.
-AC_DEFUN(AC_SIZE_CHECK,
+AC_DEFUN([AC_SIZE_CHECK],
 [
 	AC_MSG_CHECKING([for "$1" size])
 	AC_RUN_IFELSE(
@@ -81,7 +81,7 @@ AC_DEFUN(AC_SIZE_CHECK,
 # search for an integral type of a specified size
 # usage: AC_SIZE_SEARCH(typedef, bits, [type type ...])
 # each type must first be checked with AC_SIZE_CHECK
-AC_DEFUN(AC_SIZE_SEARCH,
+AC_DEFUN([AC_SIZE_SEARCH],
 [
 	AC_MSG_CHECKING([for a $2 bits type])
 	unset xtype
@@ -109,7 +109,7 @@ AC_DEFUN(AC_SIZE_SEARCH,
 # creates a new switch (--enable-) with and help string which controls
 # the definition of a conditional.
 # usage: AC_ARG_EC(command name, variable, define, help string, check string)
-AC_DEFUN(AC_ARG_EC,
+AC_DEFUN([AC_ARG_EC],
 [
 	AC_ARG_ENABLE([$1], [AC_HELP_STRING([--enable-$1], [$4])])
 	AC_MSG_CHECKING([$5])
@@ -121,5 +121,3 @@ AC_DEFUN(AC_ARG_EC,
 		AC_MSG_RESULT(no)
 	fi
 ])
-
-
