@@ -3,7 +3,7 @@
 # $Id$
 
 # initialization
-AC_INIT(wmnd, 0.4.5, wavexx@users.sf.net)
+AC_INIT(wmnd, 0.4.6, wavexx@users.sf.net)
 AC_CONFIG_SRCDIR("src/wmnd.c")
 AM_CONFIG_HEADER(config.h)
 
@@ -161,6 +161,23 @@ AC_MSG_CHECKING(whether enchange the dummy driver)
 if test "$enable_sine_dummy" = "yes";
 then
 	AC_DEFINE(USE_SINE_TESTING_DUMMY,, [enchanged dummy driver])
+	AC_MSG_RESULT(yes)
+else
+	AC_MSG_RESULT(no)
+fi
+
+
+# SNMP driver workaround
+AC_ARG_ENABLE(snmp-descr,
+	[AC_HELP_STRING(
+		[--enable-snmp-descr],
+		[use ifDescr instead of ifName for snmp devices]
+	)]
+)
+AC_MSG_CHECKING(whether generic_snmp should use ifDescr instead of ifName)
+if test "$enable_snmp_descr" = "yes";
+then
+	AC_DEFINE(USE_GENERIC_SNMP_DESCR,, [use ifDescr instead of ifName])
 	AC_MSG_RESULT(yes)
 else
 	AC_MSG_RESULT(no)
