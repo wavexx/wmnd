@@ -2,7 +2,7 @@
 # report bugs and comments to wavexx@users.sf.net
 
 # initialization
-AC_INIT(wmnd, 0.4.10, wavexx@users.sf.net)
+AC_INIT(wmnd, 0.4.11, wavexx@users.sf.net)
 AC_CONFIG_SRCDIR("src/wmnd.c")
 AM_CONFIG_HEADER(config.h)
 
@@ -34,7 +34,7 @@ AC_HEADER_TIME
 AC_CHECK_HEADERS(sys/time.h)
 
 # math library
-AC_SEARCH_LIBS(sin, m,, [AC_MSG_ERROR(m library is required)])
+AC_SEARCH_LIBS(sin, m,, [AC_MSG_ERROR(math library is required)])
 
 # X libraries
 AC_PATH_XTRA
@@ -160,6 +160,11 @@ AC_ARG_EC([snmp-descr], [snmp_descr], [USE_GENERIC_SNMP_DESCR],
 AC_ARG_EC([inexact-timing], [inexact_timing], [INEXACT_TIMING],
 	[Use an inexact (but smoother/faster) timing method],
 	[whether use an inexact timing method])
+
+# Trend support
+AC_ARG_EC([trend], [trend], [USE_TREND],
+	[Enable support for trend (history zoom/inspection)],
+	[whether enable trend support])
 
 
 # display modes selection
