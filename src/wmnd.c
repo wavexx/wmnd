@@ -626,14 +626,18 @@ int main(int argc, char* *argv)
   int rgn = -1;
   XEvent event;
   const struct drwStruct* drwPtr;
+#ifdef INEXACT_TIMING
   int beats;
+#else
+  struct timeval beat_time;
+#endif
 
   /* initialize messaging functions */
   msg_prgName = argv[0];
 
   msg_dbg(__POSITION__, "wmnd start");
 
-  // detect the number of avaible wave modes
+  /* detect the number of avaible wave modes */
   for(drwPtr = drwFuncs; drwPtr->funcName; ++drwPtr)
     ++wmnd.nWavemodes;
   msg_dbg(__POSITION__, "detected %d display modes", wmnd.nWavemodes);
@@ -808,7 +812,7 @@ int main(int argc, char* *argv)
   msg_dbg(__POSITION__, "open X display");
   if(!(dockapp.d = XOpenDisplay(dispname)))
   {
-    // fprintf crashes on some systems if dispname is null
+    /* fprintf crashes on some systems if dispname is null */
     if(dispname)
       msg_err("unable to open display '%s'", dispname);
     else
@@ -825,7 +829,11 @@ int main(int argc, char* *argv)
   add_mr(4, 3, 54, 58, 7);  /* user script? huh wtf does that do */
 
   /* updates should begin immediately */
+#ifdef INEXACT_TIMING
   beats = wmnd.scroll * 100000 / wmnd.refresh;
+#else
+  memset(&beat_time, 0, sizeof(beat_time));
+#endif
 
   /* clear the number of remaining steps */
   wmnd.avgRSteps = 1;
@@ -844,6 +852,10 @@ int main(int argc, char* *argv)
   for(;;)
   {
     unsigned int j;
+#ifndef INEXACT_TIMING
+    struct timeval beat_ctime;
+    unsigned long beat_gap;
+#endif
 
     /* get statistics for each existing device */
     for(ptr = devices; ptr; ptr = ptr->next)
@@ -905,12 +917,25 @@ int main(int argc, char* *argv)
       ptr->op_stat_last = op;
     }
 
+#ifdef INEXACT_TIMING
     /* cosmetic fix: use the number of effectively elapsed beats instead of a
      * time based check to distribute timing discrepancies and rounding
      * errors. This will also save us a syscall */
     if((wmnd.refresh * beats / 100000) >= wmnd.scroll)
     {
       beats = 0;
+#else
+    /* fetch current time */
+    gettimeofday(&beat_ctime, NULL);
+
+    /* estimate the time gap in tenth of seconds */
+    beat_gap = ((beat_ctime.tv_sec - beat_time.tv_sec) * 10) +
+      ((beat_ctime.tv_usec - beat_time.tv_usec) / 100000);
+
+    if(beat_gap >= wmnd.scroll)
+    {
+      beat_time = beat_ctime;
+#endif
 
       /* drift the average stats */
       if(!--wmnd.avgRSteps)
@@ -984,7 +1009,10 @@ int main(int argc, char* *argv)
       }
     }
 
+
+#ifdef INEXACT_TIMING
     ++beats;
+#endif
     redraw_window();
     usleep(wmnd.refresh);
   }
@@ -1102,7 +1130,7 @@ scale(char* rx_buf, char* tx_buf, unsigned long rx, unsigned long tx)
     tx_sign = '*';
   }
 
-  // return the speed in bps
+  /* return the speed in bps */
   if(wmnd.scroll != 10)
   {
     float div = 10. / wmnd.scroll;
