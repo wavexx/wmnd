@@ -22,7 +22,8 @@ WMND 0.4.4
 	ChangeLog directly from the repository. Old entries are moved
 	to the ChangeLog.0 file.
 	* The linux_proc driver can be forced to monitor devices that
-	actually are offline (usefull for ppp interfaces).
+	actually are offline (useful for ppp interfaces).
+	* New display mode: lines (trend-like behavior)
 
 WMND 0.4.3
 ----------------------------------------------------------------------

@@ -101,11 +101,11 @@ do
 	# we must repeat the define constants many times
 	# to make autoheader automatically recognize them all
 	case "$driver" in
-		linux_proc)	AC_DEFINE(USE_LINUX_PROC, "linux_proc", [enable linux proc driver]);;
-		freebsd_sysctl)	AC_DEFINE(USE_FREEBSD_SYSCTL, "freebsd_sysctl", [enable freebsd sysctl driver]);;
-		solaris_fpppd)	AC_DEFINE(USE_SOLARIS_FPPPD, "solaris_fpppd", [solaris streams pppd]);;
-		solaris_kstat)	AC_DEFINE(USE_SOLARIS_KSTAT, "solaris_kstat", [enable solaris kstat driver]);;
-		*)		AC_MSG_ERROR([unknown driver name $driver]);;
+	linux_proc)	AC_DEFINE(USE_LINUX_PROC, "linux_proc", [enable linux proc driver]);;
+	freebsd_sysctl)	AC_DEFINE(USE_FREEBSD_SYSCTL, "freebsd_sysctl", [enable freebsd sysctl driver]);;
+	solaris_fpppd)	AC_DEFINE(USE_SOLARIS_FPPPD, "solaris_fpppd", [solaris streams pppd]);;
+	solaris_kstat)	AC_DEFINE(USE_SOLARIS_KSTAT, "solaris_kstat", [enable solaris kstat driver]);;
+	*)		AC_MSG_ERROR([unknown driver name $driver]);;
 	esac
 	
 	drivers="$drivers $driver"
@@ -160,16 +160,17 @@ do
 	# we must repeat the define constants many times
 	# to make autoheader automatically recognize them all
 	case "$mode" in
-		traditional)	AC_DEFINE(USE_DRW_TRADITIONAL,, [traditional drawing mode]);;
-		mgraph)		AC_DEFINE(USE_DRW_MGRAPH,, [mgraph drawing mode]);;
-		waveform)	AC_DEFINE(USE_DRW_WAVEFORM,, [waveform drawing mode]);;
-		wmwave)		AC_DEFINE(USE_DRW_WMWAVE,, [wmwave drawing mode]);;
-		wmnet)		AC_DEFINE(USE_DRW_WMNET,, [wmnet drawing mode]);;
-		sepgraphs)	AC_DEFINE(USE_DRW_SEPGRAPHS,, [sepgraphs drawing mode]);;
-		twisted)	AC_DEFINE(USE_DRW_TWISTED,, [twisted drawing mode]);;
-		charts)		AC_DEFINE(USE_DRW_CHARTS,, [charts drawing mode]);;
-		needle)		AC_DEFINE(USE_DRW_NEEDLE,, [needle drawing mode]);;
-		*)		AC_MSG_ERROR([unknown display mode $mode]);;
+	traditional)	AC_DEFINE(USE_DRW_TRADITIONAL,, [traditional drawing mode]);;
+	mgraph)		AC_DEFINE(USE_DRW_MGRAPH,, [mgraph drawing mode]);;
+	waveform)	AC_DEFINE(USE_DRW_WAVEFORM,, [waveform drawing mode]);;
+	wmwave)		AC_DEFINE(USE_DRW_WMWAVE,, [wmwave drawing mode]);;
+	wmnet)		AC_DEFINE(USE_DRW_WMNET,, [wmnet drawing mode]);;
+	sepgraphs)	AC_DEFINE(USE_DRW_SEPGRAPHS,, [sepgraphs drawing mode]);;
+	twisted)	AC_DEFINE(USE_DRW_TWISTED,, [twisted drawing mode]);;
+	charts)		AC_DEFINE(USE_DRW_CHARTS,, [charts drawing mode]);;
+	needle)		AC_DEFINE(USE_DRW_NEEDLE,, [needle drawing mode]);;
+	lines)		AC_DEFINE(USE_DRW_LINES,, [lines drawing mode]);;
+	*)		AC_MSG_ERROR([unknown display mode $mode]);;
 	esac
 	
 	dspmodes="$dspmodes $mode"

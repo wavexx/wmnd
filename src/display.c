@@ -415,6 +415,72 @@ void drwNeedle(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
 }
 #endif
 
+#ifdef USE_DRW_LINES
+/* lines mode */
+void drwLines(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
+    int bpp, unsigned long long rx_max, unsigned long long tx_max)
+{
+  unsigned int m = MAX(tx_max, rx_max);
+  unsigned int dfac, k, oTxlev, oRxlev;
+
+  static int gcinit = 0;
+  static GC gcs[2];
+
+  /* gc initialization */
+  if (!gcinit)
+  {
+    XGCValues gcval;
+
+    gcval.foreground = dockapp.stdColors.txColor;
+    gcval.graphics_exposures = False;
+    gcs[0] = XCreateGC(dockapp.d, dockapp.pixmap, GCForeground |
+        GCGraphicsExposures, &gcval);
+    gcval.foreground = dockapp.stdColors.rxColor;
+    gcs[1] = XCreateGC(dockapp.d, dockapp.pixmap, GCForeground |
+        GCGraphicsExposures, &gcval);
+    gcinit = 1;
+  }
+
+  /* XDrawLine is a bit piggy sometimes, reduce avaible size by two */
+  if((m + 2) > size)
+  {
+    dfac = m / (size - 2);
+    if(m % (size - 2) > 0)
+      ++dfac;
+  }
+  else
+    dfac = 1;
+
+  /* fake old values */
+  oRxlev = hist[mIn] / dfac;
+  oTxlev = hist[mOut] / dfac;
+
+  for(k = 0; k < 58; k++)
+  {
+    unsigned int txlev, rxlev;
+
+    rxlev = hist[mIn] / dfac;
+    txlev = hist[mOut] / dfac;
+
+    /* clear the area */
+    copy_xpm_area(65, 0, 1, size, k + 3, 53 - size);
+
+    /* tx and rx */
+    XDrawLine(dockapp.d, dockapp.pixmap, gcs[0],
+        k + 3, 52 - oTxlev, k + 3, 52 - txlev);
+    XDrawLine(dockapp.d, dockapp.pixmap, gcs[1],
+        k + 3, 52 - oRxlev, k + 3, 52 - rxlev);
+
+    /* advance */
+    hist += 4;
+    oTxlev = txlev;
+    oRxlev = rxlev;
+  }
+
+  copy_xpm_area(70, 1, 58, 1, 3, 53 - size);
+}
+#endif
+
 /* function's structure list */
 struct drwStruct drwFuncs[] = 
 {
@@ -444,6 +510,9 @@ struct drwStruct drwFuncs[] =
 #endif
 #ifdef USE_DRW_NEEDLE
   { "needle",      drwNeedle      },
+#endif
+#ifdef USE_DRW_LINES
+  { "lines",       drwLines       },
 #endif
   { NULL,          NULL,          }
 };
