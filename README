@@ -104,6 +104,12 @@ restart the drivers subsystem. Drivers must be coded correctly to
 support a 'real' restart, thus the only driver that does 'something'
 on restart is the solaris_kstat one.
 
+-- Transition from 0.2/0.3 -------------------------------------------
+If you are coming from an old release of WMND (0.2/0.3 series) you
+must be aware that some values/scales of the ~/.wmndrc file have
+changed. Copy a fresh wmndrc from the source distribution
+(examples/wmndrc) or erase your old wmndrc to get the new defaults.
+
 
 Window Managers
 ----------------------------------------------------------------------
