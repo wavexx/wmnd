@@ -290,11 +290,10 @@ drwGetMeds(const unsigned long* hist, const unsigned mIn,
 void drwCharts(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
     int bpp, unsigned long long rx_max, unsigned long long tx_max)
 {
-  unsigned int k, j, stpos, itn, spc;
+  unsigned int k, j, stpos, spc;
   unsigned long tx_med = 0, rx_med = 0, x_max;
 
   stpos = 53 - size;
-  itn = 53 - stpos;
 
   drwGetMeds(hist, mIn, mOut, &tx_med, &rx_med);
 
