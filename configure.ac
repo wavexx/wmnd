@@ -57,8 +57,7 @@ AC_TYPE_SIZE_T
 AC_ARG_WITH(drivers,
 	[AC_HELP_STRING(
 		[--with-drivers="..."],
-		[manually selects drivers. defaults to auto]
-	)],
+		[manually selects drivers. defaults to auto])],
 	[ac_drivers="$with_drivers"],
 	[ac_drivers="auto"]
 )
@@ -132,13 +131,11 @@ do
 done
 
 
-# dumb driver
+# Dumb driver
 AC_ARG_WITH(dummy-driver,
 	[AC_HELP_STRING(
 		[--without-dummy-driver],
-		[compile without the dumb driver]
-	)]
-)
+		[compile without the dumb driver])])
 AC_MSG_CHECKING(whether enable dummy driver)
 if test "$with_dummy_driver" != "no";
 then
@@ -150,48 +147,28 @@ else
 fi
 
 
-# enchanged dummy driver
-AC_ARG_ENABLE(sine-dummy,
-	[AC_HELP_STRING(
-		[--enable-sine-dummy],
-		[enchanged dummy driver]
-	)]
-)
-AC_MSG_CHECKING(whether enchange the dummy driver)
-if test "$enable_sine_dummy" = "yes";
-then
-	AC_DEFINE(USE_SINE_TESTING_DUMMY,, [enchanged dummy driver])
-	AC_MSG_RESULT(yes)
-else
-	AC_MSG_RESULT(no)
-fi
-
+# Enchanged dummy driver
+AC_ARG_EC([sine-dummy], [sine_dummy], [USE_SINE_TESTING_DUMMY],
+	[enchanged dummy driver],
+	[whether enchange the dummy driver])
 
 # SNMP driver workaround
-AC_ARG_ENABLE(snmp-descr,
-	[AC_HELP_STRING(
-		[--enable-snmp-descr],
-		[use ifDescr instead of ifName for snmp devices]
-	)]
-)
-AC_MSG_CHECKING(whether generic_snmp should use ifDescr instead of ifName)
-if test "$enable_snmp_descr" = "yes";
-then
-	AC_DEFINE(USE_GENERIC_SNMP_DESCR,, [use ifDescr instead of ifName])
-	AC_MSG_RESULT(yes)
-else
-	AC_MSG_RESULT(no)
-fi
+AC_ARG_EC([snmp-descr], [snmp_descr], [USE_GENERIC_SNMP_DESCR],
+	[Use ifDescr instead of ifName for snmp devices],
+	[whether generic_snmp should use ifDescr instead of ifName])
+
+# Inexact timing
+AC_ARG_EC([inexact-timing], [inexact_timing], [INEXACT_TIMING],
+	[Use an inexact (but smoother/faster) timing method],
+	[whether use an inexact timing method])
 
 
 # display modes selection
 AC_ARG_WITH(display-modes,
 	[AC_HELP_STRING(
 		[--with-display-modes="..."],
-		[manually select visual modes. defaults to all]
-	)],,
-	[with_display_modes="traditional mgraph waveform wmwave wmnet sepgraphs twisted charts needle lines"]
-)
+		[manually select visual modes. defaults to all])],,
+	[with_display_modes="traditional mgraph waveform wmwave wmnet sepgraphs twisted charts needle lines"])
 for mode in $with_display_modes;
 do
 	# we must repeat the define constants many times
