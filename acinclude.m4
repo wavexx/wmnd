@@ -9,13 +9,14 @@ AC_DEFUN(AC_CC_WARNINGS,
 		)]
 	)
 
-	if test "$enable_silent" != "yes"; then
+	if test "$enable_silent" != "yes"
+	then
 		AC_MSG_CHECKING([for warning flags])
 		case "$CC" in
 			gcc* | g++*)	ac_wflags="-Wall -Wno-format";;
-			*)				AC_MSG_RESULT(unsupported compiler);;
+			*)		AC_MSG_RESULT(unsupported compiler);;
 		esac
-		if test -n "$ac_wflags";
+		if test -n "$ac_wflags"
 		then
 			AC_MSG_RESULT([$ac_wflags])
 			CFLAGS="$CFLAGS $ac_wflags"
@@ -26,7 +27,7 @@ AC_DEFUN(AC_CC_WARNINGS,
 # force supported compilers to be pedantic
 AC_DEFUN(AC_CC_PEDANTIC,
 [
-	# enable the --silent option
+	# enable the --pedantic option
 	AC_ARG_ENABLE(pedantic,
 		[AC_HELP_STRING(
 			[--enable-pedantic],
@@ -34,13 +35,14 @@ AC_DEFUN(AC_CC_PEDANTIC,
 		)]
 	)
 
-	if test "$enable_pedantic" = "yes"; then
+	if test "$enable_pedantic" = "yes"
+	then
 		AC_MSG_CHECKING([for pedantic flags])
 		case "$CC" in
 			gcc*)	ac_pflags="-pedantic";;
-			*)		AC_MSG_RESULT(unsupported compiler);;
+			*)	AC_MSG_RESULT(unsupported compiler);;
 		esac
-		if test -z "$ac_pflags";
+		if test -z "$ac_pflags"
 		then
 			AC_MSG_RESULT([none])
 		else
@@ -61,7 +63,7 @@ AC_DEFUN(AC_CC_DEBUG,
 		)]
 	)
 
-	if test "$enable_debug" != "yes";
+	if test "$enable_debug" != "yes"
 	then
 		CPPFLAGS="$CPPFLAGS -DNDEBUG"
 	fi
