@@ -26,8 +26,9 @@ WMND 0.4.4
 	* New display mode: lines (trend-like behavior). Mainly useful
 	with a low smoothing factor and a fast scroll speed.
         * Added the smoothing factor thing to clear-up the graph while using a
-	fast scroll speed and the lines mode. Read the README for more
+	fast scroll speed and the lines mode. Read the docs for more
 	informations.
+	* Fixed average sampling (-S) for multiple devices and values != 1
 
 WMND 0.4.3
 ----------------------------------------------------------------------
