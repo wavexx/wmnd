@@ -32,7 +32,11 @@ avg_steps=1
 smooth=0
 
 # buttons for user scripts
-# bt1_action=su -c ethereal
+# you can use these % escapes in the command line:
+#   %b: mouse button number (1, 2, 3...)
+#   %i: active interface name (eth0, etc)
+#   %s: interface status (0: offline, 1: online)
+# bt1_action=su -c "ethereal -i %i"
 # bt2_action=
 # bt3_action=
 

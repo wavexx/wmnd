@@ -1,9 +1,8 @@
 # process this file with autoconf >= 2.5 to produce a configure script.
 # report bugs and comments to wavexx@users.sf.net
-# $Id$
 
 # initialization
-AC_INIT(wmnd, 0.4.7, wavexx@users.sf.net)
+AC_INIT(wmnd, 0.4.8, wavexx@users.sf.net)
 AC_CONFIG_SRCDIR("src/wmnd.c")
 AM_CONFIG_HEADER(config.h)
 

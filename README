@@ -1,7 +1,7 @@
 WMND - Window Maker Network Devices
 ----------------------------------------------------------------------
-Original web site: http://wmnd.wingeer.org/
 Current development: http://www.yuv.info/wmnd/
+Old web site: http://wmnd.wingeer.org/
 Copyright information:
 
   Reed "Reed Lai" <reed@wingeer.org> http://www.wingeer.org/bv4qo/
@@ -11,7 +11,7 @@ Copyright information:
   Copyright (c) 2001
   
   wave++ "Yuri D'Elia" <wavexx@yuv.info> http://www.yuv.info/
-  Copyright (c) 2001-2003
+  Copyright (c) 2001-2004
 
 WMND is licensed under the GNU General Public License. Read the
 COPYING file for the complete GNU license description.
@@ -72,6 +72,16 @@ shown below:
 
 To monitor dialup interfaces under linux either use the -I ppp0 flag
 or use the streams solaris_fpppd driver (-D solaris_fpppd -I ppp0).
+The linux_proc driver supports multiple interfaces on the command line
+through the -I flag:
+
+  wmnd -D linux_proc -I eth0,eth1,ppp0
+
+This way you can combine multiple interfaces (whether they're online
+or not) on the same WMND instance. This trick allows also to create
+handy dialup shortcuts using the button actions (by passing the active
+interface name and status on the command line). Look at the example
+wmndrc file for details.
 
 -- GUI Usage ---------------------------------------------------------
 You can cycle in real-time through all available active interfaces
@@ -230,7 +240,7 @@ First of all, unpack the source tarball:
 
   $ gzcat wmnd-0.4.8.tar.gz | tar xf -
 
-Wmnd will unpack into the wmnd-0.4.8 directory. Create now a build
+WMND will unpack into the wmnd-0.4.8 directory. Create now a build
 directory that will contain objects:
 
   $ mkdir wmnd-build
@@ -319,9 +329,8 @@ under gcc 2.96, it's a RedHat-only bug.
 -- IRIX MIPSPro 7.3 / AIX VaCPP 5.0 ----------------------------------
 These compilers ignores what variable arguments macros are! A
 work-around has been found so WMND can be built with these compilers
-now. MIPSPro is supposed to support C99 style macros into version 7.4,
-soon available. Drivers for AIX, however, are still missing (and I'll
-probably never code them unless someone asks).
+now. MIPSPro 7.4 works correctly. Drivers for AIX, however, are still
+missing (and I'll probably never code them unless someone asks).
 
 Actually, the IRIX driver is based on the PCP API 2.x (Performance
 Co-Pilot). You'll need `pcpd' running for WMND to work. These filesets
@@ -409,7 +418,6 @@ three different packages of WMND, respectively:
 
  - wmnd-pcp: built with irix_pcp and OS's drivers.
  - wmnd-snmp: built with generic_snmp and OS's drivers.
- - wmnd-hairy: built with all drivers.
  - wmnd: standard WMND, built without generic drivers
    (actually only irix_pcp and generic_snmp)
 

@@ -1,3 +1,13 @@
+WMND 0.4.8
+----------------------------------------------------------------------
+
+	* linux_proc supports multiple interfaces on the command
+	line (integrated patch wmnd-0.4.7-lxext, requested by
+	Jesper Anderson).
+	* Mouse button actions now supports several %-escapes so you
+	can send active interface parameters to your scripts.
+	(requested by Jesper Anderson).
+
 WMND 0.4.7
 ----------------------------------------------------------------------
 
