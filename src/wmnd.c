@@ -937,6 +937,10 @@ int main(int argc, char* *argv)
     if(beat_gap >= wmnd.scroll)
     {
       beat_time = beat_ctime;
+
+      /* Do not use the instant time gap for averaging, it's useless */
+      if(wmnd.avgSteps != 1)
+        beat_gap = 10;
 #endif
 
       /* drift the average stats */
