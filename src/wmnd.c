@@ -288,7 +288,8 @@ conf_read(char *filename)
     fclose(fp);
   }
   else
-  { /* can't open the rc file, make a new one */
+  {
+    /* can't open the rc file, make a new one */
     msg_err("can't open WMND config file '%s', using defaults", filename);
     conf_write(filename);
   }
@@ -834,24 +835,7 @@ int main(int argc, char **argv)
       if(op < ptr->op_stat_last)
         ptr->op_stat_last = op;
 
-      /* smoothing */
-      if(wmnd.smooth)
-      {
-        smooth(&ib, ptr->ib_stat_last, wmnd.smooth);
-        smooth(&ob, ptr->ob_stat_last, wmnd.smooth);
-        smooth(&ip, ptr->ip_stat_last, wmnd.smooth);
-        smooth(&op, ptr->op_stat_last, wmnd.smooth);
-      }
-
-      ptr->his[57][0] += ib - ptr->ib_stat_last;
-      ptr->his[57][1] += ob - ptr->ob_stat_last;
-      ptr->his[57][2] += ip - ptr->ip_stat_last;
-      ptr->his[57][3] += op - ptr->op_stat_last;
-      ptr->ib_max_his = MAX(ptr->ib_max_his, ptr->his[57][0]);
-      ptr->ob_max_his = MAX(ptr->ob_max_his, ptr->his[57][1]);
-      ptr->ip_max_his = MAX(ptr->ip_max_his, ptr->his[57][2]);
-      ptr->op_max_his = MAX(ptr->op_max_his, ptr->his[57][3]);
-
+      /* setup leds */
       if(ptr == wmnd.curdev)
       {
         if(ptr->ib_stat_last == ib)
@@ -864,6 +848,32 @@ int main(int argc, char **argv)
         else
           led_control(LED_TX, 1);
       }
+
+      /*
+       * smoothing is performed after led setup, in order to let
+       * them blink even when the graph is smoothed. this approach is,
+       * however, still unperfect: we compare real actual values with
+       * smoothed ones where we should store real values for later use.
+       */
+      if(wmnd.smooth)
+      {
+        smooth(&ib, ptr->ib_stat_last, wmnd.smooth);
+        smooth(&ob, ptr->ob_stat_last, wmnd.smooth);
+        smooth(&ip, ptr->ip_stat_last, wmnd.smooth);
+        smooth(&op, ptr->op_stat_last, wmnd.smooth);
+      }
+
+      /* save values in history */
+      ptr->his[57][0] += ib - ptr->ib_stat_last;
+      ptr->his[57][1] += ob - ptr->ob_stat_last;
+      ptr->his[57][2] += ip - ptr->ip_stat_last;
+      ptr->his[57][3] += op - ptr->op_stat_last;
+      ptr->ib_max_his = MAX(ptr->ib_max_his, ptr->his[57][0]);
+      ptr->ob_max_his = MAX(ptr->ob_max_his, ptr->his[57][1]);
+      ptr->ip_max_his = MAX(ptr->ip_max_his, ptr->his[57][2]);
+      ptr->op_max_his = MAX(ptr->op_max_his, ptr->his[57][3]);
+
+      /* save lastest values */
       ptr->ib_stat_last = ib;
       ptr->ob_stat_last = ob;
       ptr->ip_stat_last = ip;
@@ -1286,9 +1296,11 @@ static void
 led_control(const unsigned char led, const unsigned char mode)
 {
   msg_dbg(__POSITION__, "led: %02x[%02x]", led, mode);
-  switch (led) {
+  switch (led)
+  {
   case LED_POWER:
-    switch (bit_get(CFG_MODE)) {
+    switch (bit_get(CFG_MODE))
+    {
     case 1:
       /* bytes */
       if(mode)
@@ -1316,7 +1328,7 @@ led_control(const unsigned char led, const unsigned char mode)
       if(bit_get(LED_RX))
       {
         msg_dbg(__POSITION__, "RX led already on");
-        return;		/* already on */
+        return;
       }
       copy_xpm_area(86, 69, 5, 4, 41, 4);
       bit_set(LED_RX);
@@ -1342,7 +1354,7 @@ led_control(const unsigned char led, const unsigned char mode)
       if(bit_get(LED_TX))
       {
         msg_dbg(__POSITION__, "TX led already on");
-        return;		/* already on */
+        return;
       }
       copy_xpm_area(86, 64, 5, 4, 48, 4);
       bit_set(LED_TX);
@@ -1519,7 +1531,7 @@ devices_init(const char *driver, const char *interface)
     for(in_loop0 = 0; in_loop0 < devnum; in_loop0++)
     {
       prt = prt->next;
-      prt->drvnum = cnt; /* set its driver */
+      prt->drvnum = cnt; /* set the driver number */
       if((*drivers_table[cnt].init_driver)(prt) == 1)	/* init the device */
       {
         msg_err("failed to initialize device %s,%d",

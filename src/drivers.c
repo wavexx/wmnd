@@ -2,7 +2,7 @@
  * wmnd - window maker network devices - drivers.c
  *
  * drivers definitions
- *
+ * $Id$
  */
 
 /* local headers */
@@ -11,11 +11,10 @@
 #include "messages.h"
 
 /*
- * short explanation of what a function must do
- * *_list: allocate new elements in the list and assign a name for each device
- * *_init: launched for each device allocated by *_list. Prepare device status
- * *_getstats: obtain infos about the device
- * *_term: eventually deallocate drvdata and close fds
+ * _list: allocate new elements in the list and assign a name for each device
+ * _init: callled for each device allocated by *_list. Prepare device status
+ * _getstats: obtain infos about the device
+ * _term: eventually deallocate drvdata and close fds
  */
 
 #ifdef USE_SOLARIS_FPPPD
@@ -243,6 +242,7 @@ solaris_fpppd_get(struct Devices* dev, unsigned long* ip,
 
 #endif /* USE_SOLARIS_FPPPD */
 
+
 #ifdef USE_SOLARIS_KSTAT
 #undef drName
 #define drName USE_SOLARIS_KSTAT
@@ -360,6 +360,7 @@ solaris_kstat_term(struct Devices* dev)
 
 #endif /* USE_SOLARIS_KSTAT */
 
+
 #ifdef USE_TESTING_DUMMY
 #undef drName
 #define drName USE_TESTING_DUMMY
@@ -407,7 +408,6 @@ testing_dummy_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
     unsigned long* ib, unsigned long* ob)
 {
 #ifdef USE_SINE_TESTING_DUMMY
-
   /* some more fun when debugging! */
   static float v = 0.;
   static unsigned long is = 0;
@@ -430,6 +430,7 @@ testing_dummy_term(struct Devices* dev)
 {}
 
 #endif /* USE_TESTING_DUMMY */
+
 
 #ifdef USE_LINUX_PROC
 #undef drName
@@ -542,6 +543,7 @@ linux_proc_term(struct Devices* dev)
 {}
 
 #endif /* USE_LINUX_PROC */
+
 
 /* FreeBDS sysctl driver */
 #ifdef USE_FREEBSD_SYSCTL
@@ -682,6 +684,143 @@ freebsd_sysctl_term(struct Devices* dev)
 
 #endif /* USE_FREEBSD_SYSCTL */
 
+
+/* IRIX's Performance Co-Pilot (PMCAPI 2.x) */
+#ifdef USE_IRIX_PCP
+#undef drName
+#define drName USE_IRIX_PCP
+
+/* PCP API headers */
+#include <pcp/pmapi.h>
+
+/* PCP NameSpace definitions */
+#define PCPNS_NETINBDOM "network.interface.in.bytes"
+#define PCPNS_NETINPDOM "network.interface.in.packets"
+#define PCPNS_NETOUTBDOM "network.interface.out.bytes"
+#define PCPNS_NETOUTPDOM "network.interface.out.packets"
+
+struct irix_pcp_drvdata
+{
+  pmInDom indom;
+  int inst;
+};
+
+/* resolve a PCP domain/desc */
+int
+irix_pcp_resDom(char* dom, pmID* pmId, pmDesc* pmD)
+{
+  int r;
+  if((r = pmLookupName(1, &dom, pmId)) < 0)
+  {
+    msg_drInfo(drName, "unable to lookup %s: %s", dom, pmErrStr(r));
+    return -1;
+  }
+
+  if((r = pmLookupDesc(*pmId, pmD)) < 0)
+  {
+    msg_drInfo(drName, "unable to get descriptions about %s: %s",
+        dom, pmErrStr(r));
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+irix_pcp_list(const char* devname, struct Devices* list)
+{
+  pmID pmId[4];
+  pmDesc pmD[4];
+  int* inst;
+  char** desc;
+
+  int dta = 0;
+  int rad = 0;
+  struct Devices* ndev;
+  int i;
+  int* t;
+  char** p;
+  struct irix_pcp_drvdata* drdata;
+
+
+  /* create a connection to pcpd */
+  if((dta = pmNewContext(PM_CONTEXT_HOST, "localhost")) < 0)
+  {
+    msg_drInfo(drName, pmErrStr(dta));
+    return 0;
+  }
+
+  /* resolve doms/descs */
+  if(irix_pcp_resDom(PCPNS_NETINBDOM, &pmId[0], &pmD[0]) ||
+      irix_pcp_resDom(PCPNS_NETINPDOM, &pmId[1], &pmD[1]) ||
+      irix_pcp_resDom(PCPNS_NETOUTBDOM, &pmId[2], &pmD[2]) ||
+      irix_pcp_resDom(PCPNS_NETOUTPDOM, &pmId[3], &pmD[3]))
+    return 0;
+
+  /* fetch the hinstance list from any of the four domains */
+  if((dta = pmGetInDom(pmD->indom, &inst, &desc)) < 0)
+  {
+    msg_drInfo(drName, "unable to get hinstances of " PCPNS_NETINBDOM
+        ": %s", pmErrStr(dta));
+    return 0;
+  }
+
+  /* traverse the list */
+  p = desc;
+  t = inst;
+  for(i = 0; i < dta; ++i)
+  {
+    if((devname && !strcmp(devname, *p)) ||
+        (!devname && strcmp(*p, "lo0")))
+    {
+      msg_drInfo(drName, "detected %s(%d)", *p, *t);
+      ndev = malloc(sizeof(struct Devices));
+      ndev->name = strdup(*p);
+      drdata = malloc(sizeof(struct irix_pcp_drvdata));
+      /*drdata->indom = pmD.indom;*/
+      drdata->inst = *t;
+      ndev->drvdata = (void*)drdata;
+
+      /* append the new device */
+      list->next = ndev;
+      list = ndev;
+      ndev->next = NULL;
+      ++rad;
+    }
+
+    ++p;
+    ++t;
+  }
+  free(desc);
+  free(inst);
+
+  return rad;
+}
+
+int
+irix_pcp_init(struct Devices* dev)
+{
+  dev->devstart = 0;
+  return 0;
+}
+
+int
+irix_pcp_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
+    unsigned long* ib, unsigned long* ob)
+{
+  *ip = *op = *ib = *ob = 0;
+  return 0;
+}
+
+void
+irix_pcp_term(struct Devices* dev)
+{
+  free(dev->drvdata);
+}
+
+#endif /* USE_IRIX_PCP */
+
+
 /* define the drivers list */
 struct drivers_struct drivers_table[] =
 {
@@ -700,6 +839,9 @@ struct drivers_struct drivers_table[] =
 #ifdef USE_SOLARIS_KSTAT
   {USE_SOLARIS_KSTAT, solaris_kstat_list, solaris_kstat_init,
     solaris_kstat_get, solaris_kstat_term},
+#endif
+#ifdef USE_IRIX_PCP
+  {USE_IRIX_PCP, irix_pcp_list, irix_pcp_init, irix_pcp_get, irix_pcp_term},
 #endif
 #ifdef USE_TESTING_DUMMY
   {USE_TESTING_DUMMY, testing_dummy_list, testing_dummy_init,
