@@ -20,13 +20,14 @@ scroll=10
 # average sampling for the speed display at the bottom of the pixmap.
 # this is the number of times to wait (in terms of scrolling steps) before
 # displaying the average speed of that period. The time of the period can
-# be calculated (in tenth of seconds) with: scroll * avg_steps
+# be calculated (in tenth of seconds) with: scroll * avg_steps.
 avg_steps=1
 
 # smooth: smoothing factor. A float value ranging from 0 to 1. This is
 # really the "amount" of the new speed against the history each time is
 # sampled from the device. A low value (0.1) will remove random spikes
-# from the graph. Values higher than 1 will instead enchange spikes.
+# from the graph. Values higher than 1 will instead enchange spikes. Only
+# the 'bytes' mode is affected by this switch.
 # Disabled by default (0).
 smooth=0
 
@@ -42,6 +43,7 @@ binary_scale=no
 display_time=yes
 
 # use a specific driver (driver name, %auto for automatic)
+# See -h for a list of available drivers.
 driver=%auto
 
 # Driver's interface to monitor (interface name, %any for all).
@@ -55,7 +57,7 @@ driver=%auto
 driver_interface=%any
 
 # automatically select and show this interface on startup if
-# avaible (interface name, %first for the first one)
+# available (interface name, %first for the first one)
 interface_name=%first
 
 # Show max values (yes, no)
@@ -64,12 +66,17 @@ show_max_values=yes
 # Use long interface names (yes, no)
 use_long_names=no
 
-# max values through entire history or through lastest ~50 samples
+# max values through entire history instead of through the last ~50 samples
 use_max_history=no
 
-# display mode (traditional, waveform, wmnet, ...)
+# display mode (traditional, waveform, wmnet, ...).
+# See -h for a list of available modes.
 wave_mode=wmnet
 
 # be less verbose (display only errors)
 # quiet=yes
 
+# change the WMND's class/title name. this is useful under wharf (afterstep)
+# to not swallow multiple WMND instances into a single dock. Defaults
+# to "wmnd".
+# name=wmnd
