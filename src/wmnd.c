@@ -1639,10 +1639,8 @@ devices_init(const char* driver, const char* interface)
         /* sample some stats to inizialize cleanly the graph */
         (*drivers_table[prt->drvnum].get_stats)(prt, &ip, &op, &ib, &ob);
 
-        prt->ib_max_his = ib;
-        prt->ob_max_his = ob;
-        prt->ip_max_his = ip;
-        prt->op_max_his = op;
+        prt->ib_max_his = prt->ob_max_his =
+          prt->ip_max_his = prt->op_max_his = 0;
         prt->ib_stat_last = ib;
         prt->ob_stat_last = ob;
         prt->ip_stat_last = ip;
