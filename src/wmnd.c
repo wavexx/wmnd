@@ -27,30 +27,33 @@
 #include "drivers.h"
 #include "messages.h"
 
+
 struct var *vars;        /* config file option structure */
 struct Devices *devices; /* devices to monitor */
 DevTable wmnd;           /* interesting information about devices */
 Dockapp dockapp;         /* dockapp structure */
 MRegion mr[32];          /* mouse regions */
 
+
 /* GUI */
 static void redraw_window(void);
-unsigned long get_color(char *name);
-void new_window(char *name, int width, int height, int argc, char** argv);
+unsigned long get_color(char* name);
+void new_window(char* name, char* class,
+    int width, int height, int argc, char** argv);
 
 /* config file read/write */
-void conf_read(char *filename);
-void conf_write(char *filename);
-void assign(char *name, char *value);
-void vdel(char *name);
-struct var *lookup(char *name);
-char *value(char *name);
-char *vcopy(char *str);
+void conf_read(char* filename);
+void conf_write(char* filename);
+void assign(char* name, char* value);
+void vdel(char* name);
+struct var *lookup(char* name);
+char* value(char* name);
+char* vcopy(char* str);
 
 /* utils for command line */
-int strval_fe(const struct pair_strint *data, const char *val);
-int defcon_lk(const char *token);
-void defcon_touch(char *token, char *val);
+int strval_fe(const struct pair_strint *data, const char* val);
+int defcon_lk(const char* token);
+void defcon_touch(char* token, char* val);
 
 /* support */
 int add_mr(int index, int x, int y, int width, int height);
@@ -58,10 +61,10 @@ int check_mr(int x, int y);
 void beat_event(void);
 void click_event(unsigned int region, unsigned int button);
 static void led_control(const unsigned char led, const unsigned char mode);
-void scale(char *rx_buf, char *tx_buf, unsigned long rx, unsigned long tx);
-void metric_scale(unsigned char sign, unsigned long value, char *buf);
-void binary_scale(unsigned char sign, unsigned long value, char *buf);
-void draw_string(const char *buf, unsigned int x, unsigned int y);
+void scale(char* rx_buf, char* tx_buf, unsigned long rx, unsigned long tx);
+void metric_scale(unsigned char sign, unsigned long value, char* buf);
+void binary_scale(unsigned char sign, unsigned long value, char* buf);
+void draw_string(const char* buf, unsigned int x, unsigned int y);
 void smooth(unsigned long* stat, const unsigned long last, const float smooth);
 
 /* device statistics */
@@ -71,16 +74,17 @@ void draw_max(unsigned long rx, unsigned long tx);
 void draw_stats(struct Devices *ptr);
 
 /* driver functions */
-int devices_init(const char *driver, const char *interface);
-void devices_select(const char *interface);
-void devices_getstat(struct Devices *device, unsigned long *ip,
-    unsigned long *op, unsigned long *ib, unsigned long *ob);
-void devices_destroy();
+int devices_init(const char* driver, const char* interface);
+void devices_select(const char* interface);
+void devices_getstat(struct Devices *device, unsigned long* ip,
+    unsigned long* op, unsigned long* ib, unsigned long* ob);
+void devices_destroy(void);
 void devices_restart(int sig);
 
 /* useless shit */
 void usage(void);
 void printversion(void);
+
 
 int
 add_mr(int index, int x, int y, int width, int height)
@@ -92,6 +96,7 @@ add_mr(int index, int x, int y, int width, int height)
   mr[index].height = height;
   return 0;
 }
+
 
 int
 check_mr(int x, int y)
@@ -111,6 +116,7 @@ check_mr(int x, int y)
   return (i - 1);
 }
 
+
 static void
 redraw_window(void)
 {
@@ -125,8 +131,9 @@ redraw_window(void)
   }
 }
 
+
 unsigned long
-get_color(char *name)
+get_color(char* name)
 {
   XColor color;
   XWindowAttributes attr;
@@ -142,8 +149,10 @@ get_color(char *name)
   return color.pixel;
 }
 
+
 void
-new_window(char *name, int width, int height, int argc, char** argv)
+new_window(char* name, char* class,
+    int width, int height, int argc, char** argv)
 {
   XpmAttributes attr;
   XpmColorSymbol cols[3] =
@@ -179,7 +188,7 @@ new_window(char *name, int width, int height, int argc, char** argv)
 
   XSetWMNormalHints(dockapp.d, dockapp.win, &sizehints);
   classhint.res_name = name;
-  classhint.res_class = name;
+  classhint.res_class = class;
   XSetClassHint(dockapp.d, dockapp.win, &classhint);
 
   XSelectInput(dockapp.d, dockapp.win,
@@ -242,18 +251,19 @@ new_window(char *name, int width, int height, int argc, char** argv)
   dockapp.xfd = ConnectionNumber(dockapp.d);
 }
 
+
 /* support function - chop cr/lf off the end of a string */
 void
-chomp(char *buffer)
+chomp(char* buffer)
 {
   int i = strlen(buffer) - 1;
-  while (buffer[i] == '\n' || buffer[i] == '\r') {
+  while (buffer[i] == '\n' || buffer[i] == '\r')
     buffer[i--] = '\0';
-  }
 }
 
+
 void
-conf_read(char *filename)
+conf_read(char* filename)
 {
   FILE *fp;
   char buf[1024];
@@ -295,8 +305,9 @@ conf_read(char *filename)
   }
 }
 
+
 void
-conf_write(char *filename)
+conf_write(char* filename)
 {
   FILE *fp;
   struct var *vp;
@@ -313,8 +324,9 @@ conf_write(char *filename)
   fclose(fp);
 }
 
+
 void
-assign(char *name, char *value)
+assign(char* name, char* value)
 {
   struct var *vp;
   struct var *newv;
@@ -340,8 +352,9 @@ assign(char *name, char *value)
   newv->v_value = vcopy(value);
 }
 
+
 void
-vdel(char *name)
+vdel(char* name)
 {
   struct var *vp;
   struct var *newv;
@@ -366,10 +379,11 @@ vdel(char *name)
   }
 }
 
+
 char*
-vcopy(char *str)
+vcopy(char* str)
 {
-  char *newv;
+  char* newv;
   unsigned int len;
 
   if(str == NULL)
@@ -380,8 +394,9 @@ vcopy(char *str)
   return newv;
 }
 
+
 int
-strval_fe(const struct pair_strint *data, const char *val)
+strval_fe(const struct pair_strint *data, const char* val)
 {
   /* returns the correct value for val as int */
   int cnt = 0;
@@ -396,8 +411,9 @@ strval_fe(const struct pair_strint *data, const char *val)
   return data->val;
 }
 
+
 int
-waveval_fe(const struct drwStruct *data, const char *val)
+waveval_fe(const struct drwStruct *data, const char* val)
 {
   int cnt = 0;
   while (data[cnt].funcName)
@@ -409,8 +425,9 @@ waveval_fe(const struct drwStruct *data, const char *val)
   return 0;
 }
 
+
 int
-defcon_lk(const char *token)
+defcon_lk(const char* token)
 {
   int rtval = 0;
   while (pss_defcon[rtval].token)
@@ -422,8 +439,9 @@ defcon_lk(const char *token)
   return -1;
 }
 
+
 void
-defcon_touch(char *token, char *val)
+defcon_touch(char* token, char* val)
 {
   int idx = defcon_lk(token);
 
@@ -432,8 +450,9 @@ defcon_touch(char *token, char *val)
     pss_defcon[idx].used = 1;
 }
 
+
 struct var*
-lookup(char *name)
+lookup(char* name)
 {
   struct var *vp;
 
@@ -443,8 +462,9 @@ lookup(char *name)
   return NULL;
 }
 
+
 char*
-value(char *name)
+value(char* name)
 {
   struct var *vp;
 
@@ -452,6 +472,7 @@ value(char *name)
     return NULL;
   return vp->v_value;
 }
+
 
 void
 beat_event(void)
@@ -487,10 +508,11 @@ beat_event(void)
   }
 }
 
+
 void
 click_event(unsigned int region, unsigned int button)
 {
-  char *action = NULL;
+  char* action = NULL;
 
   if(region == -1u)		/* no region */
     return;
@@ -571,11 +593,13 @@ click_event(unsigned int region, unsigned int button)
   }
 }
 
+
 void
 smooth(unsigned long* stat, const unsigned long last, const float smooth)
 {
   *stat = (long)(last + smooth * (*stat - last));
 }
+
 
 void
 mainExit(int sig)
@@ -585,15 +609,17 @@ mainExit(int sig)
   exit(1);
 }
 
-int main(int argc, char **argv)
+
+int main(int argc, char* *argv)
 {
-  char *dispname = NULL;
-  char *active_interface = NULL;
-  char *drv_interface = NULL;
-  char *drv_name = NULL;
+  char* dispname = NULL;
+  char* active_interface = NULL;
+  char* drv_interface = NULL;
+  char* drv_name = NULL;
+  char* win_name = NULL;
   int parse_conf = 1;
-  char *conf_file = NULL;
-  struct Devices *ptr;
+  char* conf_file = NULL;
+  struct Devices* ptr;
   unsigned long int ib, ob, ip, op;
   int ch;
   unsigned btn = 0;
@@ -634,7 +660,7 @@ int main(int argc, char **argv)
 
   /* parse command line */
   while((ch =
-      getopt(argc, argv, "bc:C:L:d:i:hlmMf:Fr:s:S:tvw:D:I:qQo:")) != EOF)
+      getopt(argc, argv, "bc:C:L:d:i:hlmMf:Fr:s:S:tvw:D:I:qQo:n:")) != EOF)
   {
     switch(ch)
     {
@@ -651,7 +677,7 @@ int main(int argc, char **argv)
       defcon_touch("md_color", optarg);
       break;
     case 'd':
-      dispname = strdup(optarg);
+      dispname = optarg;
       break;
     case 'i':
       defcon_touch("interface_name", optarg);
@@ -666,7 +692,7 @@ int main(int argc, char **argv)
       defcon_touch("use_max_history", "yes");
       break;
     case 'f':
-      conf_file = strdup(optarg);
+      conf_file = optarg;
       break;
     case 'F':
       parse_conf = 0;
@@ -705,6 +731,9 @@ int main(int argc, char **argv)
     case 'o':
       defcon_touch("smooth", optarg);
       break;
+    case 'n':
+      defcon_touch("name", optarg);
+      break;
     default:
       usage();
       exit(0);
@@ -715,7 +744,7 @@ int main(int argc, char **argv)
   {
     if(!conf_file)
     {
-      char *tmp;
+      char* tmp;
       tmp = getenv("HOME");
       conf_file = (char*)calloc(1, strlen(tmp) + 9);
       strcat(conf_file, tmp);
@@ -729,16 +758,14 @@ int main(int argc, char **argv)
   wmnd.scroll = MAX(atoi(value("scroll")), 1);
   wmnd.avgSteps = MAX(atoi(value("avg_steps")), 1);
   wmnd.smooth = atof(value("smooth"));
+  win_name = value("name");
   if(strval_fe(psi_bool, value("binary_scale")))
     wmnd.scale = binary_scale;
   else
     wmnd.scale = metric_scale;
-  active_interface = strdup(value("interface_name"));
+  active_interface = value("interface_name");
   if(!strcmp(active_interface, "%first"))
-  {
-    free(active_interface);
     active_interface = NULL;
-  }
   if(!strval_fe(psi_bool, value("use_long_names")))
     bit_set(CFG_SHORTNAME);
   if(strval_fe(psi_bool, value("show_max_values")))
@@ -748,18 +775,12 @@ int main(int argc, char **argv)
   if(strval_fe(psi_bool, value("display_time")))
     bit_set(CFG_SHOWTIME);
   wmnd.wavemode = waveval_fe(drwFuncs, value("wave_mode"));
-  drv_name = strdup(value("driver"));
+  drv_name = value("driver");
   if(!strcmp(drv_name, "%auto"))
-  {
-    free(drv_name);
     drv_name = NULL;
-  }
-  drv_interface = strdup(value("driver_interface"));
+  drv_interface = value("driver_interface");
   if(!strcmp(drv_interface, "%any"))
-  {
-    free(drv_interface);
     drv_interface = NULL;
-  }
   if(strval_fe(psi_bool, value("quiet")))
     msg_messages = MSG_FERR;
 
@@ -795,7 +816,7 @@ int main(int argc, char **argv)
 
     exit(-1);
   }
-  new_window("wmnd", 64, 64, argc, argv);
+  new_window(win_name, "wmnd", 64, 64, argc, argv);
 
   add_mr(0, 3, 3, 38, 9);   /* device */
   add_mr(1, 54, 3, 7, 9);   /* up/down packet/byte mode */
@@ -972,12 +993,13 @@ int main(int argc, char **argv)
   exit(0);
 }
 
+
 void
-binary_scale(unsigned char sign, unsigned long value, char *buf)
+binary_scale(unsigned char sign, unsigned long value, char* buf)
 {
   unsigned char scale;
   unsigned int i;
-  char *r;
+  char* r;
 
   if(value > 1073741823)
   {
@@ -1016,13 +1038,14 @@ binary_scale(unsigned char sign, unsigned long value, char *buf)
   *r = '\0';
 }
 
+
 void
-metric_scale(unsigned char sign, unsigned long value, char *buf)
+metric_scale(unsigned char sign, unsigned long value, char* buf)
 {
   float f;
   unsigned char scale;
   unsigned int i;
-  char *r;
+  char* r;
 
   f = (float) value;
   if(value > 999999999)
@@ -1062,8 +1085,9 @@ metric_scale(unsigned char sign, unsigned long value, char *buf)
   *r = '\0';
 }
 
+
 void
-scale(char *rx_buf, char *tx_buf, unsigned long rx, unsigned long tx)
+scale(char* rx_buf, char* tx_buf, unsigned long rx, unsigned long tx)
 {
   char rx_sign, tx_sign;
 
@@ -1089,12 +1113,13 @@ scale(char *rx_buf, char *tx_buf, unsigned long rx, unsigned long tx)
   wmnd.scale(rx_sign, rx, rx_buf);
 }
 
+
 void
-draw_string(const char *buf, unsigned int x, unsigned int y)
+draw_string(const char* buf, unsigned int x, unsigned int y)
 {
   unsigned int w, sx = 0, sy = 0;
   unsigned int draw;
-  const char *r;
+  const char* r;
 
   w = 3;
   draw = 0;
@@ -1196,6 +1221,7 @@ draw_string(const char *buf, unsigned int x, unsigned int y)
   }
 }
 
+
 void
 draw_rate(unsigned long rx, unsigned long tx)
 {
@@ -1213,6 +1239,7 @@ draw_rate(unsigned long rx, unsigned long tx)
   draw_string(tx_buf, 32, 54);
 }
 
+
 void
 draw_max(unsigned long rx, unsigned long tx)
 {
@@ -1229,6 +1256,7 @@ draw_max(unsigned long rx, unsigned long tx)
   draw_string(rx_buf, 3, 11);
   draw_string(tx_buf, 32, 11);
 }
+
 
 void
 draw_stats(struct Devices *ptr)
@@ -1265,7 +1293,7 @@ draw_stats(struct Devices *ptr)
 
   /* find maximum value in screen history */
   rx_max = tx_max = 0;
-  p = (unsigned long *) ptr->his;
+  p = (unsigned long* ) ptr->his;
   for(k = 0; k < 58; k++)
   {
     rx_max = MAX(rx_max, p[in]);
@@ -1288,13 +1316,14 @@ draw_stats(struct Devices *ptr)
   else
     draw_max(rx_max_his, tx_max_his);
 
-  p = (unsigned long *) ptr->his;
+  p = (unsigned long* ) ptr->his;
   (*drwFuncs[wmnd.wavemode].funcPtr)(p, in, out, size, bpp, rx_max, tx_max);
 
   /* copy PPP connection time over the graph */
   if(bit_get(CFG_SHOWTIME) && wmnd.curdev->devstart)
     copy_xpm_area(70, 36, 23, 7, 37, 46);
 }
+
 
 static void
 led_control(const unsigned char led, const unsigned char mode)
@@ -1380,6 +1409,7 @@ led_control(const unsigned char led, const unsigned char mode)
   }
 }
 
+
 void
 draw_interface(void)
 {
@@ -1387,7 +1417,7 @@ draw_interface(void)
   int c;
   int k = 3;
   char temp[7];
-  char *cur_name = wmnd.curdev->name;
+  char* cur_name = wmnd.curdev->name;
   int cur_namelen = strlen(cur_name);
 
   /* refresh */
@@ -1429,6 +1459,7 @@ draw_interface(void)
   }
 }
 
+
 void
 usage(void)
 {
@@ -1437,7 +1468,7 @@ usage(void)
   fprintf(stderr,
       "wmnd - WindowMaker Network Devices %s\n"
       "Home page: http://www.yuv.info/wmnd/,\n"
-      "           http://www.wingeer.org/wmnd/\n\n"
+      "           http://wmnd.wingeer.org/\n\n"
       "usage:\n"
       "  -b                  base 2 scale (no fractions)\n"
       "  -c <color>          tx color\n"
@@ -1455,6 +1486,7 @@ usage(void)
       "  -s <scroll>         scroll rate in tenth of seconds\n"
       "  -S <samples>        number of samples to average for the speed indicator\n"
       "  -t                  start without displaying time\n"
+      "  -n <name>           Use <name> instead of 'wmnd' for the window name\n"
       "  -v                  print the version number\n"
       "  -q                  be less verbose\n"
       "  -Q                  enable verbosity\n"
@@ -1487,14 +1519,16 @@ usage(void)
   }
 }
 
+
 void
 printversion(void)
 {
   printf("%s\n", WMND_VERSION);
 }
 
+
 int
-devices_init(const char *driver, const char *interface)
+devices_init(const char* driver, const char* interface)
 {
   /*
    * devices init, initializes all drivers/devices
@@ -1603,8 +1637,9 @@ devices_init(const char *driver, const char *interface)
   return (!wmnd.nr_devices);
 }
 
+
 void
-devices_select(const char *interface)
+devices_select(const char* interface)
 {
   /*
    * devices_select: sets wmnd.curdev looking up a name
@@ -1638,9 +1673,10 @@ devices_select(const char *interface)
   }
 }
 
+
 void
-devices_getstat(struct Devices *device, unsigned long *ip, unsigned long *op,
-    unsigned long *ib, unsigned long *ob)
+devices_getstat(struct Devices *device, unsigned long* ip, unsigned long* op,
+    unsigned long* ib, unsigned long* ob)
 {
   /*
    * devices_getstat: run appropriate get_stats for device
@@ -1663,8 +1699,9 @@ devices_getstat(struct Devices *device, unsigned long *ip, unsigned long *op,
   device->online = online;
 }
 
+
 void
-devices_destroy()
+devices_destroy(void)
 {
   /*
    * devices_destroy: sends destroy signal to all devices and frees devices
@@ -1680,6 +1717,7 @@ devices_destroy()
     free(ptr);
   }
 }
+
 
 void
 devices_restart(int sig)
