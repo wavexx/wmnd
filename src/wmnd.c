@@ -38,7 +38,7 @@ MRegion mr[32];          /* mouse regions */
 /* GUI */
 static void redraw_window(void);
 unsigned long get_color(char* name);
-void new_window(char* name, char* class,
+void new_window(char* res_name, char* res_class,
     int width, int height, int argc, char** argv);
 
 /* config file read/write */
@@ -61,7 +61,8 @@ int check_mr(int x, int y);
 void beat_event(void);
 void click_event(unsigned int region, unsigned int button);
 static void led_control(const unsigned char led, const unsigned char mode);
-void scale(char* rx_buf, char* tx_buf, unsigned long rx, unsigned long tx);
+void scale(char* rx_buf, char* tx_buf, unsigned long rx,
+    unsigned long tx, const int gap);
 void metric_scale(unsigned char sign, unsigned long value, char* buf);
 void binary_scale(unsigned char sign, unsigned long value, char* buf);
 void draw_string(const char* buf, unsigned int x, unsigned int y);
@@ -69,9 +70,9 @@ void smooth(unsigned long* stat, const unsigned long last, const float smooth);
 
 /* device statistics */
 void draw_interface(void);
-void draw_rate(unsigned long rx, unsigned long tx);
+void draw_rate(unsigned long rx, unsigned long tx, const int gap);
 void draw_max(unsigned long rx, unsigned long tx);
-void draw_stats(struct Devices *ptr);
+void draw_stats(struct Devices *ptr, const int gap);
 
 /* driver functions */
 int devices_init(const char* driver, const char* interface);
@@ -151,7 +152,7 @@ get_color(char* name)
 
 
 void
-new_window(char* name, char* class,
+new_window(char* res_name, char* res_class,
     int width, int height, int argc, char** argv)
 {
   XpmAttributes attr;
@@ -187,8 +188,8 @@ new_window(char* name, char* class,
       sizehints.x, sizehints.y, sizehints.width, sizehints.height, 1, fg, bg);
 
   XSetWMNormalHints(dockapp.d, dockapp.win, &sizehints);
-  classhint.res_name = name;
-  classhint.res_class = class;
+  classhint.res_name = res_name;
+  classhint.res_class = res_class;
   XSetClassHint(dockapp.d, dockapp.win, &classhint);
 
   XSelectInput(dockapp.d, dockapp.win,
@@ -198,8 +199,8 @@ new_window(char* name, char* class,
       ExposureMask | ButtonPressMask | ButtonReleaseMask |
       StructureNotifyMask);
 
-  XStoreName(dockapp.d, dockapp.win, name);
-  XSetIconName(dockapp.d, dockapp.win, name);
+  XStoreName(dockapp.d, dockapp.win, res_name);
+  XSetIconName(dockapp.d, dockapp.win, res_name);
 
   gcval.foreground = fg;
   gcval.background = bg;
@@ -924,6 +925,7 @@ int main(int argc, char* *argv)
     if((wmnd.refresh * beats / 100000) >= wmnd.scroll)
     {
       beats = 0;
+#define beat_gap 10
 #else
     /* fetch current time */
     gettimeofday(&beat_ctime, NULL);
@@ -960,7 +962,7 @@ int main(int argc, char* *argv)
       beat_event();
 
       /* scroll the statistics */
-      draw_stats(wmnd.curdev);
+      draw_stats(wmnd.curdev, beat_gap);
       for(ptr = devices; ptr; ptr = ptr->next)
       {
         for(j = 1; j < 58; j++)
@@ -1002,7 +1004,7 @@ int main(int argc, char* *argv)
           {
             click_event(rgn, btn);
             beat_event();
-            draw_stats(wmnd.curdev);
+            draw_stats(wmnd.curdev, beat_gap);
           }
         }
         break;
@@ -1115,7 +1117,8 @@ metric_scale(unsigned char sign, unsigned long value, char* buf)
 
 
 void
-scale(char* rx_buf, char* tx_buf, unsigned long rx, unsigned long tx)
+scale(char* rx_buf, char* tx_buf, unsigned long rx,
+    unsigned long tx, const int gap)
 {
   char rx_sign, tx_sign;
 
@@ -1131,9 +1134,9 @@ scale(char* rx_buf, char* tx_buf, unsigned long rx, unsigned long tx)
   }
 
   /* return the speed in bps */
-  if(wmnd.scroll != 10)
+  if(wmnd.scroll != 10 || gap != 10)
   {
-    float div = 10. / wmnd.scroll;
+    float div = (float)gap / wmnd.scroll;
     tx = (unsigned long)(div * tx);
     rx = (unsigned long)(div * rx);
   }
@@ -1251,7 +1254,7 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
 
 
 void
-draw_rate(unsigned long rx, unsigned long tx)
+draw_rate(unsigned long rx, unsigned long tx, const int gap)
 {
   char rx_buf[16];
   char tx_buf[16];
@@ -1260,7 +1263,7 @@ draw_rate(unsigned long rx, unsigned long tx)
   copy_xpm_area(100, 85, 58, 7, 3, 54);
 
   /* put rx/tx numbers into strings, scaling them */
-  scale(rx_buf, tx_buf, rx, tx);
+  scale(rx_buf, tx_buf, rx, tx, gap);
 
   /* draw rx/tx strings */
   draw_string(rx_buf, 3, 54);
@@ -1277,8 +1280,10 @@ draw_max(unsigned long rx, unsigned long tx)
   /* clear rate bar */
   copy_xpm_area(100, 85, 58, 7, 3, 11);
 
-  /* put rx/tx numbers into strings, scaling them */
-  scale(rx_buf, tx_buf, rx, tx);
+  /* put rx/tx numbers into strings, scaling them. Scale now acceps the median
+   * time in microseconds to scale the values correctly; as we don't have the
+   * median time for all samples, use a reasonable default */
+  scale(rx_buf, tx_buf, rx, tx, 10);
 
   /* draw rx/tx strings */
   draw_string(rx_buf, 3, 11);
@@ -1287,7 +1292,7 @@ draw_max(unsigned long rx, unsigned long tx)
 
 
 void
-draw_stats(struct Devices *ptr)
+draw_stats(struct Devices *ptr, const int gap)
 {
   int bpp = 1; /* bytes per pixel */
   unsigned int k;
@@ -1337,7 +1342,7 @@ draw_stats(struct Devices *ptr)
 
   /* draw rx/tx rate */
   p = ptr->avg;
-  draw_rate(p[in], p[out]);
+  draw_rate(p[in], p[out], gap);
 
   if(bit_get(CFG_MAXSCREEN))
     draw_max(rx_max, tx_max);
