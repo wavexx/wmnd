@@ -1646,8 +1646,21 @@ devices_getstat(struct Devices *device, unsigned long *ip, unsigned long *op,
    * devices_getstat: run appropriate get_stats for device
    */
 
-  device->online =
+  int online =
     (*drivers_table[device->drvnum].get_stats)(device, ip, op, ib, ob);
+  if(!online && device->online)
+  {
+    /* the device retuned back online, update the timestamp */
+    time(&device->devstart);
+  }
+  else
+  if(online && !device->online)
+  {
+    /* device shutdown */
+    device->devstart = 0;
+  }
+
+  device->online = online;
 }
 
 void
