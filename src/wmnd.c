@@ -62,6 +62,7 @@ void scale(char *rx_buf, char *tx_buf, unsigned long rx, unsigned long tx);
 void metric_scale(unsigned char sign, unsigned long value, char *buf);
 void binary_scale(unsigned char sign, unsigned long value, char *buf);
 void draw_string(const char *buf, unsigned int x, unsigned int y);
+void smooth(unsigned long* stat, const unsigned long last, const float smooth);
 
 /* device statistics */
 void draw_interface(void);
@@ -569,6 +570,12 @@ click_event(unsigned int region, unsigned int button)
 }
 
 void
+smooth(unsigned long* stat, const unsigned long last, const float smooth)
+{
+  *stat = last + smooth * (*stat - last);
+}
+
+void
 mainExit(int sig)
 {
   msg_info("caught signal %d, terminating...", sig);
@@ -586,12 +593,12 @@ int main(int argc, char **argv)
   char *conf_file = NULL;
   struct Devices *ptr;
   unsigned long int ib, ob, ip, op;
-  struct timeval beat_time;
   int ch;
   unsigned btn = 0;
   int rgn = -1;
   XEvent event;
   const struct drwStruct* drwPtr;
+  int beats;
 
   /* initialize messaging functions */
   msg_prgName = argv[0];
@@ -624,7 +631,7 @@ int main(int argc, char **argv)
   }
 
   /* parse command line */
-  while((ch = getopt(argc, argv, "bc:C:L:d:i:hlmMf:Fr:s:S:tvw:D:I:q")) != EOF)
+  while((ch = getopt(argc, argv, "bc:C:L:d:i:hlmMf:Fr:s:S:tvw:D:I:qo:")) != EOF)
   {
     switch(ch)
     {
@@ -689,6 +696,9 @@ int main(int argc, char **argv)
     case 'q':
       defcon_touch("quiet", "yes");
       break;
+    case 'o':
+      defcon_touch("smooth", optarg);
+      break;
     default:
       usage();
       exit(0);
@@ -712,6 +722,7 @@ int main(int argc, char **argv)
   wmnd.refresh = atoi(value("refresh"));
   wmnd.scroll = MAX(atoi(value("scroll")), 1);
   wmnd.avgSteps = MAX(atoi(value("avg_steps")), 1);
+  wmnd.smooth = atof(value("smooth"));
   if(strval_fe(psi_bool, value("binary_scale")))
     wmnd.scale = binary_scale;
   else
@@ -787,7 +798,7 @@ int main(int argc, char **argv)
   add_mr(4, 3, 54, 58, 7);  /* user script? huh wtf does that do */
 
   /* updates should begin immediately */
-  beat_time.tv_sec = beat_time.tv_usec = 0;
+  beats = wmnd.scroll * 10;
 
   /* clear the number of remaining steps */
   wmnd.avgRSteps = 1;
@@ -806,8 +817,6 @@ int main(int argc, char **argv)
   for(;;)
   {
     unsigned int j;
-    struct timeval beat_ctime;
-    unsigned long beat_gap;
 
     /* get statistics for each existing device */
     for(ptr = devices; ptr; ptr = ptr->next)
@@ -823,6 +832,15 @@ int main(int argc, char **argv)
         ptr->ip_stat_last = ip;
       if(op < ptr->op_stat_last)
         ptr->op_stat_last = op;
+
+      /* smoothing */
+      if(wmnd.smooth)
+      {
+        smooth(&ib, ptr->ib_stat_last, wmnd.smooth);
+        smooth(&ob, ptr->ob_stat_last, wmnd.smooth);
+        smooth(&ip, ptr->ip_stat_last, wmnd.smooth);
+        smooth(&op, ptr->op_stat_last, wmnd.smooth);
+      }
 
       ptr->his[57][0] += ib - ptr->ib_stat_last;
       ptr->his[57][1] += ob - ptr->ob_stat_last;
@@ -851,16 +869,12 @@ int main(int argc, char **argv)
       ptr->op_stat_last = op;
     }
 
-    /* fetch current time */
-    gettimeofday(&beat_ctime, NULL);
-
-    /* estimate the time gap in tenth of seconds */
-    beat_gap = ((beat_ctime.tv_sec - beat_time.tv_sec) * 10) +
-      ((beat_ctime.tv_usec - beat_time.tv_usec) / 100000);
-    
-    if(beat_gap >= wmnd.scroll)
+    /* cosmetic fix: use the number of effectively elapsed beats instead of a
+     * time based check to distribute timing discrepancies and rounding
+     * errors. This will also save us a syscall */
+    if((wmnd.refresh * beats / 100000) >= wmnd.scroll)
     {
-      beat_time = beat_ctime;
+      beats = 0;
 
       /* drift the average stats */
       if(!--wmnd.avgRSteps)
@@ -931,6 +945,8 @@ int main(int argc, char **argv)
         break;
       }
     }
+
+    ++beats;
     redraw_window();
     usleep(wmnd.refresh);
   }
@@ -1356,8 +1372,8 @@ usage(void)
 
   fprintf(stderr,
       "wmnd - WindowMaker Network Devices %s\n"
-      "Home page: http://www.wingeer.org/wmnd/,\n"
-      "           http://www.hydra.ubiest.com/wmnd/\n\n"
+      "Home page: http://www.hydra.ubiest.com/wmnd/,\n"
+      "           http://www.wingeer.org/wmnd/\n\n"
       "usage:\n"
       "  -b                  base 2 scale (no fractions)\n"
       "  -c <color>          tx color\n"
@@ -1377,6 +1393,7 @@ usage(void)
       "  -t                  start without displaying time\n"
       "  -v                  print the version number\n"
       "  -q                  be less verbose\n"
+      "  -o <float>          smoothing factor (0-1)\n"
       "  -w <mode>           select display mode (see below)\n"
       "  -D <driver>         specify a driver to use\n"
       "  -I <interface name> tell to driver/s the interface to monitor\n\n"
