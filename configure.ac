@@ -77,10 +77,13 @@ then
 	)
 	
 	# freebsd sysctl driver
-	AC_CHECK_HEADERS(net/if_mib.h,
-		[AC_CHECK_HEADERS(sys/sysctl.h,
+	AC_MSG_CHECKING([for *BSD net/if_mib.h presence])
+	AC_PREPROC_IFELSE([#include <net/if_mib.h>],
+		[AC_MSG_RESULT([yes])
+		AC_CHECK_HEADERS(sys/sysctl.h,
 			[ac_drivers="$ac_drivers freebsd_sysctl"]
-		)]
+		)],
+		[AC_MSG_RESULT([no])]
 	)
 	
 	# solaris/linux streams pppd driver
