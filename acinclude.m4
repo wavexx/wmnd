@@ -69,3 +69,46 @@ AC_DEFUN(AC_CC_DEBUG,
 	fi
 ])
 
+# check for a size type
+# note how I use the returning value of AC_RUN_IFELSE(ac_status),
+# as there's NO other way of capturing a test's output.
+AC_DEFUN(AC_SIZE_CHECK,
+[
+	AC_MSG_CHECKING([for "$1" size])
+	AC_RUN_IFELSE(
+	[
+	  int main() {return (sizeof($1) * 8);}
+	], [AC_MSG_RESULT([indeterminate])],
+		[translit($1, ' ', '_')_size="$ac_status"
+		AC_MSG_RESULT([$ac_status bits])]
+	)
+])
+
+# search for an integral type of a specified size
+# usage: AC_SIZE_SEARCH(typedef, bits, [type type ...])
+# each type must first be checked with AC_SIZE_CHECK
+AC_DEFUN(AC_SIZE_SEARCH,
+[
+	AC_MSG_CHECKING([for a $2 bits type])
+	unset xtype
+	for type in $3
+	do
+		bits="`echo \"$type\" | tr \" \" \"_\"`_size"
+		bits="`eval echo \\$$bits`"
+		if test -n "$bits" -a "$bits" = "$2"
+		then
+			xtype="$type"
+			break
+		fi
+	done
+
+	if test -n "$xtype"
+	then
+		AC_DEFINE_UNQUOTED([$1], $xtype, [$2 bits type])
+		AC_MSG_RESULT([$xtype])
+	else
+		AC_MSG_ERROR([unable to find any suitable type])
+	fi
+	unset IFS
+])
+

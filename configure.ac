@@ -225,6 +225,19 @@ else
 fi
 
 
+# check for basic type sizes
+AC_SIZE_CHECK(unsigned int)
+AC_SIZE_CHECK(unsigned long)
+
+# on all systems char is an 8 bits type
+AC_DEFINE([__u8], [unsigned char], [basic unsigned 8 bits type])
+
+# on recent HW all int types (int, long) are actually 32 bits types. On old
+# 16bit CPUs this may not be true. Also, I should consider adding a check for
+# unsigned short, just for those future 128 bits CPUs :)).
+AC_SIZE_SEARCH(__u32, 32, ["unsigned int" "unsigned long"])
+
+
 # output files
 AC_CONFIG_FILES([
   Makefile
