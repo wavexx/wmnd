@@ -23,6 +23,13 @@ scroll=10
 # be calculated (in tenth of seconds) with: scroll * avg_steps
 avg_steps=1
 
+# smooth: smoothing factor. A float value ranging from 0 to 1. This is
+# really the "amount" of the new speed against the history each time is
+# sampled from the device. A low value (0.01) will remove random spikes
+# from the graph. Values higher that 1 will instead enchange spikes.
+# Disabled by default (0).
+smooth=0
+
 # buttons for user scripts
 # bt1_action=su -c ethereal
 # bt2_action=

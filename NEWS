@@ -15,15 +15,19 @@ WMND 0.4.4
 	bandwidth generator with --enable-sine-dummy! Then, experience
 	it with:
 
-	  wmnd -D testing_dummy -s 1 -r 100000
+	  wmnd -D testing_dummy -s 1
 
 	* The --enable-debug switch should now work again.
 	* I now maintain WMND with cvs, so I use cvs2cl to produce the
 	ChangeLog directly from the repository. Old entries are moved
 	to the ChangeLog.0 file.
 	* The linux_proc driver can be forced to monitor devices that
-	actually are offline (useful for ppp interfaces).
-	* New display mode: lines (trend-like behavior)
+	are actually offline (useful for ppp interfaces).
+	* New display mode: lines (trend-like behavior). Mainly useful
+	with a low smoothing factor and a fast scroll speed.
+        * Added the smoothing factor thing to clear-up the graph while using a
+	fast scroll speed and the lines mode. Read the README for more
+	informations.
 
 WMND 0.4.3
 ----------------------------------------------------------------------

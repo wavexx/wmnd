@@ -56,7 +56,7 @@ that is first found in /proc/net/dev (or the current driver), but
 skip the lo and irda.
 
 Use the -I option to load only a specific interface into wmnd. By
-default wmnd loads all avaible interfaces.
+default wmnd loads all available interfaces.
 
 To monitor the lo or irda devices you must manually force wmnd as
 shown below:
@@ -147,7 +147,7 @@ Tx and Rx are piled on the same line within a single graph
 (like wmifs original behavior)
 
 -- MGraph ------------------------------------------------------------
-Tx and Rx scale is calculed uniquely and the slower channel is shown
+Tx and Rx scale is calculated uniquely and the slower channel is shown
 in front of the other one.
 
 -- Waveform ----------------------------------------------------------
@@ -268,15 +268,15 @@ and then proceed as above. You'll notice this big improvement:
   +checking for working fake-automake... missing
 
 This will prevent for make to recall automake later for regenerating
-makefiles (and this happens regardless the date of files!).
-automake 1.4 no longer works. automake 1.7 and autoconf 2.5 are now
+makefiles (and this happens regardless the date of files!). automake
+1.4 no longer works. automake >= 1.7 and autoconf >= 2.5 are now
 _required_ to regenerate the configure script.
 
 Also, on some platforms (linux actually) the solaris_fpppd driver
 would be detected only when the ppp kernel module is installed. To
-forcely enable specified drivers use the --with-drivers="list" flag.
+forcedly enable specified drivers use the --with-drivers="list" flag.
 
--- Avaible drivers/display modes -------------------------------------
+-- Available drivers/display modes -----------------------------------
 Actually WMND supports these drivers/display modes (these names should
 be used with configure, they're case sensitive):
 
@@ -291,8 +291,7 @@ WMND 0.4 won't compile with RedHat's gcc 2.96. Either downgrade to
 under gcc 2.96, it's a RedHat-only bug.
 
 -- IRIX MIPSPro 7.3 / AIX VaCPP 5.0 ----------------------------------
-These compilers ignores what variable arguments macros are!
-A work-around has been found so wmnd can be built with these
-compilers now. Drivers for these architectures, however, are still
-missing.
-
+These compilers ignores what variable arguments macros are! A
+work-around has been found so WMND can be built with these compilers
+now. MIPSPro is supposed to support C99 style macros into version 7.4,
+soon available. Drivers for AIX, however, are still missing.

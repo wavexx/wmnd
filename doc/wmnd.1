@@ -100,6 +100,9 @@ Show version of \fBWMND\fP.
 .TP
 .B \-q
 be less verbose (display only errors).
+.TP
+.BI "\-o " float
+smoothing factor (a float from 0 to 1).
 .SH USAGE
 .SS Active Interface
 You can cycle in realtime through all available active interfaces
@@ -178,6 +181,13 @@ scroll=1
 # that period. The time of the period can be calculated (in
 # tenth of seconds) with: scroll * avg_steps
 avg_steps=1
+.IP
+# smooth: smoothing factor. A float value ranging from 0 to 1. This is
+# really the "amount" of the new speed against the history each time is
+# sampled from the device. A low value (0.01) will remove random spikes
+# from the graph. Values higher that 1 will instead enchange spikes.
+# Disabled by default (0).
+smooth=0
 .IP
 # buttons for user scripts
 # bt1_action=su -c ethereal
