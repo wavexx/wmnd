@@ -308,5 +308,10 @@ If you don't have these, you can download PCP directly from here:
 http://www.sgi.com/software/co-pilot/ (pcp_eoe.* filesets are into
 "IRIX Overlays, 2/4" and "Foundation 2").
 
+In some cases WMND may fail to compile due to the presence of Motif
+XPM headers: be sure to have freeware's XPM installed (see
+http://freeware.sgi.com/) and have "/usr/freeware/include" paths
+before any other.
+
 There seems to be a Linux version of PCP, but I can't (don't) want to
 try it. It will probably work.
