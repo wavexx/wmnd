@@ -465,7 +465,7 @@ linux_proc_list(const char* devname, struct Devices* list)
     ndev->next = ndev->drvdata = NULL;
     list->next = ndev;
 
-    msg_drInfo(drName, "forced %s", p);
+    msg_drInfo(drName, "forced %s", devname);
   }
   else
   {
