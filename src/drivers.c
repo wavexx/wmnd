@@ -386,19 +386,15 @@ solaris_kstat_term(struct Devices* dev)
 int
 testing_dummy_list(const char* devname, struct Devices* list)
 {
-  char* devn;
   struct Devices* ndev;
-
-  if(!devname)
-    devn = strdup("off");
-  else
-    devn = strdup(devname);
+  if(devname)
+    return 0;
 
   ndev = (struct Devices*)malloc(sizeof(struct Devices));
-  ndev->name = devn;
+  ndev->name = strdup("off");
   devices_append(list, ndev);
 
-  msg_drInfo(drName, "detected %s", devn);
+  msg_drInfo(drName, "detected %s", ndev->name);
 
   return 1; /* usually returns the number of devices */
 }
