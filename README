@@ -201,6 +201,9 @@ _max: maximal value in history
 I particularly like this mode :), the needles speed are slow and
 smooth like a real analog display.
 
+-- Lines -------------------------------------------------------------
+Displays a trend graph using two lines.
+
 
 Building WMND 0.4
 ----------------------------------------------------------------------
@@ -278,7 +281,7 @@ Actually WMND supports these drivers/display modes (these names should
 be used with configure, they're case sensitive):
 
   * display modes: traditional mgraph waveform wmwave wmnet sepgraphs
-  twisted charts needle
+  twisted charts needle lines
 
   * drivers: linux_proc freebsd_sysctl solaris_fpppd solaris_kstat
 
@@ -286,3 +289,10 @@ be used with configure, they're case sensitive):
 WMND 0.4 won't compile with RedHat's gcc 2.96. Either downgrade to
 2.95 or upgrade to 3. DON'T SEND bug reports about INLINE not working
 under gcc 2.96, it's a RedHat-only bug.
+
+-- IRIX MIPSPro 7.3 / AIX VaCPP 5.0 ----------------------------------
+These compilers ignores what variable arguments macros are!
+A work-around has been found so wmnd can be built with these
+compilers now. Drivers for these architectures, however, are still
+missing.
+
