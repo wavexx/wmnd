@@ -305,8 +305,8 @@ are required:
   pcp.sw.base
 
 If you don't have these, you can download PCP directly from here:
-http://oss.sgi.com/projects/pcp/ (pcp_eoe.* filesets are into "IRIX
-Overlays, 2/4" and "Foundation 2").
+http://www.sgi.com/software/co-pilot/ (pcp_eoe.* filesets are into
+"IRIX Overlays, 2/4" and "Foundation 2").
 
 There seems to be a Linux version of PCP, but I can't (don't) want to
 try it. It will probably work.
