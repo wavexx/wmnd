@@ -290,7 +290,7 @@ conf_read(char *filename)
   else
   {
     /* can't open the rc file, make a new one */
-    msg_err("can't open WMND config file '%s', using defaults", filename);
+    msg_err("can't open WMND rc file '%s', using defaults", filename);
     conf_write(filename);
   }
 }
