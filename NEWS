@@ -1,3 +1,9 @@
+WMND 0.4.10
+----------------------------------------------------------------------
+
+	* Fixed generic_snmp for old snmpd by probing both ifName and
+	ifDesc. --enable-snmp-descr is no longer needed.
+
 WMND 0.4.9
 ----------------------------------------------------------------------
 

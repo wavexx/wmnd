@@ -1,6 +1,6 @@
 #!/bin/sh
-p4 changes -lt //wavexx-lambda/wmnd/... | sed -e '
-	s/ wavexx@[^ ]*$/ wave++ <wavexx@users.sf.net>/
+p4 changes -lt //depot/wmnd/main/... | sed -e '
+	s/ wave\(xx\|mm\)@[^ ]*$/ wave++ <wavexx@users.sf.net>/
 	/^	\[imported from CVS/,/^$/d
 	/^Change 355 on/,/^	$/d
 	s/[ 	]*$//

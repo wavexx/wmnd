@@ -875,6 +875,7 @@ irix_pcp_term(struct Devices* dev)
 #define SNMPMIB_COMN "public"
 #define SNMPMIB_NUM "ifNumber.0"
 #define SNMPMIB_STATUS "ifOperStatus"
+#define SNMPMIB_CHANGE "ifLastChange"
 #define SNMPMIB_IFINBDEF "ifInOctets"
 #define SNMPMIB_IFINPDEF "ifInUcastPkts"
 #define SNMPMIB_IFOUTBDEF "ifOutOctets"
@@ -883,12 +884,15 @@ irix_pcp_term(struct Devices* dev)
 /*
  * In WMND 0.4.5 I fetch ifName instead of ifDescr (ifName is shorter). I
  * noticed however that ifName is buggy on some firmware vendors (DLINK) and
- * there's no way to get around the bug without causing a network flood.
+ * there's no way to get around the bug without causing a network flood, so
+ * simply invert the order.
  */
 #ifndef USE_GENERIC_SNMP_DESCR
-#define SNMPMIB_NAME "ifName"
+#define SNMPMIB_NAME_A "ifName"
+#define SNMPMIB_NAME_B "ifDescr"
 #else
-#define SNMPMIB_NAME "ifDescr"
+#define SNMPMIB_NAME_A "ifDescr"
+#define SNMPMIB_NAME_B "ifName"
 #endif
 
 struct generic_snmp_drvdata
@@ -999,13 +1003,13 @@ generic_snmp_comp(const char* name, const int num)
 }
 
 char*
-generic_snmp_getDesc(struct snmp_session* se, int dev)
+generic_snmp_getNodeDesc(struct snmp_session* se, const char* node, int dev)
 {
   struct snmp_pdu* pdu;
   struct snmp_pdu* res;
   oid OID[MAX_OID_LEN];
   size_t OID_len = MAX_OID_LEN;
-  char* name = generic_snmp_comp(SNMPMIB_NAME, dev);
+  char* name = generic_snmp_comp(node, dev);
 
   pdu = snmp_pdu_create(SNMP_MSG_GET);
   get_node(name, OID, &OID_len);
@@ -1024,6 +1028,15 @@ generic_snmp_getDesc(struct snmp_session* se, int dev)
     return NULL;
 
   return name;
+}
+
+char*
+generic_snmp_getDesc(struct snmp_session* se, int dev)
+{
+  char* desc;
+
+  return ((desc = generic_snmp_getNodeDesc(se, SNMPMIB_NAME_A, dev))? desc:
+      generic_snmp_getNodeDesc(se, SNMPMIB_NAME_B, dev));
 }
 
 struct Devices*
