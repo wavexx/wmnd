@@ -835,6 +835,20 @@ int main(int argc, char **argv)
       if(op < ptr->op_stat_last)
         ptr->op_stat_last = op;
 
+      /*
+       * smoothing is performed before led setup, in order to let
+       * them blink even when the graph is smoothed. this approach is,
+       * however, still unperfect: we compare smoothed actual values 
+       * where we should store real values for later use.
+       */
+      if(wmnd.smooth)
+      {
+        smooth(&ib, ptr->ib_stat_last, wmnd.smooth);
+        smooth(&ob, ptr->ob_stat_last, wmnd.smooth);
+        smooth(&ip, ptr->ip_stat_last, wmnd.smooth);
+        smooth(&op, ptr->op_stat_last, wmnd.smooth);
+      }
+
       /* setup leds */
       if(ptr == wmnd.curdev)
       {
@@ -847,20 +861,6 @@ int main(int argc, char **argv)
           led_control(LED_TX, 0);
         else
           led_control(LED_TX, 1);
-      }
-
-      /*
-       * smoothing is performed after led setup, in order to let
-       * them blink even when the graph is smoothed. this approach is,
-       * however, still unperfect: we compare real actual values with
-       * smoothed ones where we should store real values for later use.
-       */
-      if(wmnd.smooth)
-      {
-        smooth(&ib, ptr->ib_stat_last, wmnd.smooth);
-        smooth(&ob, ptr->ob_stat_last, wmnd.smooth);
-        smooth(&ip, ptr->ip_stat_last, wmnd.smooth);
-        smooth(&op, ptr->op_stat_last, wmnd.smooth);
       }
 
       /* save values in history */
