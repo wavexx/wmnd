@@ -871,12 +871,22 @@ irix_pcp_term(struct Devices* dev)
 #define SNMPMIB_HOST "localhost"
 #define SNMPMIB_COMN "public"
 #define SNMPMIB_NUM "ifNumber.0"
-#define SNMPMIB_DESCR "ifDescr"
 #define SNMPMIB_STATUS "ifOperStatus"
 #define SNMPMIB_IFINBDEF "ifInOctets"
 #define SNMPMIB_IFINPDEF "ifInUcastPkts"
 #define SNMPMIB_IFOUTBDEF "ifOutOctets"
 #define SNMPMIB_IFOUTPDEF "ifOutUcastPkts"
+
+/*
+ * In WMND 0.4.5 I fetch ifName instead of ifDescr (ifName is shorter). I
+ * noticed however that ifName is buggy on some firmware vendors (DLINK) and
+ * there's no way to get around the bug without causing a network flood.
+ */
+#ifndef USE_GENERIC_SNMP_DESCR
+#define SNMPMIB_NAME "ifName"
+#else
+#define SNMPMIB_NAME "ifDescr"
+#endif
 
 struct generic_snmp_drvdata
 {
@@ -992,7 +1002,7 @@ generic_snmp_getDesc(struct snmp_session* se, int dev)
   struct snmp_pdu* res;
   oid OID[MAX_OID_LEN];
   size_t OID_len = MAX_OID_LEN;
-  char* name = generic_snmp_comp(SNMPMIB_DESCR, dev);
+  char* name = generic_snmp_comp(SNMPMIB_NAME, dev);
 
   pdu = snmp_pdu_create(SNMP_MSG_GET);
   get_node(name, OID, &OID_len);
