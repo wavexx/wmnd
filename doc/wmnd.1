@@ -157,6 +157,11 @@ Gather all devices of class net from the kstat library.
 .B irix_pcp
 Reads metrics from the IRIX Performance Co-Pilot daemon. Read
 the README for problems with this driver.
+.TP
+.B testing_dummy
+This is the "last resort" driver, it shows a null device useful only
+to make \fBWMND\fP don't exit when all other drivers failed. Can be
+enchanged to display something at compile time.
 .SH FILES
 ~/.wmndrc	User configuration.
 .PP
