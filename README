@@ -228,9 +228,9 @@ WMND for your box with little or no difficulty.
 
 First of all, unpack the source tarball:
 
-  $ gzcat wmnd-0.4.2.tar.gz | tar xf -
+  $ gzcat wmnd-0.4.8.tar.gz | tar xf -
 
-Wmnd will unpack into the wmnd-0.4.2 directory. Create now a build
+Wmnd will unpack into the wmnd-0.4.8 directory. Create now a build
 directory that will contain objects:
 
   $ mkdir wmnd-build
@@ -238,7 +238,7 @@ directory that will contain objects:
 
 You can now launch configure to 'configure' wmnd as follows:
 
-  $ ../wmnd-0.4.2/configure
+  $ ../wmnd-0.4.8/configure
 
 And finally make/install it:
 
@@ -248,17 +248,27 @@ And finally make/install it:
 Configure accepts several options to enchange/minimize wmnd
 functionality and size.  To forcely disable the dummy driver:
 
-  $ ../wmnd-0.4.2/configure --without-dummy-driver
+  $ ../wmnd-0.4.8/configure --without-dummy-driver
 
 To select only some display modes:
 
-  $ ../wmnd-0.4.2/configure --with-display-modes="traditional wmwave"
+  $ ../wmnd-0.4.8/configure --with-display-modes="traditional wmwave"
 
 To forcely build specified drivers (beware that the dummy driver should
 be disabled with --wihout-dummy-driver, also, extra libraries that may
 be needed by the driver won't be checked automatically):
 
-  $ ../wmnd-0.4.2/configure --with-drivers="linux_proc"
+  $ ../wmnd-0.4.8/configure --with-drivers="linux_proc"
+
+To enchange the dummy driver (shows a sine function instead of a plain
+empty graph):
+
+  $ ../wmnd-0.4.8/configure --enable-sine-dummy
+
+To use an innacurate (but smoother, if you don't mind about stats)
+timing method:
+
+  $ ../wmnd-0.4.8/configure --enable-inexact-timing
 
 The --help flag will show you a complete list of command line flags
 that the configure script supports.
@@ -272,7 +282,7 @@ automake 1.5 doesn't seem to cooperate with autoconf 2.5 and so it
 might cause problems if you have it installed. The only thing that you
 can do is making configure failing to find automake:
 
-  $ cd wmnd-0.4.2
+  $ cd wmnd-0.4.8
   $ sed -e "s/\<automake\>/fake-automake/" configure > configure.tmp
   $ mv configure.tmp configure
   $ chmod +x configure
