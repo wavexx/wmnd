@@ -13,7 +13,7 @@
 /* a typedef for bits operation container */
 typedef long int __bytearray;
 
-// core functions
+/* core functions */
 INLINE __bytearray getmask(const int pos);
 INLINE void onbit(__bytearray* obj, const int pos);
 INLINE void offbit(__bytearray* obj, const int pos);

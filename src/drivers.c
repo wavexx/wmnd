@@ -782,9 +782,10 @@ irix_pcp_list(const char* devname, struct Devices* list)
         (!devname && strcmp(*p, "lo0")))
     {
       msg_drInfo(drName, "detected %s(%d)", *p, *t);
-      ndev = malloc(sizeof(struct Devices));
+      ndev = (struct Devices*)malloc(sizeof(struct Devices));
       ndev->name = strdup(*p);
-      drdata = malloc(sizeof(struct irix_pcp_drvdata));
+      drdata = (struct irix_pcp_drvdata*)malloc(
+	  sizeof(struct irix_pcp_drvdata));
       memcpy(drdata->pmId, pmId, sizeof(pmId));
       drdata->inst = *t;
       ndev->drvdata = (void*)drdata;
