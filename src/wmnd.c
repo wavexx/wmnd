@@ -71,8 +71,8 @@ void draw_stats(struct Devices *ptr);
 /* driver functions */
 int devices_init(const char *driver, const char *interface);
 void devices_select(const char *interface);
-void devices_getstat(struct Devices *device, unsigned long *ip, unsigned long *op,
-		     unsigned long *ib, unsigned long *ob);
+void devices_getstat(struct Devices *device, unsigned long *ip,
+    unsigned long *op, unsigned long *ib, unsigned long *ob);
 void devices_destroy();
 void devices_restart(int sig);
 
@@ -97,14 +97,14 @@ check_mr(int x, int y)
   register int i;
   register int found = 0;
 
-  for (i = 0; i < 32 && !found; i++)
+  for(i = 0; i < 32 && !found; i++)
   {
-    if (mr[i].enable && x >= mr[i].x &&
+    if(mr[i].enable && x >= mr[i].x &&
         x <= mr[i].x + mr[i].width &&
         y >= mr[i].y && y <= mr[i].y + mr[i].height)
       found = 1;
   }
-  if (!found)
+  if(!found)
     return -1;
   return (i - 1);
 }
@@ -112,9 +112,9 @@ check_mr(int x, int y)
 static void
 redraw_window(void)
 {
-  if (dockapp.update)
+  if(dockapp.update)
   {
-    msg_dbg("redrawing window");
+    msg_dbg(__POSITION__, "redrawing window");
     XCopyArea(dockapp.d, dockapp.pixmap, dockapp.iconwin, dockapp.gc,
         0, 0, dockapp.width, dockapp.height, 0, 0);
     XCopyArea(dockapp.d, dockapp.pixmap, dockapp.win, dockapp.gc,
@@ -136,7 +136,7 @@ get_color(char *name)
       DefaultScreen(dockapp.d)), name, &color);
   color.flags = DoRed | DoGreen | DoBlue;
   XAllocColor(dockapp.d, attr.colormap, &color);
-  msg_dbg("pixel: %08lx", color.pixel);
+  msg_dbg(__POSITION__, "pixel: %08lx", color.pixel);
   return color.pixel;
 }
 
@@ -211,7 +211,7 @@ new_window(char *name, int width, int height, int argc, char** argv)
   attr.numsymbols = 3;
   attr.valuemask =
     (XpmColorSymbols | XpmExactColors | XpmAllocCloseColors | XpmCloseness);
-  if (XpmCreatePixmapFromData
+  if(XpmCreatePixmapFromData
       (dockapp.d, dockapp.win, master_xpm, &dockapp.pixmap,
        &dockapp.mask, &attr) != XpmSuccess)
   {
@@ -258,16 +258,15 @@ conf_read(char *filename)
   size_t pos;
   int line = 0;
   int exist;
-  char *lk;
 
   fp = fopen(filename, "r");
 
-  if (fp)
+  if(fp)
   {
     /* actually read in the config file, skipping over short and #lines */
     while (fgets(buf, 1024, fp)) {
       line++;
-      if (buf[0] == '#' || (strlen(buf) < 2))
+      if(buf[0] == '#' || (strlen(buf) < 2))
         continue;
       chomp(buf);
       pos = strcspn(buf, "=");
@@ -276,12 +275,10 @@ conf_read(char *filename)
         buf[pos++] = '\0';
 
         /* check for existent value */
-        exist = 0;
-        lk = value(buf);
         exist = defcon_lk(buf); /* search for buf in defaults */
-        if (exist != -1 && !pss_defcon[exist].used)
+        if(exist != -1 && !pss_defcon[exist].used)
           exist = -1;
-        if (exist == -1) /* only if isn't a default or it's not on cmdline */
+        if(exist == -1) /* only if isn't a default or it's not on cmdline */
           assign(buf, buf+pos);
       }
       memset(buf, 0, 1024);
@@ -302,12 +299,12 @@ conf_write(char *filename)
   struct var *vp;
 
   fp = fopen(filename, "w");
-  if (!fp) {
+  if(!fp) {
     msg_err("can't open '%s' for writing", filename);
     exit(1);
   }
   fprintf(fp, "# WMND configuration file (generated automatically)\n\n");
-  for (vp = vars; vp; vp = vp->v_next)
+  for(vp = vars; vp; vp = vp->v_next)
     fprintf(fp, "%s=%s\n", vp->v_name, vp->v_value);
   fclose(fp);
 }
@@ -322,7 +319,7 @@ assign(char *name, char *value)
 
   vdel(name);
 
-  if (vars == NULL || strcmp(vars->v_name, name) >= 0)
+  if(vars == NULL || strcmp(vars->v_name, name) >= 0)
   {
     newv->v_next = vars;
     vars = newv;
@@ -351,10 +348,10 @@ vdel(char *name)
     free((struct var *) vars);
     vars = vp;
   }
-  if (vars)
+  if(vars)
   {
-    for (newv = vars; newv->v_next;)
-      if (!strcmp(newv->v_next->v_name, name))
+    for(newv = vars; newv->v_next;)
+      if(!strcmp(newv->v_next->v_name, name))
       {
         vp = newv->v_next->v_next;
         free(newv->v_next);
@@ -371,7 +368,7 @@ vcopy(char *str)
   char *newv;
   unsigned int len;
 
-  if (str == NULL)
+  if(str == NULL)
     return "";
   len = strlen(str) + 1;
   newv = (char*)malloc(len);
@@ -386,7 +383,7 @@ strval_fe(const struct pair_strint *data, const char *val)
   int cnt = 0;
   while (data[cnt].strval)
   {
-    if (!strcmp(val,data[cnt].strval))
+    if(!strcmp(val,data[cnt].strval))
       return data[cnt].val;
     cnt++;
   }
@@ -401,7 +398,7 @@ waveval_fe(const struct drwStruct *data, const char *val)
   int cnt = 0;
   while (data[cnt].funcName)
   {
-    if (!strcmp(val,data[cnt].funcName))
+    if(!strcmp(val,data[cnt].funcName))
       return cnt;
     cnt++;
   }
@@ -414,7 +411,7 @@ defcon_lk(const char *token)
   int rtval = 0;
   while (pss_defcon[rtval].token)
   {
-    if (!strcmp(token,pss_defcon[rtval].token))
+    if(!strcmp(token,pss_defcon[rtval].token))
       return rtval;
     rtval++;
   }
@@ -427,7 +424,7 @@ defcon_touch(char *token, char *val)
   int idx = defcon_lk(token);
 
   assign(token, val);
-  if (idx != -1)
+  if(idx != -1)
     pss_defcon[idx].used = 1;
 }
 
@@ -436,8 +433,8 @@ lookup(char *name)
 {
   struct var *vp;
 
-  for (vp = vars; vp; vp = vp->v_next)
-    if (!strcmp(name, vp->v_name))
+  for(vp = vars; vp; vp = vp->v_next)
+    if(!strcmp(name, vp->v_name))
       return vp;
   return NULL;
 }
@@ -447,7 +444,7 @@ value(char *name)
 {
   struct var *vp;
 
-  if (!(vp = lookup(name)))
+  if(!(vp = lookup(name)))
     return NULL;
   return vp->v_value;
 }
@@ -459,7 +456,7 @@ beat_event(void)
   unsigned int min, hr;
   char temp[16];
 
-  msg_dbg("activated");
+  msg_dbg(__POSITION__, "activated");
   if(!wmnd.curdev->online)
   {
     if(!bit_get(RUN_ONLINE))
@@ -494,7 +491,7 @@ click_event(unsigned int region, unsigned int button)
   if(region == -1u)		/* no region */
     return;
 
-  msg_dbg("clicked btn %d in region %d", button, region);
+  msg_dbg(__POSITION__, "clicked btn %d in region %d", button, region);
 
   if(region == 0)
   {
@@ -506,37 +503,37 @@ click_event(unsigned int region, unsigned int button)
       break;
     case Button3:
       bit_tgl(CFG_SHORTNAME);
-      msg_dbg("shortname: %d", bit_get(CFG_SHORTNAME));
+      msg_dbg(__POSITION__, "shortname: %d", bit_get(CFG_SHORTNAME));
       draw_interface();
       break;
     }
   }
   else
-  if (region == 1)
+  if(region == 1)
   {
-    if (button == Button1)
+    if(button == Button1)
     {
       bit_tgl(CFG_MODE);
       led_control(LED_POWER, bit_get(RUN_ONLINE));
     }
   }
   else
-  if (region == 2)
+  if(region == 2)
   {
-    if (button == Button1)
+    if(button == Button1)
     {
-      if (wmnd.wavemode < (wmnd.nWavemodes - 1))
+      if(wmnd.wavemode < (wmnd.nWavemodes - 1))
         wmnd.wavemode++;
       else
         wmnd.wavemode = 0;
-      msg_dbg("wavemode: %d", wmnd.wavemode);
+      msg_dbg(__POSITION__, "wavemode: %d", wmnd.wavemode);
     }
     else if(button == Button3)
       /* switch time visualization */
       bit_tgl(CFG_SHOWTIME);
   }
   else
-  if (region == 3)
+  if(region == 3)
   {
     switch (button)
     {
@@ -551,7 +548,7 @@ click_event(unsigned int region, unsigned int button)
     }
   }
   else
-  if (region == 4)
+  if(region == 4)
   {
     switch (button)
     {
@@ -565,7 +562,7 @@ click_event(unsigned int region, unsigned int button)
       action = value("bt3_action");
       break;
     }
-    if (action)
+    if(action)
       execCommand(action);
   }
 }
@@ -598,11 +595,12 @@ int main(int argc, char **argv)
   /* initialize messaging functions */
   msg_prgName = argv[0];
 
-  msg_dbg("wmnd start");
+  msg_dbg(__POSITION__, "wmnd start");
 
   // detect the number of avaible wave modes
   for(drwPtr = drwFuncs; drwPtr->funcName; ++drwPtr)
     ++wmnd.nWavemodes;
+  msg_dbg(__POSITION__, "detected %d display modes", wmnd.nWavemodes);
 
   /*
    * set default config options before option parsing so command line can
@@ -755,7 +753,7 @@ int main(int argc, char **argv)
   }
 
   /* initialize drivers and devices */
-  if (!active_interface)
+  if(!active_interface)
     active_interface = drv_interface;
   if(devices_init(drv_name, drv_interface))
   {
@@ -768,11 +766,11 @@ int main(int argc, char **argv)
   signal(SIGTERM, mainExit);
   signal(SIGUSR1, devices_restart);
 
-  msg_dbg("open X display");
+  msg_dbg(__POSITION__, "open X display");
   if(!(dockapp.d = XOpenDisplay(dispname)))
   {
     // fprintf crashes on some systems if dispname is null
-    if (dispname)
+    if(dispname)
       msg_err("unable to open display '%s'", dispname);
     else
       msg_err("unable to open default display");
@@ -793,18 +791,18 @@ int main(int argc, char **argv)
   /* clear the number of remaining steps */
   wmnd.avgRSteps = 1;
 
-  if (!active_interface)	/* set default device name */
+  if(!active_interface)	/* set default device name */
     wmnd.curdev = devices;
   else
     devices_select(active_interface);
 
   draw_interface();
 
-  msg_dbg("looping");
+  msg_dbg(__POSITION__, "looping");
   XSync(dockapp.d, False);	/* kick off X11 queue */
 
   /* loop forever */
-  while(1)
+  for(;;)
   {
     unsigned int j;
     struct timeval beat_ctime;
@@ -816,13 +814,13 @@ int main(int argc, char **argv)
       devices_getstat(ptr, &ip, &op, &ib, &ob);
 
       /* check for device shutdown */
-      if (ib < ptr->ib_stat_last)
+      if(ib < ptr->ib_stat_last)
         ptr->ib_stat_last = ib;
-      if (ob < ptr->ob_stat_last)
+      if(ob < ptr->ob_stat_last)
         ptr->ob_stat_last = ob;
-      if (ip < ptr->ip_stat_last)
+      if(ip < ptr->ip_stat_last)
         ptr->ip_stat_last = ip;
-      if (op < ptr->op_stat_last)
+      if(op < ptr->op_stat_last)
         ptr->op_stat_last = op;
 
       ptr->his[57][0] += ib - ptr->ib_stat_last;
@@ -834,13 +832,13 @@ int main(int argc, char **argv)
       ptr->ip_max_his = MAX(ptr->ip_max_his, ptr->his[57][2]);
       ptr->op_max_his = MAX(ptr->op_max_his, ptr->his[57][3]);
 
-      if (ptr == wmnd.curdev) {	/* displayed */
-        if (ptr->ib_stat_last == ib) {
+      if(ptr == wmnd.curdev) {	/* displayed */
+        if(ptr->ib_stat_last == ib) {
           led_control(LED_RX, 0);
         } else {
           led_control(LED_RX, 1);
         }
-        if (ptr->ob_stat_last == ob) {
+        if(ptr->ob_stat_last == ob) {
           led_control(LED_TX, 0);
         } else {
           led_control(LED_TX, 1);
@@ -887,17 +885,14 @@ int main(int argc, char **argv)
       draw_stats(wmnd.curdev);
       for(ptr = devices; ptr; ptr = ptr->next)
       {
-        for (j = 1; j < 58; j++)
+        for(j = 1; j < 58; j++)
         {
           ptr->his[j - 1][0] = ptr->his[j][0];
           ptr->his[j - 1][1] = ptr->his[j][1];
           ptr->his[j - 1][2] = ptr->his[j][2];
           ptr->his[j - 1][3] = ptr->his[j][3];
         }
-        ptr->his[57][0] = 0;
-        ptr->his[57][1] = 0;
-        ptr->his[57][2] = 0;
-        ptr->his[57][3] = 0;
+        memset(ptr->his[57], 0, sizeof(ptr->his[57]));
       }
     }
 
@@ -907,7 +902,7 @@ int main(int argc, char **argv)
      */
     while (XPending(dockapp.d))
     {
-      msg_dbg("X11 activity");
+      msg_dbg(__POSITION__, "X11 activity");
       XNextEvent(dockapp.d, &event);
       switch (event.type)
       {
@@ -950,24 +945,35 @@ binary_scale(unsigned char sign, unsigned long value, char *buf)
   unsigned int i;
   char *r;
 
-  if (value > 1073741823) {	/* scale in giga */
+  if(value > 1073741823)
+  {
+    /* scale in giga */
     value = value >> 30;
     scale = 'G';
-  } else if (value > 1048575) {	/* scale in mega */
+  }
+  else
+  if(value > 1048575)
+  {
+    /* scale in mega */
     value = value >> 20;
     scale = 'M';
-  } else if (value > 1023) {	/* scale in kilo */
+  }
+  else
+  if(value > 1023)
+  {
+    /* scale in kilo */
     value = value >> 10;
     scale = 'K';
-  } else {
-    scale = ' ';
   }
+  else
+    scale = ' ';
+
   sprintf(buf, "%c%lu", sign, value);		/* to string */
   r = buf;
   r++;
-  for (i = 3; i > 0 && *r != '\0'; i--)
+  for(i = 3; i > 0 && *r != '\0'; i--)
   {
-    if (*r == '+' || *r == '-' || *r == '.')
+    if(*r == '+' || *r == '-' || *r == '.')
       ++i;
     ++r;
   }
@@ -984,13 +990,13 @@ metric_scale(unsigned char sign, unsigned long value, char *buf)
   char *r;
 
   f = (float) value;
-  if (value > 999999999) {	/* scale in giga */
+  if(value > 999999999) {	/* scale in giga */
     f /= 1000000000;
     scale = 'G';
-  } else if (value > 999999) {	/* scale in mega */
+  } else if(value > 999999) {	/* scale in mega */
     f /= 1000000;
     scale = 'M';
-  } else if (value > 999) {	/* scale in kilo */
+  } else if(value > 999) {	/* scale in kilo */
     f /= 1000;
     scale = 'K';
   } else {
@@ -999,9 +1005,9 @@ metric_scale(unsigned char sign, unsigned long value, char *buf)
   sprintf(buf, "%c%f", sign, f);	/* to string */
   r = buf;
   r++;
-  for (i = 3; i > 0 && *r != '\0'; i--)
+  for(i = 3; i > 0 && *r != '\0'; i--)
   {
-    if (*r == '+' || *r == '-' || *r == '.')
+    if(*r == '+' || *r == '-' || *r == '.')
       ++i;
     ++r;
   }
@@ -1074,7 +1080,7 @@ draw_string(const char *buf, unsigned int x, unsigned int y)
     if(*r == '+')
     {
       w = 6;
-      if (bit_get(CFG_MAXSCREEN)) {
+      if(bit_get(CFG_MAXSCREEN)) {
         sx = 133;
         sy = 93;
       } else {
@@ -1087,7 +1093,7 @@ draw_string(const char *buf, unsigned int x, unsigned int y)
     if(*r == '-')
     {
       w = 6;
-      if (bit_get(CFG_MAXSCREEN)) {
+      if(bit_get(CFG_MAXSCREEN)) {
         sx = 139;
         sy = 93;
       } else {
@@ -1100,7 +1106,7 @@ draw_string(const char *buf, unsigned int x, unsigned int y)
     if(*r == '*')
     {
       w = 6;
-      if (bit_get(CFG_MAXSCREEN)) {
+      if(bit_get(CFG_MAXSCREEN)) {
         sx = 145;
         sy = 93;
       } else {
@@ -1113,7 +1119,7 @@ draw_string(const char *buf, unsigned int x, unsigned int y)
     if(*r == '#')
     {
       w = 6;
-      if (bit_get(CFG_MAXSCREEN)) {
+      if(bit_get(CFG_MAXSCREEN)) {
         sx = 151;
         sy = 93;
       } else {
@@ -1176,12 +1182,12 @@ draw_stats(struct Devices *ptr)
   unsigned long long int rx_max, tx_max, max;
   unsigned int size;
 
-  if (bit_get(CFG_SHOWMAX))
+  if(bit_get(CFG_SHOWMAX))
     size = 35;		/* with max bar mode */
   else
     size = 41;		/* without max bar */
 
-  if (bit_get(CFG_MODE)) {	/* bytes mode */
+  if(bit_get(CFG_MODE)) {	/* bytes mode */
     in = 0;
     out = 1;
     rx_max_his = ptr->ib_max_his;
@@ -1196,14 +1202,14 @@ draw_stats(struct Devices *ptr)
   /* find maximum value in screen history */
   rx_max = tx_max = 0;
   p = (unsigned long *) ptr->his;
-  for (k = 0; k < 58; k++) {
+  for(k = 0; k < 58; k++) {
     rx_max = MAX(rx_max, p[in]);
     tx_max = MAX(tx_max, p[out]);
     p += 4;
   }
-  if ((max = rx_max + tx_max) > size) {
+  if((max = rx_max + tx_max) > size) {
     bpp = max / size;
-    if ((max % size) > 0) {
+    if((max % size) > 0) {
       ++bpp;
     }
   }
@@ -1215,7 +1221,7 @@ draw_stats(struct Devices *ptr)
   p = ptr->avg;
   draw_rate(p[in], p[out]);
 
-  if (bit_get(CFG_MAXSCREEN))
+  if(bit_get(CFG_MAXSCREEN))
     draw_max(rx_max, tx_max);
   else
     draw_max(rx_max_his, tx_max_his);
@@ -1224,7 +1230,7 @@ draw_stats(struct Devices *ptr)
   (*drwFuncs[wmnd.wavemode].funcPtr)(p, in, out, size, bpp, rx_max, tx_max);
 
   /* copy PPP connection time over the graph */
-  if (bit_get(CFG_SHOWTIME) && wmnd.curdev->devstart) {
+  if(bit_get(CFG_SHOWTIME) && wmnd.curdev->devstart) {
     copy_xpm_area(70, 36, 23, 7, 37, 46);
   }
 }
@@ -1232,19 +1238,19 @@ draw_stats(struct Devices *ptr)
 static void
 led_control(const unsigned char led, const unsigned char mode)
 {
-  msg_dbg("led: %02x[%02x]", led, mode);
+  msg_dbg(__POSITION__, "led: %02x[%02x]", led, mode);
   switch (led) {
   case LED_POWER:
     switch (bit_get(CFG_MODE)) {
     case 1:		/* bytes */
-      if (mode) {		/* on-line */
+      if(mode) {		/* on-line */
         copy_xpm_area(116, 64, 5, 7, 55, 4);
       } else {		/* off-line */
         copy_xpm_area(122, 64, 5, 7, 55, 4);
       }
       break;
     case 0:		/* packets */
-      if (mode) {		/* on-line */
+      if(mode) {		/* on-line */
         copy_xpm_area(128, 64, 5, 7, 55, 4);
       } else {		/* off-line */
         copy_xpm_area(134, 64, 5, 7, 55, 4);
@@ -1253,41 +1259,41 @@ led_control(const unsigned char led, const unsigned char mode)
     }
     break;
   case LED_RX:
-    if (mode) {		/* turn on */
-      if (bit_get(LED_RX)) {
-        msg_dbg("RX led already on");
+    if(mode) {		/* turn on */
+      if(bit_get(LED_RX)) {
+        msg_dbg(__POSITION__, "RX led already on");
         return;		/* already on */
       }
       copy_xpm_area(86, 69, 5, 4, 41, 4);
       bit_set(LED_RX);
-      msg_dbg("RX led on");
+      msg_dbg(__POSITION__, "RX led on");
     } else {		/* turn off */
-      if (!bit_get(LED_RX)) {
-        msg_dbg("RX led already off");
+      if(!bit_get(LED_RX)) {
+        msg_dbg(__POSITION__, "RX led already off");
         return;
       }
       copy_xpm_area(92, 69, 5, 4, 41, 4);
       bit_off(LED_RX);
-      msg_dbg("RX led off");
+      msg_dbg(__POSITION__, "RX led off");
     }
     break;
   case LED_TX:
-    if (mode) {		/* turn on */
-      if (bit_get(LED_TX)) {
-        msg_dbg("TX led already on");
+    if(mode) {		/* turn on */
+      if(bit_get(LED_TX)) {
+        msg_dbg(__POSITION__, "TX led already on");
         return;		/* already on */
       }
       copy_xpm_area(86, 64, 5, 4, 48, 4);
       bit_set(LED_TX);
-      msg_dbg("TX led on");
+      msg_dbg(__POSITION__, "TX led on");
     } else {		/* turn off */
-      if (!bit_get(LED_TX)) {
-        msg_dbg("TX led already off");
+      if(!bit_get(LED_TX)) {
+        msg_dbg(__POSITION__, "TX led already off");
         return;
       }
       copy_xpm_area(92, 64, 5, 4, 48, 4);
       bit_off(LED_TX);
-      msg_dbg("TX led off");
+      msg_dbg(__POSITION__, "TX led off");
     }
     break;
   }
@@ -1325,15 +1331,15 @@ draw_interface(void)
     temp[cur_namelen] = '\0';
   }
 
-  for (i = 0; temp[i]; i++)
+  for(i = 0; temp[i]; i++)
   {
     c = temp[i];
-    if (c >= '0' && c <= '9') {
+    if(c >= '0' && c <= '9') {
       c -= '0';
       copy_xpm_area(c * 6, 64, 6, 9, k, 3);
       k += 6;
     } else {
-      if (c >= 'a' && c <= 'z')
+      if(c >= 'a' && c <= 'z')
         c = c - 'a' + 'A';
       c -= 'A';
       copy_xpm_area(c * 6, 74, 6, 9, k, 3);
@@ -1378,7 +1384,7 @@ usage(void)
   /* display builting drivers */
   while(drivers_table[cnt].driver_name)
   {
-    if (drivers_table[cnt+1].driver_name)
+    if(drivers_table[cnt+1].driver_name)
       fprintf(stderr, "%s, ", drivers_table[cnt].driver_name);
     else
       fprintf(stderr, "%s.\n", drivers_table[cnt].driver_name);
@@ -1390,7 +1396,7 @@ usage(void)
   cnt = 0;
   while(drwFuncs[cnt].funcName)
   {
-    if (drwFuncs[cnt + 1].funcName)
+    if(drwFuncs[cnt + 1].funcName)
       fprintf(stderr,"%s, ",drwFuncs[cnt].funcName);
     else
       fprintf(stderr,"%s.\n",drwFuncs[cnt].funcName);
@@ -1421,6 +1427,8 @@ devices_init(const char *driver, const char *interface)
   wmnd.nr_devices = 0;
 
   /* creating and empy first device */
+  msg_dbg(__POSITION__, "initializing devices");
+
   devices = (struct Devices*)malloc(sizeof(struct Devices));
   devices->next = NULL;
   prt = devices;
@@ -1435,6 +1443,7 @@ devices_init(const char *driver, const char *interface)
       continue;
 
     /* device matches or driver is NULL, then check if driver is avaible */
+    msg_dbg(__POSITION__, "probing %s", drivers_table[cnt].driver_name);
     aftPrt = prt;
     devnum = (*drivers_table[cnt].list_devices)(interface, prt);
     if(!devnum)
@@ -1487,13 +1496,8 @@ devices_init(const char *driver, const char *interface)
         prt->op_stat_last = op;
 
         /* cleaning history */
-        for (cnt = 0; cnt < 58; cnt++)
-        {
-          prt->his[cnt][0] = 0;
-          prt->his[cnt][1] = 0;
-          prt->his[cnt][2] = 0;
-          prt->his[cnt][3] = 0;
-        }
+        for(cnt = 0; cnt < 58; cnt++)
+          memset(prt->his, 0, sizeof(prt->his));
 
         /* clean average sampling buffers */
         prt->avgBuf[0] = ib;
@@ -1532,7 +1536,7 @@ devices_select(const char *interface)
     wmnd.curdev = devices;
     while(prt)
     {
-      if (!strcmp(interface, prt->name))
+      if(!strcmp(interface, prt->name))
       {
         /* name matches */
         wmnd.curdev = prt;
@@ -1544,7 +1548,7 @@ devices_select(const char *interface)
   else
   {
     /* switching active device */
-    if (!wmnd.curdev->next)
+    if(!wmnd.curdev->next)
       wmnd.curdev = devices; /* last element, back to first */
     else
       wmnd.curdev = wmnd.curdev->next;
@@ -1587,6 +1591,8 @@ devices_restart(int sig)
   /*
    * restart the driver subsystem without interrupting wmnd.
    * call each device destructor and recall the constructor.
+   *
+   * TODO: warning! still using usafe signals.
    */
 
   struct Devices* ptr = devices;

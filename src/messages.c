@@ -3,9 +3,6 @@
 /* local headers */
 #include <messages.h>
 
-/* system headers */
-#include <stdio.h>
-
 /* externs definitions */
 char* msg_prgName = NULL;
 char msg_messages = MSG_FALL;
