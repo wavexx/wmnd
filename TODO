@@ -6,6 +6,8 @@ planned features:
 	multiple times.
 	* wave++: per-interface options (long names, etc)
 	* wave++: per-display options (scroll speed, etc)
+	* wave++: the driver subsystem really needs a rewrite to support
+	these new concepts.
 
 completed since release 0.4.3:
 
