@@ -99,6 +99,13 @@ then
 			[ac_drivers="$ac_drivers solaris_kstat"]
 		)]
 	)
+
+	# irix pcp
+	AC_CHECK_HEADER(pcp/pmapi.h,
+		[AC_SEARCH_LIBS(pmLookupName, pcp,
+			[ac_drivers="$ac_drivers irix_pcp"]
+		)]
+	)
 fi
 for driver in $ac_drivers;
 do
@@ -109,6 +116,7 @@ do
 	freebsd_sysctl)	AC_DEFINE(USE_FREEBSD_SYSCTL, "freebsd_sysctl", [enable freebsd sysctl driver]);;
 	solaris_fpppd)	AC_DEFINE(USE_SOLARIS_FPPPD, "solaris_fpppd", [solaris streams pppd]);;
 	solaris_kstat)	AC_DEFINE(USE_SOLARIS_KSTAT, "solaris_kstat", [enable solaris kstat driver]);;
+	irix_pcp)	AC_DEFINE(USE_IRIX_PCP, "irix_pcp", [IRIX Performance Co-Pilot]);;
 	*)		AC_MSG_ERROR([unknown driver name $driver]);;
 	esac
 	
