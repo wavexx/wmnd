@@ -1,5 +1,3 @@
-/*	$Id$	*/
-
 /*
  * ppp_defs.h - PPP definitions.
  *
@@ -25,6 +23,8 @@
  * ON AN "AS IS" BASIS, AND THE AUSTRALIAN NATIONAL UNIVERSITY HAS NO
  * OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS,
  * OR MODIFICATIONS.
+ *
+ * $Id$
  */
 
 /*
@@ -41,6 +41,11 @@
 
 #ifndef _PPP_DEFS_H_
 #define _PPP_DEFS_H_
+
+/*
+ * Include the configuration to use __u8/__u32 typedefs
+ */
+#include <config.h>
 
 /*
  * The basic PPP frame.
