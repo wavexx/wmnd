@@ -1,3 +1,20 @@
+WMND 0.4.7
+----------------------------------------------------------------------
+
+	* WMND statistics are more accurate now with a finer
+	time-based method (should remove a 10% error). You can switch
+	back to the old method (produces a smoother graph if you
+	don't mind about stats) with --enable-inexact-timing.
+	* Packets mode is no longer smoothed (quite useless) with -o.
+	* Leds blinks again even when smoothing is enabled.
+	* Fixed a bug in the smooth function (could produce an empty
+	graph depending on the compiler used).
+	* The 'whole history' max stats should now report real
+	values instead of an huge nonsense.
+	* You can now change the title/class name of WMND using -n.
+	This is useful on wharf (afterstep) to not swallow multiple
+	instances into a single dock.
+
 WMND 0.4.6
 ----------------------------------------------------------------------
 
