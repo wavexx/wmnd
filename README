@@ -294,4 +294,19 @@ under gcc 2.96, it's a RedHat-only bug.
 These compilers ignores what variable arguments macros are! A
 work-around has been found so WMND can be built with these compilers
 now. MIPSPro is supposed to support C99 style macros into version 7.4,
-soon available. Drivers for AIX, however, are still missing.
+soon available. Drivers for AIX, however, are still missing (and I'll
+probably never code them unless someone asks).
+
+Actually, the IRIX driver is based on the PCP API 2.x (Performance
+Co-Pilot). You'll need `pcpd' running for WMND to work. These filesets
+are required:
+
+  pcp_eoe.sw.eoe
+  pcp.sw.base
+
+If you don't have these, you can download PCP directly from here:
+http://oss.sgi.com/projects/pcp/ (pcp_eoe.* filesets are into "IRIX
+Overlays, 2/4" and "Foundation 2").
+
+There seems to be a Linux version of PCP, but I can't (don't) want to
+try it. It will probably work.
