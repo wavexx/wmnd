@@ -922,7 +922,7 @@ int main(int argc, char* *argv)
     if((wmnd.refresh * beats / 100000) >= wmnd.scroll)
     {
       beats = 0;
-#define beat_gap 10
+#define beat_gap wmnd.scroll
 #else
     /* fetch current time */
     gettimeofday(&beat_ctime, NULL);
