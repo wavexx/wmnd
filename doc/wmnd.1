@@ -148,11 +148,15 @@ Reads data from the linux
 virtual filesystem.
 .TP
 .B freebsd_sysctl
-Uses the MIB to gather device statistics under FreeBSD (offline devices handling
-is buggy, support needed!)
+Uses the MIB to gather device statistics under FreeBSD (offline
+devices handling is buggy, support needed!)
 .TP
 .B solaris_kstat
 Gather all devices of class net from the kstat library.
+.TP
+.B irix_pcp
+Reads metrics from the IRIX Performance Co-Pilot daemon. Read
+the README for problems with this driver.
 .SH FILES
 ~/.wmndrc	User configuration.
 .PP
