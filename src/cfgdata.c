@@ -41,6 +41,7 @@ struct pair_strstr pss_defcon[] =
   {"driver",          "%auto",   0},
   {"driver_interface","%any",    0},
   {"quiet",           "no",      0},
+  {"smooth",          "0",       0},
   {NULL,               NULL,     0}
 };
 
