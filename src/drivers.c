@@ -1,8 +1,7 @@
 /*
  * wmnd - window maker network devices - drivers.c
- *
- * drivers definitions
- * $Id$
+ * drivers definitions - implementation
+ * Copyright(c) 2001-2004 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
  */
 
 /* local headers */
@@ -466,13 +465,18 @@ linux_proc_list(const char* devname, struct Devices* list)
   /* device name was specified */
   if(devname)
   {
-    dta = 1;
-    ndev = (struct Devices*)malloc(sizeof(struct Devices));
-    ndev->devstart = 0;
-    ndev->name = strdup(devname);
-    devices_append(list, ndev);
+    strncpy(temp, devname, sizeof(temp));
+    for(p = strtok(temp, ","); p; p = strtok(NULL, ","))
+    {
+      ndev = (struct Devices*)malloc(sizeof(struct Devices));
+      ndev->devstart = 0;
+      ndev->name = strdup(p);
 
-    msg_drInfo(drName, "forced %s", devname);
+      ++dta;
+      list = devices_append(list, ndev);
+
+      msg_drInfo(drName, "forced %s", p);
+    }
   }
   else
   {
