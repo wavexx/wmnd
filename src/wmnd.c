@@ -1295,7 +1295,7 @@ draw_max(unsigned long rx, unsigned long tx)
 void
 draw_stats(struct Devices *ptr, const int gap)
 {
-  int bpp = 1; /* bytes per pixel */
+  int bpp; /* bytes/packets per pixel */
   unsigned int k;
   unsigned long* p;
   unsigned int in, out;
@@ -1340,6 +1340,8 @@ draw_stats(struct Devices *ptr, const int gap)
     if((max % size) > 0)
       ++bpp;
   }
+  else
+    bpp = 1;
 
   /* draw rx/tx rate */
   p = ptr->avg;
