@@ -1,3 +1,11 @@
+WMND 0.4.6
+----------------------------------------------------------------------
+
+	* Fixed a typo in the configure script that could cause some
+	shells to interrupt the configuration.
+	* generic_snmp will now use ifName instead of ifDescr, which
+	is usually shorter. Again, issues in the README.
+
 WMND 0.4.5
 ----------------------------------------------------------------------
 
