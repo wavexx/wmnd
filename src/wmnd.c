@@ -1331,12 +1331,11 @@ draw_max(unsigned long rx, unsigned long tx)
 void
 draw_stats(struct Devices *ptr, const int gap)
 {
-  int bpp; /* bytes/packets per pixel */
   unsigned int k;
   unsigned long* p;
   unsigned int in, out;
   unsigned long rx_max_his, tx_max_his;
-  unsigned long long rx_max, tx_max, max;
+  unsigned long long rx_max, tx_max;
   unsigned int size;
 
   if(bit_get(CFG_SHOWMAX))
@@ -1370,23 +1369,6 @@ draw_stats(struct Devices *ptr, const int gap)
     tx_max = MAX(tx_max, p[out]);
     p += 4;
   }
-  if(wmnd.maxScale)
-  {
-    bpp = wmnd.maxScale / size;
-    if((wmnd.maxScale % size) > 0)
-      ++bpp;
-  }
-  else
-  {
-    if((max = rx_max + tx_max) > size)
-    {
-      bpp = max / size;
-      if((max % size) > 0)
-        ++bpp;
-    }
-    else
-      bpp = 1;
-  }
 
   /* draw rx/tx rate */
   p = ptr->avg;
@@ -1398,7 +1380,7 @@ draw_stats(struct Devices *ptr, const int gap)
     draw_max(rx_max_his, tx_max_his);
 
   p = (unsigned long*)ptr->his;
-  (*drwFuncs[wmnd.wavemode].funcPtr)(p, in, out, size, bpp, rx_max, tx_max);
+  (*drwFuncs[wmnd.wavemode].funcPtr)(p, in, out, size, rx_max, tx_max);
 
   /* copy connection time over the graph */
   if(bit_get(CFG_SHOWTIME) && wmnd.curdev->devstart)

@@ -9,6 +9,8 @@ WMND 0.4.8
 	(requested by Jesper Anderson).
 	* Support for mouse wheel (integrated patch wmnd-0.4.7-wheel
 	by Noberasco Michele).
+	* Support for fixed scales for the bytes modes (requested by
+	Jeff Greenfield a looong time ago).
 
 WMND 0.4.7
 ----------------------------------------------------------------------

@@ -84,3 +84,7 @@ wave_mode=wmnet
 # to not swallow multiple WMND instances into a single dock. Defaults
 # to "wmnd".
 # name=wmnd
+
+# use a fixed scale (specified in bytes per second) for the bytes modes.
+# by default use an automatic scale (0).
+# fixed_max=12000

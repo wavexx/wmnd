@@ -11,7 +11,6 @@ planned features:
 	* wave++: snmp driver could use a single session instance. I need
 	per-driver termination handlers.
 	* Jeff Greenfield: logarithmic graph scale.
-	* Jeff Greenfield: fixed graph scale.
 
 completed since release 0.4.3:
 

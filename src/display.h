@@ -28,12 +28,10 @@ struct drwStruct
 {
   char* funcName;
   void (*funcPtr)(unsigned long* hist, unsigned mIn, unsigned mOut,
-      unsigned size, int bpp, unsigned long long rx_max,
-      unsigned long long tx_max);
+      unsigned size, unsigned long long rx_max, unsigned long long tx_max);
 };
 
 /* function's structure */
 extern struct drwStruct drwFuncs[];
 
 #endif
-

@@ -49,6 +49,7 @@
 #endif
 #endif
 
+
 struct Devices
 {
   struct Devices* next;     /* ptr to next structure */
@@ -124,6 +125,7 @@ typedef struct
 
 /* I don't like this very much.. */
 extern Dockapp dockapp;
+extern DevTable wmnd;
 
 typedef struct
 {
@@ -152,4 +154,3 @@ typedef struct
 #define bit_get(n) getbit((__bytearray*)&wmnd.flags, n)
 
 #endif
-

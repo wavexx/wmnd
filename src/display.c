@@ -4,29 +4,88 @@
  * common drawing functions definitions
  */
 
-// local headers
+/* local headers */
 #include "display.h"
 #include "wmnd.h"
 
-// system headers
+/* system headers */
 #include <math.h>
 #include <X11/Xlib.h>
+
+
+/*
+ * get the bits-per-pixel for the specified maximal value, considering
+ * the actual scale mode (auto, max, log).
+ */
+int
+getBpp(unsigned size, unsigned long max)
+{
+  int bpp;
+
+  if(wmnd.maxScale && bit_get(CFG_MODE))
+  {
+    bpp = wmnd.maxScale / size;
+    if((wmnd.maxScale % size) > 0)
+      ++bpp;
+  }
+  else
+  {
+    if(max > size)
+    {
+      bpp = max / size;
+      if((max % size) > 0)
+        ++bpp;
+    }
+    else
+      bpp = 1;
+  }
+
+  return bpp;
+}
+
+
+/* truncate values below size in a stacked way */
+void
+trunc_stacked(unsigned size, unsigned* rx, unsigned* tx)
+{
+  /* handle values below max */
+  if((*rx + *tx) > size)
+  {
+    if(*rx > size)
+      *rx = size;
+    if((*rx + *tx) > size)
+      *tx = size - *rx;
+  }
+}
+
+
+/* truncate values below size */
+void
+trunc_normal(unsigned size, unsigned* rx, unsigned* tx)
+{
+  *rx = MIN(size, *rx);
+  *tx = MIN(size, *tx);
+}
+
 
 #ifdef USE_DRW_TRADITIONAL
 /* Traditional mode */
 void
 drwTraditional(unsigned long* hist, unsigned mIn, unsigned mOut,
-    unsigned size, int bpp, unsigned long long rx_max,
-    unsigned long long tx_max)
+    unsigned size, unsigned long long rx_max, unsigned long long tx_max)
 {
-  unsigned int k;
-  for(k = 0; k < 58; k++) {
-    unsigned int txlev, rxlev, nolev;
+  unsigned int k, txlev, rxlev, nolev;
+  int bpp = getBpp(size, rx_max + tx_max);
+
+  for(k = 0; k < 58; k++)
+  {
     rxlev = hist[mIn] / bpp;
     txlev = hist[mOut] / bpp;
-    nolev = size - (rxlev + txlev);
-    copy_xpm_area(66, 0, 1, txlev, k + 3, 53 - (rxlev + txlev));
-    copy_xpm_area(65, 0, 1, nolev, k + 3, 53 - size);
+    trunc_stacked(size, &rxlev, &txlev);
+
+    nolev = (rxlev + txlev);
+    copy_xpm_area(66, 0, 1, txlev, k + 3, 53 - nolev);
+    copy_xpm_area(65, 0, 1, size - nolev, k + 3, 53 - size);
     copy_xpm_area(67, 0, 1, rxlev, k + 3, 53 - rxlev);
     hist += 4;
   }
@@ -34,69 +93,64 @@ drwTraditional(unsigned long* hist, unsigned mIn, unsigned mOut,
 }
 #endif
 
+
 #ifdef USE_DRW_MGRAPH
 /* MGraph mode */
 void
 drwMGraph(unsigned long* hist, unsigned mIn, unsigned mOut,
-    unsigned size, int bpp, unsigned long long rx_max,
-    unsigned long long tx_max)
+    unsigned size, unsigned long long rx_max, unsigned long long tx_max)
 {
   /* max scale */
-  unsigned int m = MAX(tx_max, rx_max);
-  unsigned int dfac, k;
+  unsigned int k, txlev, rxlev;
+  int bpp = getBpp(size, MAX(tx_max, rx_max));
   
-  if(m > size)
-  {
-    dfac = m / size;
-    if(m % size > 0)
-      ++dfac;
-  }
-  else
-    dfac = 1;
-
   /* process the whole history */
   for(k = 0; k < 58; ++k)
   {
-    unsigned int txlev, rxlev;
-    rxlev = hist[mIn] / dfac;
-    txlev = hist[mOut] / dfac;
+    rxlev = hist[mIn] / bpp;
+    txlev = hist[mOut] / bpp;
+    trunc_normal(size, &rxlev, &txlev);
 
-    // clear the top area
+    /* clear the top area */
     copy_xpm_area(65, 0, 1, size - MAX(rxlev, txlev), k + 3, 53 - size);
 
-    // draw the tx/rx bars
+    /* draw the tx/rx bars */
     if(rxlev > txlev)
     {
-      // rx is major
+      /* rx is major */
       copy_xpm_area(67, 0, 1, rxlev - txlev, k + 3, 53 - rxlev);
       copy_xpm_area(66, 0, 1, txlev, k + 3, 53 - txlev);
     }
     else
     {
-      // tx is major
+      /* tx is major */
       copy_xpm_area(66, 0, 1, txlev - rxlev, k + 3, 53 - txlev);
       copy_xpm_area(67, 0, 1, rxlev, k + 3, 53 - rxlev);
     }
 
-    // advance
+    /* advance */
     hist += 4;
   }
   copy_xpm_area(70, 1, 58, 1, 3, 53 - size);
 }
 #endif
 
+
 #ifdef USE_DRW_WAVEFORM
 /* Waveform mode */
 void
 drwWaveform(unsigned long* hist, unsigned mIn, unsigned mOut,
-    unsigned size, int bpp, unsigned long long rx_max,
-    unsigned long long tx_max)
+    unsigned size, unsigned long long rx_max, unsigned long long tx_max)
 {
-  unsigned int k;
-  for(k = 0; k < 58; k++) {
-    unsigned int txlev, rxlev, center;
-    rxlev = hist[mIn] / bpp / 2;	/* we need them like this */
-    txlev = hist[mOut] / bpp / 2;	/* we need it like this */
+  unsigned int k, txlev, rxlev, center;
+  int bpp = getBpp(size, rx_max + tx_max);
+
+  for(k = 0; k < 58; k++)
+  {
+    rxlev = hist[mIn] / bpp / 2;
+    txlev = hist[mOut] / bpp / 2;
+    trunc_stacked(size / 2, &rxlev, &txlev);
+
     center = 53 - size / 2;
     copy_xpm_area(65, 0, 1, size, k + 3, 53 - size);
     copy_xpm_area(66, 0, 1, txlev, k + 3,
@@ -110,33 +164,24 @@ drwWaveform(unsigned long* hist, unsigned mIn, unsigned mOut,
 }
 #endif
 
+
 #ifdef USE_DRW_WMWAVE
 /* Reverse wmnet mode */
 void
 drwWmwave(unsigned long* hist, unsigned mIn, unsigned mOut,
-    unsigned size, int bpp, unsigned long long rx_max,
-    unsigned long long tx_max)
+    unsigned size, unsigned long long rx_max, unsigned long long tx_max)
 {
-  unsigned int k, msize, dfac, mlev;
-
+  unsigned int k, msize, bpp, txlev, rxlev, center;
   msize = (unsigned)((double)size / 2);
-  mlev = MAX(tx_max, rx_max);
-  if(mlev > msize)
-  {
-    dfac = mlev / msize;
-    if (mlev % msize > 0)
-      dfac++;
-  }
-  else
-    dfac = 1;
-
+  bpp = getBpp(msize, MAX(tx_max, rx_max));
+  
   for(k = 0; k < 58; k++)
   {
-    unsigned int txlev, rxlev, center;
-    txlev = hist[mOut] / dfac;
-    rxlev = hist[mIn] / dfac;
-    center = 53 - msize;
+    rxlev = hist[mIn] / bpp;
+    txlev = hist[mOut] / bpp;
+    trunc_normal(msize, &rxlev, &txlev);
 
+    center = 53 - msize;
     copy_xpm_area(65, 0, 1, size, k + 3, 53 - size);
     copy_xpm_area(66, 0, 1, txlev, k + 3, center - txlev);
     copy_xpm_area(67, 0, 1, rxlev, k + 3, center);
@@ -148,18 +193,31 @@ drwWmwave(unsigned long* hist, unsigned mIn, unsigned mOut,
 }
 #endif
 
+
 #ifdef USE_DRW_WMNET
 /* Wmnet like modeness */
 void
 drwWmnet(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
-    int bpp, unsigned long long rx_max, unsigned long long tx_max)
+    unsigned long long rx_max, unsigned long long tx_max)
 {
-  unsigned int k;
+  unsigned int k, txlev, rxlev, nolev;
+  int bpp = getBpp(size, rx_max + tx_max);
+
   for(k = 0; k < 58; k++)
   {
-    unsigned int txlev, rxlev, nolev;
-    txlev = hist[mOut] / bpp;
     rxlev = hist[mIn] / bpp;
+    txlev = hist[mOut] / bpp;
+    trunc_normal(size, &rxlev, &txlev);
+
+    /* handle overlap, smaller in front */
+    if((rxlev + txlev) > size)
+    {
+      if(rxlev > txlev)
+	rxlev = size - txlev;
+      else
+	txlev = size - rxlev;
+    }
+
     nolev = size - (rxlev + txlev);
     copy_xpm_area(66, 0, 1, txlev, k + 3, 53 - size);
     copy_xpm_area(65, 0, 1, nolev, k + 3, (53 - size) + txlev);
@@ -170,40 +228,25 @@ drwWmnet(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
 }
 #endif
 
+
 #ifdef USE_DRW_SEPGRAPHS
 /* Separated graphs mode */
 void
 drwSepgraphs(unsigned long* hist, unsigned mIn, unsigned mOut,
-    unsigned size, int bpp, unsigned long long rx_max,
-    unsigned long long tx_max)
+    unsigned size, unsigned long long rx_max, unsigned long long tx_max)
 {
-  unsigned int k, msize, Txdfac, Rxdfac;
-
+  unsigned int k, msize, txlev, rxlev, center, rxBpp, txBpp;
   msize = (unsigned)((double)size / 2);
-  if(tx_max > msize)
-  {
-    Txdfac = tx_max / msize;
-    if (tx_max % msize > 0)
-      Txdfac++;
-  }
-  else
-    Txdfac = 1;
-  if(rx_max > msize)
-  {
-    Rxdfac = rx_max / msize;
-    if (rx_max % msize > 0)
-      Rxdfac++;
-  }
-  else
-    Rxdfac = 1;
+  rxBpp = getBpp(msize, rx_max);
+  txBpp = getBpp(msize, tx_max);
 
   for(k = 0; k < 58; k++)
   {
-    unsigned int txlev, rxlev, center;
-    txlev = hist[mOut] / Txdfac;
-    rxlev = hist[mIn] / Rxdfac;
-    center = 53 - msize;
+    rxlev = hist[mIn] / rxBpp;
+    txlev = hist[mOut] / txBpp;
+    trunc_normal(msize, &rxlev, &txlev);
 
+    center = 53 - msize;
     copy_xpm_area(65, 0, 1, size, k + 3, 53 - size);
     copy_xpm_area(66, 0, 1, txlev, k + 3, center - txlev);
     copy_xpm_area(67, 0, 1, rxlev, k + 3, 53 - rxlev);
@@ -215,35 +258,25 @@ drwSepgraphs(unsigned long* hist, unsigned mIn, unsigned mOut,
 }
 #endif
 
+
 #ifdef USE_DRW_TWISTED
 /* Twisted mode */
 void
 drwTwisted(unsigned long* hist, unsigned mIn, unsigned mOut,
-    unsigned size, int bpp, unsigned long long rx_max,
-    unsigned long long tx_max)
+    unsigned size, unsigned long long rx_max, unsigned long long tx_max)
 {
-  unsigned int k, stpos, itn, dfac, mlev;
+  unsigned int k, stpos, itn, txlev, rxlev;
+  int bpp = getBpp(29, MAX(tx_max, rx_max));
 
   stpos = 53 - size;
   itn = 53 - stpos;
 
-  mlev = MAX(tx_max, rx_max);
-  if (mlev > 29)
-  {
-    dfac = mlev / 29;
-    if (mlev % 29 > 0)
-      dfac++;
-  }
-  else
-    dfac = 1;
-
   hist += 4 * (58-itn);
   for(k = 0; k < itn; k++)
   {
-    unsigned int txlev, rxlev, center;
-    txlev = hist[mOut] / dfac;
-    rxlev = hist[mIn] / dfac;
-    center = 29;
+    rxlev = hist[mIn] / bpp;
+    txlev = hist[mOut] / bpp;
+    trunc_normal(29, &rxlev, &txlev);
 
     /* Tx on the right, flowing up */
     copy_xpm_area(70, 3, 29, 1, 32, stpos + k);
@@ -253,9 +286,9 @@ drwTwisted(unsigned long* hist, unsigned mIn, unsigned mOut,
       copy_xpm_area(70, 0, 1, 1, 46, stpos + k);
 
     /* Rx on the left, flowing down */
-    copy_xpm_area(70, 3, center, 1, 3, 52 - k);
+    copy_xpm_area(70, 3, 29, 1, 3, 52 - k);
     if (rxlev)
-      copy_xpm_area(70, 5, rxlev, 1, 3 + (center-rxlev)/2, 52 - k)
+      copy_xpm_area(70, 5, rxlev, 1, 3 + (29 - rxlev) / 2, 52 - k)
     else
       copy_xpm_area(70, 0, 1, 1, 17, 52 - k);
 
@@ -264,6 +297,7 @@ drwTwisted(unsigned long* hist, unsigned mIn, unsigned mOut,
   copy_xpm_area(70, 1, 58, 1, 3, 53 - size);
 }
 #endif
+
 
 #if defined(USE_DRW_CHARTS) || defined(USE_DRW_NEEDLE)
 /* func utils */
@@ -285,16 +319,16 @@ drwGetMeds(const unsigned long* hist, const unsigned mIn,
 }
 #endif
 
+
 #ifdef USE_DRW_CHARTS
 /* Charts mode */
 void drwCharts(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
-    int bpp, unsigned long long rx_max, unsigned long long tx_max)
+    unsigned long long rx_max, unsigned long long tx_max)
 {
   unsigned int k, j, stpos, spc;
   unsigned long tx_med = 0, rx_med = 0, x_max;
 
   stpos = 53 - size;
-
   drwGetMeds(hist, mIn, mOut, &tx_med, &rx_med);
 
   hist +=  4 * 57;
@@ -331,8 +365,9 @@ void drwCharts(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
 }
 #endif
 
+
 #ifdef USE_DRW_NEEDLE
-// simple utility function for rotating points
+/* simple utility function for rotating points */
 void
 drwRotPoint(const unsigned len, const double rad,
     unsigned* nX, unsigned* nY)
@@ -343,7 +378,7 @@ drwRotPoint(const unsigned len, const double rad,
 
 /* needle mode */
 void drwNeedle(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
-    int bpp, unsigned long long rx_max, unsigned long long tx_max)
+    unsigned long long rx_max, unsigned long long tx_max)
 {
   unsigned int k, stpos, offset, nX, nY;
   unsigned long tx_med = 0, rx_med = 0, x_max;
@@ -415,13 +450,14 @@ void drwNeedle(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
 }
 #endif
 
+
 #ifdef USE_DRW_LINES
 /* lines mode */
 void drwLines(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
-    int bpp, unsigned long long rx_max, unsigned long long tx_max)
+    unsigned long long rx_max, unsigned long long tx_max)
 {
-  unsigned int m = MAX(tx_max, rx_max);
-  unsigned int dfac, k, oTxlev, oRxlev;
+  unsigned int k, oTxlev, oRxlev, txlev, rxlev;
+  int bpp = getBpp(size - 2, MAX(tx_max, rx_max));
 
   static int gcinit = 0;
   static GC gcs[2];
@@ -441,26 +477,16 @@ void drwLines(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
     gcinit = 1;
   }
 
-  /* XDrawLine is a bit piggy sometimes, reduce avaible size by two */
-  if((m + 2) > size)
-  {
-    dfac = m / (size - 2);
-    if(m % (size - 2) > 0)
-      ++dfac;
-  }
-  else
-    dfac = 1;
-
   /* fake old values */
-  oRxlev = hist[mIn] / dfac;
-  oTxlev = hist[mOut] / dfac;
+  oRxlev = hist[mIn] / bpp;
+  oTxlev = hist[mOut] / bpp;
+  trunc_normal(size - 2, &oRxlev, &oTxlev);
 
   for(k = 0; k < 58; k++)
   {
-    unsigned int txlev, rxlev;
-
-    rxlev = hist[mIn] / dfac;
-    txlev = hist[mOut] / dfac;
+    rxlev = hist[mIn] / bpp;
+    txlev = hist[mOut] / bpp;
+    trunc_normal(size - 2, &rxlev, &txlev);
 
     /* clear the area */
     copy_xpm_area(65, 0, 1, size, k + 3, 53 - size);
@@ -480,6 +506,7 @@ void drwLines(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
   copy_xpm_area(70, 1, 58, 1, 3, 53 - size);
 }
 #endif
+
 
 /* function's structure list */
 struct drwStruct drwFuncs[] = 
@@ -516,4 +543,3 @@ struct drwStruct drwFuncs[] =
 #endif
   { NULL,          NULL,          }
 };
-
