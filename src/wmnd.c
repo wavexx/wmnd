@@ -947,10 +947,10 @@ int main(int argc, char* *argv)
 
         for(ptr = devices; ptr; ptr = ptr->next)
         {
-          ptr->avg[0] = (long)(div * (ptr->ib_stat_last - ptr->avgBuf[0]));
-          ptr->avg[1] = (long)(div * (ptr->ob_stat_last - ptr->avgBuf[1]));
-          ptr->avg[2] = (long)(div * (ptr->ip_stat_last - ptr->avgBuf[2]));
-          ptr->avg[3] = (long)(div * (ptr->op_stat_last - ptr->avgBuf[3]));
+          ptr->avg[0] = (unsigned long)(div * (ptr->ib_stat_last - ptr->avgBuf[0]));
+          ptr->avg[1] = (unsigned long)(div * (ptr->ob_stat_last - ptr->avgBuf[1]));
+          ptr->avg[2] = (unsigned long)(div * (ptr->ip_stat_last - ptr->avgBuf[2]));
+          ptr->avg[3] = (unsigned long)(div * (ptr->op_stat_last - ptr->avgBuf[3]));
           ptr->avgBuf[0] = ptr->ib_stat_last;
           ptr->avgBuf[1] = ptr->ob_stat_last;
           ptr->avgBuf[2] = ptr->ip_stat_last;
@@ -1297,10 +1297,10 @@ draw_stats(struct Devices *ptr, const int gap)
 {
   int bpp = 1; /* bytes per pixel */
   unsigned int k;
-  unsigned long int *p;
+  unsigned long* p;
   unsigned int in, out;
-  unsigned long int rx_max_his, tx_max_his;
-  unsigned long long int rx_max, tx_max, max;
+  unsigned long rx_max_his, tx_max_his;
+  unsigned long long rx_max, tx_max, max;
   unsigned int size;
 
   if(bit_get(CFG_SHOWMAX))
@@ -1327,7 +1327,7 @@ draw_stats(struct Devices *ptr, const int gap)
 
   /* find maximum value in screen history */
   rx_max = tx_max = 0;
-  p = (unsigned long* ) ptr->his;
+  p = (unsigned long*)ptr->his;
   for(k = 0; k < 58; k++)
   {
     rx_max = MAX(rx_max, p[in]);
@@ -1350,7 +1350,7 @@ draw_stats(struct Devices *ptr, const int gap)
   else
     draw_max(rx_max_his, tx_max_his);
 
-  p = (unsigned long* ) ptr->his;
+  p = (unsigned long*)ptr->his;
   (*drwFuncs[wmnd.wavemode].funcPtr)(p, in, out, size, bpp, rx_max, tx_max);
 
   /* copy connection time over the graph */
