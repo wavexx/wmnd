@@ -1436,7 +1436,7 @@ usage(void)
 
   fprintf(stderr,
       "wmnd - WindowMaker Network Devices %s\n"
-      "Home page: http://www.hydra.ubiest.com/wmnd/,\n"
+      "Home page: http://www.yuv.info/wmnd/,\n"
       "           http://www.wingeer.org/wmnd/\n\n"
       "usage:\n"
       "  -b                  base 2 scale (no fractions)\n"

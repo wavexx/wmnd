@@ -21,12 +21,12 @@ Timecop <timecop@japan.co.jp> http://www.ne.jp/asahi/linux/timecop/
 
 	* Source code optimization (Re-wrote the source code of WMND 0.2.0)
 
-Yuri D'Elia (wave++) <wavexx@users.sf.net> http://www.hydra.ubiest.com/
+Yuri D'Elia (wave++) <wavexx@users.sf.net> http://www.yuv.info/
 
 	* Driver architecture, new visualization structs, re-wrote source code
 	of WMND 0.3 series.
 	* Many minor things (see ChangeLog)
-	* WMND mirror: http://www.hydra.ubiest.com/wmnd/
+	* WMND mirror: http://www.yuv.info/wmnd/
 
 Sebastian Liusnea <sebaks@csit-sun.pub.ro> http://www.csit-sun.pub.ro/~sebaks/wm/
 
