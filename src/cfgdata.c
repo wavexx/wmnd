@@ -22,6 +22,8 @@ struct pair_strint psi_bool[] =
  * If you develope a driver, don't name it with a leading %
  * the "used" variable is used to detect forced command line
  * parameters, 0: read config, 1: don't read
+ *
+ * NOTE: DEFault CONfiguration.
  */
 struct pair_strstr pss_defcon[] =
 {
@@ -44,6 +46,7 @@ struct pair_strstr pss_defcon[] =
   {"smooth",          "0",       0},
   {"name",            "wmnd",    0},
   {"fixed_max",       "0",       0},
-  {NULL,               NULL,     0}
+  {"display",         NULL,      0},
+  {"geometry",        NULL,      0},
+  {NULL,              NULL,      0}
 };
-

@@ -2,6 +2,7 @@ WMND 0.4.9
 ----------------------------------------------------------------------
 
 	* The auto-generated wmndrc now only includes changed values.
+	* Added a geometry flag (-g, requested by Johannes Middeke).
 
 WMND 0.4.8
 ----------------------------------------------------------------------

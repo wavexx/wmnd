@@ -153,6 +153,7 @@ void
 new_window(char* res_name, char* res_class,
     int width, int height, int argc, char** argv)
 {
+  char* geometry;
   XpmAttributes attr;
   XpmColorSymbol cols[3] =
   {
@@ -171,9 +172,17 @@ new_window(char* res_name, char* res_class,
   dockapp.screen = DefaultScreen(dockapp.d);
   dockapp.root = DefaultRootWindow(dockapp.d);
 
-  sizehints.flags = USSize | USPosition;
-  sizehints.x = dockapp.x ? dockapp.x : 0;
-  sizehints.y = dockapp.y ? dockapp.y : 0;
+  /* parse the geometry spec, if any */
+  geometry = value("geometry");
+  if(geometry)
+  {
+    unsigned dummy;
+    XParseGeometry(geometry, &dockapp.x, &dockapp.y, &dummy, &dummy);
+  }
+
+  sizehints.flags = USSize | (geometry? USPosition: 0);
+  sizehints.x = dockapp.x;
+  sizehints.y = dockapp.y;
   sizehints.width = width;
   sizehints.height = height;
 
@@ -327,7 +336,8 @@ conf_write(char* filename)
       continue;
 
     dc = defcon_lk(vp->v_name);
-    if(dc == -1 || strcmp(pss_defcon[dc].value, vp->v_value))
+    if(dc == -1 || !pss_defcon[dc].value ||
+	strcmp(pss_defcon[dc].value, vp->v_value))
       fprintf(fp, "%s=%s\n", vp->v_name, vp->v_value);
   }
   fclose(fp);
@@ -341,9 +351,10 @@ assign(char* name, char* value)
   struct var* newv;
 
   /* search for existing values */
-  for(vp = vars; vp && vp->v_next; vp = vp->v_next)
+  for(vp = vars; vp &&
+	(vp->v_next || !strcmp(name, vp->v_name)); vp = vp->v_next)
   {
-    if(!strcmp(name, vp->v_name))
+    if(!vp->v_next || !strcmp(name, vp->v_name))
     {
       /* existing value */
       if(vp->v_value)
@@ -681,7 +692,7 @@ int main(int argc, char* *argv)
 
   /* parse command line */
   while((ch =
-      getopt(argc, argv, "bc:C:L:d:i:hlmMf:Fr:s:S:tvw:D:I:qQo:n:a:")) != EOF)
+      getopt(argc, argv, "bc:C:L:d:g:i:hlmMf:Fr:s:S:tvw:D:I:qQo:n:a:")) != EOF)
   {
     switch(ch)
     {
@@ -698,7 +709,10 @@ int main(int argc, char* *argv)
       defcon_touch("md_color", optarg);
       break;
     case 'd':
-      dispname = optarg;
+      defcon_touch("display", optarg);
+      break;
+    case 'g':
+      defcon_touch("geometry", optarg);
       break;
     case 'i':
       defcon_touch("interface_name", optarg);
@@ -831,6 +845,7 @@ int main(int argc, char* *argv)
   signal(SIGUSR1, devices_restart);
 
   msg_dbg(__POSITION__, "open X display");
+  dispname = value("display");
   if(!(dockapp.d = XOpenDisplay(dispname)))
   {
     /* fprintf crashes on some systems if dispname is null */
@@ -1522,6 +1537,7 @@ usage(void)
       "  -C <color>          rx color\n"
       "  -L <color>          middle line color\n"
       "  -d <display name>\n"
+      "  -g <geometry>\n"
       "  -h                  this help screen\n"
       "  -i <interface name> select this interface at startup\n"
       "  -l                  start using long device names\n"
