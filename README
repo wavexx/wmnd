@@ -383,3 +383,5 @@ three different packages of WMND, respectively:
  - wmnd: standard WMND, built without generic drivers
    (actually only irix_pcp and generic_snmp)
 
+Finally, --enable-sine-dummy should be really a default :).
+
