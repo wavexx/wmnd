@@ -158,6 +158,22 @@ Gather all devices of class net from the kstat library.
 Reads metrics from the IRIX Performance Co-Pilot daemon. Read
 the README for problems with this driver.
 .TP
+.B generic_snmp
+Query an IF-MIB capable snmp server for gathering interface
+statistics. By default \fIgeneric_snmp\fP connects to localhost and
+uses the public community. You can change the community/host/interface
+to monitor by using the \fI\-I\fP flag:
+
+.RB [ community @] host [: interface ]
+
+You must specify an interface number, not an interface name. If the
+interface number is 0, or there's no interface specification,
+\fBWMND\fP will display all available interfaces. By default the
+community name is "public". Beware that by specifying an snmp v1
+community name on a command line can be dangerous on an multiuser
+platform. Please read the README file on the distribution for more
+details.
+.TP
 .B testing_dummy
 This is the "last resort" driver, it shows a null device useful only
 to make \fBWMND\fP don't exit when all other drivers failed. Can be
@@ -215,7 +231,14 @@ display_time=yes
 # use a specific driver (driver name, %auto for automatic)
 driver=%auto
 .IP
-# driver interface to monitor (interface name, %any for all)
+# Driver's interface to monitor (interface name, %any for all).
+# This is actually a parameter to the driver, and may have different
+# meanings on different drivers.
+#
+# linux_proc, freebsd_sysctl, solaris_kstat, solaris_fpppd: a simple
+#   interface name on the current host.
+# irix_pcp: [host@]interface
+# generic_snmp: [community@]host[:interface number]
 driver_interface=%any
 .IP
 # automatically select and show the interface on startup
