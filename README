@@ -113,6 +113,9 @@ AfterSTEP users put the following in their .steprc:
 
   "Wharf wmnd - MaxSwallow "wmnd" wmnd -i eth0 -w &".
 
+Change the WMND's title name in order to not swallow multiple
+instances into a single dock (see -n).
+
 -- BlackBox or FluxBox -----------------------------------------------
 You must enable the slit in other make wmnd visible. To add wmnd to
 the slit simply run wmnd from the command line:
