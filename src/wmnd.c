@@ -15,8 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 
 #include "wmnd.h"
@@ -511,11 +509,37 @@ beat_event(void)
 
 
 void
+exec_perc_command(const char* cmd, int button)
+{
+  char buf[4];
+  char* newcmd;
+  perctbl_t data[3];
+
+  /* button */
+  sprintf(buf, "%d", button);
+  data[0].c = 'b';
+  data[0].value = buf;
+
+  /* interface name */
+  data[1].c = 'i';
+  data[1].value = wmnd.curdev->name;
+
+  /* status */
+  data[2].c = 's';
+  data[2].value = (wmnd.curdev->online? "0": "1");
+
+  /* parse and exec the new command */
+  newcmd = percsubst(cmd, data, 3);
+  exec_command(newcmd);
+  free(newcmd);
+}
+
+
+void
 click_event(unsigned int region, unsigned int button)
 {
   char* action = NULL;
-
-  if(region == -1u)		/* no region */
+  if(region == -1u) /* no region */
     return;
 
   msg_dbg(__POSITION__, "clicked btn %d in region %d", button, region);
@@ -577,7 +601,7 @@ click_event(unsigned int region, unsigned int button)
   else
   if(region == 4)
   {
-    switch (button)
+    switch(button)
     {
     case Button1:
       action = value("bt1_action");
@@ -590,7 +614,7 @@ click_event(unsigned int region, unsigned int button)
       break;
     }
     if(action)
-      execCommand(action);
+      exec_perc_command(action, button);
   }
 }
 
