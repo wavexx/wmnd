@@ -7,7 +7,7 @@ md_color=#71e371
 rx_color=#188a86
 tx_color=#00fff2
 
-# refresh between status polling (not graph scroll speed, this affects
+# refresh between status polling (not graph scroll speed: this affects
 # the speed of those flashing arrows)
 # numbering in microseconds
 refresh=50000
@@ -26,7 +26,7 @@ avg_steps=1
 # smooth: smoothing factor. A float value ranging from 0 to 1. This is
 # really the "amount" of the new speed against the history each time is
 # sampled from the device. A low value (0.1) will remove random spikes
-# from the graph. Values higher that 1 will instead enchange spikes.
+# from the graph. Values higher than 1 will instead enchange spikes.
 # Disabled by default (0).
 smooth=0
 
