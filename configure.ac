@@ -1,5 +1,6 @@
 # process this file with autoconf >= 2.5 to produce a configure script.
 # report bugs and comments to wavexx@users.sf.net
+# $Id$
 
 # initialization
 AC_INIT(wmnd, 0.4.4, wavexx@users.sf.net)
@@ -153,7 +154,7 @@ AC_ARG_WITH(display-modes,
 		[--with-display-modes="..."],
 		[manually select visual modes. defaults to all]
 	)],,
-	[with_display_modes="traditional mgraph waveform wmwave wmnet sepgraphs twisted charts needle"]
+	[with_display_modes="traditional mgraph waveform wmwave wmnet sepgraphs twisted charts needle lines"]
 )
 for mode in $with_display_modes;
 do
