@@ -81,7 +81,7 @@ struct var
 
 typedef struct {
   unsigned int nr_devices;              /* number of devices in list */
-  unsigned long int flags;              /* big bit-mapped flags mask */
+  unsigned long flags;                  /* big bit-mapped flags mask */
   unsigned int wavemode;                /* type of wave graph */
   unsigned int nWavemodes;              /* numbers of wave graph */
   struct Devices* curdev;               /* current device */
@@ -92,6 +92,7 @@ typedef struct {
   unsigned int avgRSteps;               /* number of remaining steps */
   float smooth;                         /* smoothing factor */
   unsigned long scroll;	                /* speed of the graph scrolling */
+  unsigned long maxScale;               /* fixed max scale */
 } DevTable;
 
 typedef struct

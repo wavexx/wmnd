@@ -43,6 +43,7 @@ struct pair_strstr pss_defcon[] =
   {"quiet",           "no",      0},
   {"smooth",          "0",       0},
   {"name",            "wmnd",    0},
+  {"fixed_max",       "0",       0},
   {NULL,               NULL,     0}
 };
 

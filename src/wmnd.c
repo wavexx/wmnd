@@ -665,7 +665,7 @@ int main(int argc, char* *argv)
 
   /* parse command line */
   while((ch =
-      getopt(argc, argv, "bc:C:L:d:i:hlmMf:Fr:s:S:tvw:D:I:qQo:n:")) != EOF)
+      getopt(argc, argv, "bc:C:L:d:i:hlmMf:Fr:s:S:tvw:D:I:qQo:n:a:")) != EOF)
   {
     switch(ch)
     {
@@ -739,6 +739,9 @@ int main(int argc, char* *argv)
     case 'n':
       defcon_touch("name", optarg);
       break;
+    case 'a':
+      defcon_touch("fixed_max", optarg);
+      break;
     default:
       usage();
       exit(0);
@@ -763,6 +766,7 @@ int main(int argc, char* *argv)
   wmnd.scroll = MAX(atoi(value("scroll")), 1);
   wmnd.avgSteps = MAX(atoi(value("avg_steps")), 1);
   wmnd.smooth = atof(value("smooth"));
+  wmnd.maxScale = strtol(value("fixed_max"), NULL, 0);
   win_name = value("name");
   if(strval_fe(psi_bool, value("binary_scale")))
     wmnd.scale = binary_scale;
@@ -1334,14 +1338,23 @@ draw_stats(struct Devices *ptr, const int gap)
     tx_max = MAX(tx_max, p[out]);
     p += 4;
   }
-  if((max = rx_max + tx_max) > size)
+  if(wmnd.maxScale)
   {
-    bpp = max / size;
-    if((max % size) > 0)
+    bpp = wmnd.maxScale / size;
+    if((wmnd.maxScale % size) > 0)
       ++bpp;
   }
   else
-    bpp = 1;
+  {
+    if((max = rx_max + tx_max) > size)
+    {
+      bpp = max / size;
+      if((max % size) > 0)
+        ++bpp;
+    }
+    else
+      bpp = 1;
+  }
 
   /* draw rx/tx rate */
   p = ptr->avg;
@@ -1527,6 +1540,7 @@ usage(void)
       "  -q                  be less verbose\n"
       "  -Q                  enable verbosity\n"
       "  -o <float>          smoothing factor (0-1)\n"
+      "  -a <bps>            fixed max scale at <bps>\n"
       "  -w <mode>           select display mode (see below)\n"
       "  -D <driver>         specify a driver to use\n"
       "  -I <interface name> tell to driver/s the interface to monitor\n\n"
