@@ -1,7 +1,7 @@
 WMND 0.4.4
 ----------------------------------------------------------------------
 
-	* WMND can now be quiet (-q or quiet into ~/.wmndrc).
+	* WMND can now be quiet (-q/Q or quiet into ~/.wmndrc).
 	* Fixed some parts of the configure script. Some options have
 	changed their names:
 
@@ -29,6 +29,11 @@ WMND 0.4.4
 	fast scroll speed and the lines mode. Read the docs for more
 	informations.
 	* Fixed average sampling (-S) for multiple devices and values != 1
+	* Added a new IRIX Performance Co-Pilot driver!
+	* Re-touched the "charts" pixmap, in order to use less colors
+	(PseudoColor users will appreciate this). I find it nicer anyway :)
+	* The timer now works for *every* device. linux_proc users can
+	now use it for ppp links.
 
 WMND 0.4.3
 ----------------------------------------------------------------------
