@@ -1,4 +1,3 @@
-
 /*
  * wmnd - window maker network devices - drivers.c
  *
@@ -6,6 +5,7 @@
  *
  */
 
+/* local headers */
 #include "config.h"
 #include "drivers.h"
 #include "messages.h"
@@ -454,35 +454,48 @@ linux_proc_list(const char* devname, struct Devices* list)
   struct Devices* ndev;
   char* p;
 
-  fd = fopen(linux_proc_netDevice, "r");
-  if(!fd) return 0;
-
-  /* Skip the first 2 lines */
-  fgets(temp, MAXBUF, fd);
-  fgets(temp, MAXBUF, fd);
-
-  /* grab all active devices, adding them as we go */
-  while(fgets(temp, MAXBUF, fd))
+  /* device name was specified */
+  if(devname)
   {
-    p = strtok(temp, tokens);
-    if(!strncmp(p, "dummy", 5) || !strncmp(p, "irda", 4))
-      continue;
+    dta = 1;
+    ndev = (struct Devices*)malloc(sizeof(struct Devices));
+    ndev->devstart = 0;
+    ndev->name = strdup(devname);
+    ndev->next = ndev->drvdata = NULL;
+    list->next = ndev;
 
-    if((devname && !strcmp(p, devname)) || (!devname && strcmp(p, "lo")))
+    msg_drInfo(drName, "forced %s", p);
+  }
+  else
+  {
+    /* fetch all devices */
+    fd = fopen(linux_proc_netDevice, "r");
+    if(!fd) return 0;
+
+    /* Skip the first 2 lines */
+    fgets(temp, MAXBUF, fd);
+    fgets(temp, MAXBUF, fd);
+
+    while(fgets(temp, MAXBUF, fd))
     {
+      /* grab all active devices, adding them as we go */
+      p = strtok(temp, tokens);
+      if(!strncmp(p, "dummy", 5) ||
+          !strncmp(p, "irda", 4) || !strncmp(p, "lo", 3))
+        continue;
+
       dta++;
       ndev = (struct Devices*)malloc(sizeof(struct Devices));
       ndev->devstart = 0;
       ndev->name = strdup(p);
-      ndev->next = NULL;
-      ndev->drvdata = NULL;
+      ndev->next = ndev->drvdata = NULL;
       list->next = ndev;
       list = ndev;
 
       msg_drInfo(drName, "detected %s", p);
     }
+    fclose(fd);
   }
-  fclose(fd);
 
   return dta;
 }

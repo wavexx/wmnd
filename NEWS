@@ -12,8 +12,17 @@ WMND 0.4.4
 	in the installation procedure). WMND now requires autoconf 5
 	and automake 1.7 for regenerating the configure script.
 	* Tired of the boring dummy driver? Enable the sine-o-matic
-	bandwidth generator with --enable-sine-dummy!
+	bandwidth generator with --enable-sine-dummy! Then, experience
+	it with:
+
+	  wmnd -D testing_dummy -s 1 -r 100000
+
 	* The --enable-debug switch should now work again.
+	* I now maintain WMND with cvs, so I use cvs2cl to produce the
+	ChangeLog directly from the repository. Old entries are moved
+	to the ChangeLog.0 file.
+	* The linux_proc driver can be forced to monitor devices that
+	actually are offline (usefull for ppp interfaces).
 
 WMND 0.4.3
 ----------------------------------------------------------------------
