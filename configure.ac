@@ -3,7 +3,7 @@
 # $Id$
 
 # initialization
-AC_INIT(wmnd, 0.4.4a, wavexx@users.sf.net)
+AC_INIT(wmnd, 0.4.5, wavexx@users.sf.net)
 AC_CONFIG_SRCDIR("src/wmnd.c")
 AM_CONFIG_HEADER(config.h)
 
@@ -106,6 +106,13 @@ then
 			[ac_drivers="$ac_drivers irix_pcp"]
 		)]
 	)
+
+	# generic snmp
+	AC_CHECK_HEADER(net-snmp/net-snmp-config.h,
+		[AC_SEARCH_LIBS(snmp_sess_init, snmp,
+			[ac_drivers="$ac_drivers generic_snmp"]
+		)]
+	)
 fi
 for driver in $ac_drivers;
 do
@@ -117,6 +124,7 @@ do
 	solaris_fpppd)	AC_DEFINE(USE_SOLARIS_FPPPD, "solaris_fpppd", [solaris streams pppd]);;
 	solaris_kstat)	AC_DEFINE(USE_SOLARIS_KSTAT, "solaris_kstat", [enable solaris kstat driver]);;
 	irix_pcp)	AC_DEFINE(USE_IRIX_PCP, "irix_pcp", [IRIX Performance Co-Pilot]);;
+	generic_snmp)	AC_DEFINE(USE_GENERIC_SNMP, "generic_snmp", [Generic SNMP module]);;
 	*)		AC_MSG_ERROR([unknown driver name $driver]);;
 	esac
 	
