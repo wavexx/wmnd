@@ -80,17 +80,18 @@ struct var
 };
 
 typedef struct {
-  unsigned int nr_devices;             /* number of devices in list */
-  unsigned long int flags;             /* big bit-mapped flags mask */
-  unsigned int wavemode;               /* type of wave graph */
-  unsigned int nWavemodes;             /* numbers of wave graph */
-  struct Devices* curdev;	           /* current device */
-  void                                 /* scale function */
+  unsigned int nr_devices;              /* number of devices in list */
+  unsigned long int flags;              /* big bit-mapped flags mask */
+  unsigned int wavemode;                /* type of wave graph */
+  unsigned int nWavemodes;              /* numbers of wave graph */
+  struct Devices* curdev;               /* current device */
+  void                                  /* scale function */
   (*scale)(unsigned char sign, unsigned long value, char* buf); 
-  unsigned int refresh;	               /* speed of the refresh */
-  unsigned int avgSteps;               /* number of steps to average */
-  unsigned int avgRSteps;              /* number of remaining steps */
-  unsigned long scroll;	               /* speed of the graph scrolling */
+  unsigned int refresh;	                /* speed of the refresh */
+  unsigned int avgSteps;                /* number of steps to average */
+  unsigned int avgRSteps;               /* number of remaining steps */
+  float smooth;                         /* smoothing factor */
+  unsigned long scroll;	                /* speed of the graph scrolling */
 } DevTable;
 
 typedef struct
