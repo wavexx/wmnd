@@ -633,7 +633,8 @@ int main(int argc, char **argv)
   }
 
   /* parse command line */
-  while((ch = getopt(argc, argv, "bc:C:L:d:i:hlmMf:Fr:s:S:tvw:D:I:qo:")) != EOF)
+  while((ch =
+      getopt(argc, argv, "bc:C:L:d:i:hlmMf:Fr:s:S:tvw:D:I:qQo:")) != EOF)
   {
     switch(ch)
     {
@@ -697,6 +698,9 @@ int main(int argc, char **argv)
       break;
     case 'q':
       defcon_touch("quiet", "yes");
+      break;
+    case 'Q':
+      defcon_touch("quiet", "no");
       break;
     case 'o':
       defcon_touch("smooth", optarg);
@@ -1453,6 +1457,7 @@ usage(void)
       "  -t                  start without displaying time\n"
       "  -v                  print the version number\n"
       "  -q                  be less verbose\n"
+      "  -Q                  enable verbosity\n"
       "  -o <float>          smoothing factor (0-1)\n"
       "  -w <mode>           select display mode (see below)\n"
       "  -D <driver>         specify a driver to use\n"
