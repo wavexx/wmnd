@@ -524,6 +524,8 @@ linux_proc_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
 
   /* read statistics from network device's list */
   fp = fopen(linux_proc_netDevice, "r");
+  if(!fp) return 1;
+
   fgets(temp, MAXBUF, fp);
   fgets(temp, MAXBUF, fp);
 
