@@ -1,17 +1,31 @@
 WMND - Window Maker Network Devices
 ----------------------------------------------------------------------
-Original web site: http://www.wingeer.org/wmnd/
+Original web site: http://wmnd.wingeer.org/
 Current development: http://www.yuv.info/wmnd/
-Author: Reed Lai <reed@wingeer.org> http://www.wingeer.org/bv4qo/
+Copyright information:
+
+  Reed "Reed Lai" <reed@wingeer.org> http://www.wingeer.org/bv4qo/
+  Copyright (c) 2000-2001
+  
+  Timecop <timecop@japan.co.jp> http://www.ne.jp/asahi/linux/timecop/
+  Copyright (c) 2001
+  
+  wave++ "Yuri D'Elia" <wavexx@yuv.info> http://www.yuv.info/
+  Copyright (c) 2001-2003
+
+WMND is licensed under the GNU General Public License. Read the
+COPYING file for the complete GNU license description.
 
 
 Description
 ----------------------------------------------------------------------
 WMND (WindowMaker Network Devices) is a network monitoring
 dockapp for Window Maker (and compatibles) for many operative systems.
-Improved and based on WMiFS 1.3b, the version 0.2 of wmnd is almost
+Improved and based on WMiFS 1.3b, the version 0.2 of WMND is almost
 totally written by Timecop, given the optimization and flexibility and
-now consumes less cpu than wmmon. Enjoy!
+now consumes less cpu than wmmon. Version >= 0.3 WMND is now
+maintained by wave++, which added new display modes and several new
+drivers. Enjoy!
 
 
 Files
@@ -28,17 +42,9 @@ AUTHORS		Programmers that have contributed to WMND.
 
 Bugs
 ----------------------------------------------------------------------
-If you discover any bugs in this software, please post it to
-http://www.wingeer.org/wmnd/wall/ or mail the current maintainer:
-Wave++ <wavexx@users.sf.net>. Please describe the problems in as
-much in detail as you can.
-
-
-Copyright
-----------------------------------------------------------------------
-WMND is copyright (c) 2000 by Reed Lai and licensed under the GNU
-General Public License. Read the COPYING file for the complete
-GNU license description.
+If you discover any bugs in this software, please submit a bug report
+to the current maintainer: wave++ <wavexx@users.sf.net>. Please
+describe the problems in as much in detail as you can.
 
 
 Hints for WMND
