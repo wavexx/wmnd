@@ -43,7 +43,6 @@ void new_window(char* res_name, char* res_class,
 void conf_read(char* filename);
 void conf_write(char* filename);
 void assign(char* name, char* value);
-void vdel(char* name);
 struct var *lookup(char* name);
 char* value(char* name);
 char* vcopy(char* str);
@@ -311,6 +310,7 @@ conf_write(char* filename)
 {
   FILE *fp;
   struct var *vp;
+  int dc;
 
   fp = fopen(filename, "w");
   if(!fp)
@@ -319,8 +319,17 @@ conf_write(char* filename)
     exit(1);
   }
   fprintf(fp, "# WMND configuration file (generated automatically)\n\n");
+
+  /* write only changed values */
   for(vp = vars; vp; vp = vp->v_next)
-    fprintf(fp, "%s=%s\n", vp->v_name, vp->v_value);
+  {
+    if(!vp->v_value)
+      continue;
+
+    dc = defcon_lk(vp->v_name);
+    if(dc == -1 || strcmp(pss_defcon[dc].value, vp->v_value))
+      fprintf(fp, "%s=%s\n", vp->v_name, vp->v_value);
+  }
   fclose(fp);
 }
 
@@ -328,70 +337,42 @@ conf_write(char* filename)
 void
 assign(char* name, char* value)
 {
-  struct var *vp;
-  struct var *newv;
+  struct var* vp;
+  struct var* newv;
 
-  newv = (struct var *) malloc(sizeof(struct var));
-
-  vdel(name);
-
-  if(vars == NULL || strcmp(vars->v_name, name) >= 0)
+  /* search for existing values */
+  for(vp = vars; vp && vp->v_next; vp = vp->v_next)
   {
-    newv->v_next = vars;
-    vars = newv;
+    if(!strcmp(name, vp->v_name))
+    {
+      /* existing value */
+      if(vp->v_value)
+	free(vp->v_value);
+      vp->v_value = vcopy(value);
+      return;
+    }
   }
-  else
-  {
-    vp = vars;
-    while (vp->v_next && strcmp(vp->v_next->v_name, name) <= 0)
-      vp = vp->v_next;
-    newv->v_next = vp->v_next;
-    vp->v_next = newv;
-  }
+   
+  /* append the value */
+  newv = (struct var*)malloc(sizeof(struct var));
   newv->v_name = vcopy(name);
   newv->v_value = vcopy(value);
-}
+  newv->v_next = NULL;
 
-
-void
-vdel(char* name)
-{
-  struct var *vp;
-  struct var *newv;
-
-  while (vars && !strcmp(vars->v_name, name))
-  {
-    vp = vars->v_next;
-    free((struct var *) vars);
-    vars = vp;
-  }
-  if(vars)
-  {
-    for(newv = vars; newv->v_next;)
-      if(!strcmp(newv->v_next->v_name, name))
-      {
-        vp = newv->v_next->v_next;
-        free(newv->v_next);
-        newv->v_next = vp;
-      }
-      else
-        newv = newv->v_next;
-  }
+  if(!vars)
+    vars = newv;
+  else
+    vp->v_next = newv;
 }
 
 
 char*
 vcopy(char* str)
 {
-  char* newv;
-  unsigned int len;
-
   if(str == NULL)
-    return "";
-  len = strlen(str) + 1;
-  newv = (char*)malloc(len);
-  memcpy(newv, str, len);
-  return newv;
+    return NULL;
+
+  return strdup(str);
 }
 
 
@@ -426,6 +407,7 @@ waveval_fe(const struct drwStruct *data, const char* val)
 }
 
 
+/* Lookup for an index in the defcon table */
 int
 defcon_lk(const char* token)
 {
@@ -440,6 +422,7 @@ defcon_lk(const char* token)
 }
 
 
+/* Touch an item in the defcon table (mark as 'used') */
 void
 defcon_touch(char* token, char* val)
 {
@@ -681,6 +664,7 @@ int main(int argc, char* *argv)
    */
   wmnd.nr_devices = 0;
   wmnd.flags = 0;
+  vars = NULL;
   bit_set(RUN_ONLINE);
   bit_set(CFG_MODE);
 
@@ -689,9 +673,9 @@ int main(int argc, char* *argv)
    * we can use ch, because it's used later
    */
   ch = 0;
-  while (pss_defcon[ch].token)
+  while(pss_defcon[ch].token)
   {
-    assign(pss_defcon[ch].token,pss_defcon[ch].value);
+    assign(pss_defcon[ch].token, pss_defcon[ch].value);
     ch++;
   }
 

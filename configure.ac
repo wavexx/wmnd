@@ -2,7 +2,7 @@
 # report bugs and comments to wavexx@users.sf.net
 
 # initialization
-AC_INIT(wmnd, 0.4.8, wavexx@users.sf.net)
+AC_INIT(wmnd, 0.4.9, wavexx@users.sf.net)
 AC_CONFIG_SRCDIR("src/wmnd.c")
 AM_CONFIG_HEADER(config.h)
 

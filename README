@@ -120,6 +120,16 @@ must be aware that some values/scales of the ~/.wmndrc file have
 changed. Copy a fresh wmndrc from the source distribution
 (examples/wmndrc) or erase your old wmndrc to get the new defaults.
 
+-- Firing up WMND with sensible defaults -----------------------------
+Default values are easily changed from the command line or through
+the ~/.wmndrc file. The ~/.wmndrc file gets created automatically
+the first time you execute WMND (unless you use -F) using the internal
+defaults and command line flags. That is, if you want to change
+"permanently" the defaults (so you can start it without command line
+fuss) just remove ~/.wmndrc and launch WMND using all the flags
+again. Beware however that internal defaults may change. Consider
+reading the example wmndrc that comes with the distribution.
+
 
 Window Managers
 ----------------------------------------------------------------------
