@@ -111,7 +111,7 @@ check_mr(int x, int y)
       found = 1;
   }
   if(!found)
-    return -1;
+    return REG_NOREG;
   return (i - 1);
 }
 
@@ -199,13 +199,11 @@ new_window(char* res_name, char* res_class,
   classhint.res_class = res_class;
   XSetClassHint(dockapp.d, dockapp.win, &classhint);
 
-  XSelectInput(dockapp.d, dockapp.win,
-      ExposureMask | ButtonPressMask | ButtonReleaseMask |
-      StructureNotifyMask);
-  XSelectInput(dockapp.d, dockapp.iconwin,
-      ExposureMask | ButtonPressMask | ButtonReleaseMask |
-      StructureNotifyMask);
-
+#define EVENTS (ExposureMask | ButtonPressMask | \
+	ButtonReleaseMask | StructureNotifyMask)
+  XSelectInput(dockapp.d, dockapp.win, EVENTS);
+  XSelectInput(dockapp.d, dockapp.iconwin, EVENTS);
+  
   XStoreName(dockapp.d, dockapp.win, res_name);
   XSetIconName(dockapp.d, dockapp.win, res_name);
 
@@ -530,11 +528,93 @@ exec_perc_command(const char* cmd, int button)
 }
 
 
+#ifdef USE_TREND
+const char*
+tmpfifo()
+{
+  const char* file;
+  int retries = 26;
+
+  while(retries--)
+  {
+    /* Nouuuuuu (sound of a lemming exploding)!
+     * Don't use THAT function! IT'S BAD! BAD BAAAD! Will kill 'ya!
+     * MAVAFF... I'd use tmpfile _anyway_ */
+    file = tmpnam(NULL);
+    if(!file) return NULL;
+    if(!mkfifo(file, 0600))
+      return file;
+  }
+
+  return NULL;
+}
+
+
+void
+exec_trend(int rt, int bp)
+{
+  int idx, i;
+  const char* title;
+  const char* file;
+  FILE* fd;
+
+  idx = (bp? 0: 2);	/* bytes or packets */
+  idx += (rt? 0: 1);	/* input or output */
+
+  /* title */
+  switch(idx)
+  {
+  case 0: title = "input bytes"; break;
+  case 1: title = "ouput bytes"; break;
+  case 2: title = "input packets"; break;
+  case 3: title = "output packets"; break;
+  }
+
+  /* create the fifo */
+  file = tmpfifo();
+  if(!file)
+  {
+    msg_err("cannot create temporary fifo");
+    return;
+  }
+
+  /* execute */
+  switch(fork())
+  {
+  case -1:
+    msg_err("cannot fork!");
+    break;
+
+  case 0:
+    execlp("trend", "trend", "-t", title, "-G", (bp? "1000": "10"),
+	"-d", "-m", file, "59", "58", NULL);
+
+    /* exec failed, unlock the parent anyway! */
+    msg_err("cannot execute trend!");
+    fd = fopen(file, "r");
+    exit(1);
+
+  default:
+    /* feed the pipe */
+    if((fd = fopen(file, "w")))
+    {
+      for(i = 0; i != 59; ++i)
+	fprintf(fd, "%lu\n", wmnd.curdev->his[i][idx]);
+      fclose(fd);
+    }
+  }
+
+  /* remove the fifo */
+  unlink(file);
+}
+#endif
+
+
 void
 click_event(unsigned int region, unsigned int button)
 {
   char* action = NULL;
-  if(region == -1u) /* no region */
+  if(region == REG_NOREG) /* no region */
     return;
 
   msg_dbg(__POSITION__, "clicked btn %d in region %d", button, region);
@@ -549,7 +629,7 @@ click_event(unsigned int region, unsigned int button)
 
     draw_interface();
   }
-  else if(region == 0)
+  else if(region == REG_DEV)
   {
     switch(button)
     {
@@ -565,7 +645,7 @@ click_event(unsigned int region, unsigned int button)
       break;
     }
   }
-  else if(region == 1)
+  else if(region == REG_RT_PB)
   {
     if(button == Button1)
     {
@@ -573,7 +653,7 @@ click_event(unsigned int region, unsigned int button)
       led_control(LED_POWER, bit_get(RUN_ONLINE));
     }
   }
-  else if(region == 2)
+  else if(region == REG_MAIN)
   {
     if(button == Button1)
     {
@@ -587,7 +667,7 @@ click_event(unsigned int region, unsigned int button)
       /* switch time visualization */
       bit_tgl(CFG_SHOWTIME);
   }
-  else if(region == 3)
+  else if(region == REG_SCALE_RX || region == REG_SCALE_TX)
   {
     switch(button)
     {
@@ -595,13 +675,19 @@ click_event(unsigned int region, unsigned int button)
       /* switch max screen/history */
       bit_tgl(CFG_MAXSCREEN);
       break;
+#ifdef USE_TREND
+    case Button2:
+      /* launch trend */
+      exec_trend((region == REG_SCALE_RX), bit_get(CFG_MODE));
+      break;
+#endif
     case Button3:
       /* toggle max display */
       bit_tgl(CFG_SHOWMAX);
       break;
     }
   }
-  else if(region == 4)
+  else if(region == REG_SCRIPT)
   {
     switch(button)
     {
@@ -858,11 +944,12 @@ int main(int argc, char* *argv)
   }
   new_window(win_name, "wmnd", 64, 64, argc, argv);
 
-  add_mr(0, 3, 3, 38, 9);   /* device */
-  add_mr(1, 54, 3, 7, 9);   /* up/down packet/byte mode */
-  add_mr(2, 3, 22, 58, 31); /* main display area */
-  add_mr(3, 3, 13, 58, 9);  /* scale meter */
-  add_mr(4, 3, 54, 58, 7);  /* user script? huh wtf does that do */
+  add_mr(REG_DEV, 3, 3, 38, 9);		/* device */
+  add_mr(REG_RT_PB, 54, 3, 7, 9);	/* up/down packet/byte mode */
+  add_mr(REG_MAIN, 3, 22, 58, 31);	/* main display area */
+  add_mr(REG_SCALE_RX, 3, 13, 29, 9);	/* scale meter, left side (rx) */
+  add_mr(REG_SCALE_TX, 32, 13, 29, 9);	/* scale meter, right side (tx) */
+  add_mr(REG_SCRIPT, 3, 54, 58, 7);	/* user script */
 
   /* updates should begin immediately */
 #ifdef INEXACT_TIMING

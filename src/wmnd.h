@@ -147,6 +147,15 @@ typedef struct
 #define CFG_MODE        18 /* 1: bytes 0: packets */
 #define CFG_SHOWMAX     19 /* 1: yes 0: no */
 
+/* region definitions */
+#define REG_NOREG	(-1u)
+#define REG_DEV		0
+#define REG_RT_PB	1
+#define REG_MAIN	2
+#define REG_SCALE_RX	3
+#define REG_SCALE_TX	4
+#define REG_SCRIPT	5
+
 /* bit ops */
 #define bit_set(n) onbit((__bytearray*)&wmnd.flags, n)
 #define bit_off(n) offbit((__bytearray*)&wmnd.flags, n)
