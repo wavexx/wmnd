@@ -75,6 +75,7 @@ void draw_stats(struct Devices *ptr, const int gap);
 /* driver functions */
 int devices_init(const char* driver, const char* interface);
 void devices_select(const char* interface);
+void devices_prev(void);
 void devices_getstat(struct Devices *device, unsigned long* ip,
     unsigned long* op, unsigned long* ib, unsigned long* ob);
 void devices_destroy(void);
@@ -544,14 +545,25 @@ click_event(unsigned int region, unsigned int button)
 
   msg_dbg(__POSITION__, "clicked btn %d in region %d", button, region);
 
-  if(region == 0)
+  /* the wheel is valid everywhere */
+  if(button == Button4 || button == Button5)
   {
-    switch (button)
+    if(button == Button4)
+      devices_prev();
+    else
+      devices_select(NULL);
+
+    draw_interface();
+  }
+  else if(region == 0)
+  {
+    switch(button)
     {
     case Button1:
       devices_select(NULL);
       draw_interface();
       break;
+
     case Button3:
       bit_tgl(CFG_SHORTNAME);
       msg_dbg(__POSITION__, "shortname: %d", bit_get(CFG_SHORTNAME));
@@ -559,8 +571,7 @@ click_event(unsigned int region, unsigned int button)
       break;
     }
   }
-  else
-  if(region == 1)
+  else if(region == 1)
   {
     if(button == Button1)
     {
@@ -568,8 +579,7 @@ click_event(unsigned int region, unsigned int button)
       led_control(LED_POWER, bit_get(RUN_ONLINE));
     }
   }
-  else
-  if(region == 2)
+  else if(region == 2)
   {
     if(button == Button1)
     {
@@ -583,10 +593,9 @@ click_event(unsigned int region, unsigned int button)
       /* switch time visualization */
       bit_tgl(CFG_SHOWTIME);
   }
-  else
-  if(region == 3)
+  else if(region == 3)
   {
-    switch (button)
+    switch(button)
     {
     case Button1:
       /* switch max screen/history */
@@ -598,8 +607,7 @@ click_event(unsigned int region, unsigned int button)
       break;
     }
   }
-  else
-  if(region == 4)
+  else if(region == 4)
   {
     switch(button)
     {
@@ -1711,6 +1719,22 @@ devices_init(const char* driver, const char* interface)
 
 
 void
+devices_prev(void)
+{
+  /*
+   * devices_prev: cycles for the previous device.
+   */
+
+  struct Devices* tmp = devices;
+
+  while(tmp->next && (wmnd.curdev == devices || tmp->next != wmnd.curdev))
+    tmp = tmp->next;
+
+  wmnd.curdev = tmp;
+}
+
+
+void
 devices_select(const char* interface)
 {
   /*
@@ -1718,7 +1742,7 @@ devices_select(const char* interface)
    * if name is null, cycles for next device
    */
 
-  struct Devices *prt = devices;
+  struct Devices* prt = devices;
 
   if(interface)
   {

@@ -7,6 +7,8 @@ WMND 0.4.8
 	* Mouse button actions now supports several %-escapes so you
 	can send active interface parameters to your scripts.
 	(requested by Jesper Anderson).
+	* Support for mouse wheel (integrated patch wmnd-0.4.7-wheel
+	by Noberasco Michele).
 
 WMND 0.4.7
 ----------------------------------------------------------------------
@@ -73,7 +75,7 @@ WMND 0.4.4
 	are actually offline (useful for ppp interfaces).
 	* New display mode: lines (trend-like behavior). Mainly useful
 	with a low smoothing factor and a fast scroll speed.
-        * Added the smoothing factor thing to clear-up the graph while using a
+	* Added the smoothing factor thing to clear-up the graph while using a
 	fast scroll speed and the lines mode. Read the docs for more
 	informations.
 	* Fixed average sampling (-S) for multiple devices and values != 1
