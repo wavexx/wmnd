@@ -5,9 +5,7 @@ AC_DEFUN(AC_CC_WARNINGS,
 	AC_ARG_ENABLE(silent,
 		[AC_HELP_STRING(
 			[--enable-silent],
-			[disable implicit warnings]
-		)]
-	)
+			[disable implicit warnings])])
 
 	if test "$enable_silent" != "yes"
 	then
@@ -31,9 +29,7 @@ AC_DEFUN(AC_CC_PEDANTIC,
 	AC_ARG_ENABLE(pedantic,
 		[AC_HELP_STRING(
 			[--enable-pedantic],
-			[enable pedantic flags]
-		)]
-	)
+			[enable pedantic flags])])
 
 	if test "$enable_pedantic" = "yes"
 	then
@@ -59,9 +55,7 @@ AC_DEFUN(AC_CC_DEBUG,
 	AC_ARG_ENABLE(debug,
 		[AC_HELP_STRING(
 			[--enable-debug],
-			[enable debugging flags]
-		)]
-	)
+			[enable debugging flags])])
 
 	if test "$enable_debug" != "yes"
 	then
@@ -111,4 +105,21 @@ AC_DEFUN(AC_SIZE_SEARCH,
 	fi
 	unset IFS
 ])
+
+# creates a new switch (--enable-) with and help string which controls
+# the definition of a conditional.
+# usage: AC_ARG_EC(command name, variable, define, help string, check string)
+AC_DEFUN(AC_ARG_EC,
+[
+	AC_ARG_ENABLE([$1], [AC_HELP_STRING([--enable-$1], [$4])])
+	AC_MSG_CHECKING([$5])
+	if test "$enable_$2" = "yes"
+	then
+		AC_DEFINE([$3],, [$4])
+		AC_MSG_RESULT(yes)
+	else
+		AC_MSG_RESULT(no)
+	fi
+])
+
 
