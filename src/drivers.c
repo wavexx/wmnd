@@ -701,8 +701,9 @@ freebsd_sysctl_term(struct Devices* dev)
 
 struct irix_pcp_drvdata
 {
-  pmInDom indom;
+  pmID pmId[4];
   int inst;
+  int ph;
 };
 
 /* resolve a PCP domain/desc */
@@ -757,10 +758,10 @@ irix_pcp_list(const char* devname, struct Devices* list)
       irix_pcp_resDom(PCPNS_NETOUTPDOM, &pmId[3], &pmD[3]))
     return 0;
 
-  /* fetch the hinstance list from any of the four domains */
+  /* fetch the instance list from any of the four domains */
   if((dta = pmGetInDom(pmD->indom, &inst, &desc)) < 0)
   {
-    msg_drInfo(drName, "unable to get hinstances of " PCPNS_NETINBDOM
+    msg_drInfo(drName, "unable to get instances of " PCPNS_NETINBDOM
         ": %s", pmErrStr(dta));
     return 0;
   }
@@ -777,7 +778,7 @@ irix_pcp_list(const char* devname, struct Devices* list)
       ndev = malloc(sizeof(struct Devices));
       ndev->name = strdup(*p);
       drdata = malloc(sizeof(struct irix_pcp_drvdata));
-      /*drdata->indom = pmD.indom;*/
+      memcpy(drdata->pmId, pmId, sizeof(pmId));
       drdata->inst = *t;
       ndev->drvdata = (void*)drdata;
 
@@ -800,7 +801,18 @@ irix_pcp_list(const char* devname, struct Devices* list)
 int
 irix_pcp_init(struct Devices* dev)
 {
+  struct irix_pcp_drvdata* drdata =
+    (struct irix_pcp_drvdata*)dev->drvdata;
+
+  /* reset the device timestamp, can't know when a device
+   * goes offline with PCP */
   dev->devstart = 0;
+
+  /* initialize a profile for this device */
+  pmDelProfile(PM_INDOM_NULL, 0, NULL);
+  drdata->ph = pmDupContext();
+  pmAddProfile(PM_INDOM_NULL, 1, &drdata->inst);
+
   return 0;
 }
 
@@ -808,13 +820,32 @@ int
 irix_pcp_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
     unsigned long* ib, unsigned long* ob)
 {
-  *ip = *op = *ib = *ob = 0;
+  /* switch to the right context */
+  struct irix_pcp_drvdata* drdata =
+    (struct irix_pcp_drvdata*)dev->drvdata;
+  pmResult* pmR;
+
+  pmUseContext(drdata->ph);
+  if(pmFetch(4, drdata->pmId, &pmR))
+    return 1;
+  
+  *ib = pmR->vset[0]->vlist->value.lval;
+  *ip = pmR->vset[1]->vlist->value.lval;
+  *ob = pmR->vset[2]->vlist->value.lval;
+  *op = pmR->vset[3]->vlist->value.lval;
+
+  pmFreeResult(pmR);
   return 0;
 }
 
 void
 irix_pcp_term(struct Devices* dev)
 {
+  /* free the device profile */
+  struct irix_pcp_drvdata* drdata =
+    (struct irix_pcp_drvdata*)dev->drvdata;
+
+  pmDestroyContext(drdata->ph);
   free(dev->drvdata);
 }
 
