@@ -4,6 +4,7 @@ WMND 0.4.5
 	* Added a new IF-MIB snmp driver! You can now monitor local
 	and remote snmp interfaces a-la MRTG, but in realtime! Read
 	CAREFULLY the README about issues with this driver.
+	* Some packaging 'hints' into the README.
 
 WMND 0.4.4a
 ----------------------------------------------------------------------

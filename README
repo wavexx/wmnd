@@ -368,3 +368,18 @@ dedicate to myself anymore, so I want to do something really useful
 instead of guessing what you'd like. Thanks to everyone that have done
 it so far. These comments greatly improved WMND over time.
 
+-- Packager's notes --------------------------------------------------
+I'm not a professional packager, but you may want to consider these
+notes to improve the WMND package.
+
+The irix_pcp and generic_snmp drivers depends upon libraries that are
+not installed on a distribution/OS by default. Both these drivers are
+supported by different operating systems. I suggest you to build
+three different packages of WMND, respectively:
+
+ - wmnd-pcp: built with irix_pcp and OS's drivers.
+ - wmnd-snmp: built with generic_snmp and OS's drivers.
+ - wmnd-hairy: built with all drivers.
+ - wmnd: standard WMND, built without generic drivers
+   (actually only irix_pcp and generic_snmp)
+
