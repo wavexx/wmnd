@@ -44,7 +44,14 @@ display_time=yes
 # use a specific driver (driver name, %auto for automatic)
 driver=%auto
 
-# driver interface to monitor (interface name, %any for all)
+# Driver's interface to monitor (interface name, %any for all).
+# This is actually a parameter to the driver, and may have different
+# meanings on different drivers.
+#
+# linux_proc, freebsd_sysctl, solaris_kstat, solaris_fpppd: a simple
+#   interface name on the current host.
+# irix_pcp: [host@]interface
+# generic_snmp: [community@]host[:interface number]
 driver_interface=%any
 
 # automatically select and show this interface on startup if
