@@ -316,3 +316,55 @@ before any other.
 
 There seems to be a Linux version of PCP, but I can't (don't) want to
 try it. It will probably work.
+
+-- IF-MIB snmp driver ------------------------------------------------
+Since 0.4.5 wmnd adds a new snmp driver for local and/or remote IF-MIB
+compliant devices. This driver requires the NET-SNMP library,
+available at http://www.net-snmp.org/, version 5 or higher. The
+drivers name is generic_snmp. It uses the parameters sent through the
+-I flag to initialize the device/s list. The format is as follows:
+
+  [community@]host[:interface]
+
+Parameters inside [] are optional. If you do not explicitly supply
+these parameters, generic_snmp will use "public@localhost".
+
+To monitor an entire switch, you can usually do:
+
+  wmnd -D generic_snmp -I public@switch
+
+(or "-I switch", which is shorter).
+To monitor only a specific interface:
+
+  wmnd -D generic_snmp -I public@switch:1
+
+Interface numbers start at 1 (0 means all interfaces, like an empty
+interface specification). Beware that EACH remote interface, at the
+default refresh speed, burns AT LEAST 2kB/s of continuous data stream
+through your network. Monitoring a complete switch (24 ports), always
+at the default refresh speed, burns circa 30kB/s. You can slow down
+the refresh speed (-r) to reduce this traffic. The extremely fast
+queries done by wmnd can also reduce the available cpu of your snmp
+server/hardware and decrease overall performance.
+
+Also beware that using the -I flag on the command-line can potentially
+expose the community name of your remote snmp server. Better to use
+~/.wmndrc and chmod it to 600 in this case.
+
+Personal note: this driver shows both the potential and the side
+effects of the current driver layout. You can make drivers for almost
+anything, but as you need initialization parameters, you'll loose the
+ability to have multiple interfaces/drivers inside a single wmnd
+instance, that has always been a nice feature of wmnd.
+
+WMND now needs a mayor rewrite, definitively! The snmp driver itself
+needs more work to the able to monitor non IF-MIB devices. But I want
+your comments. I won't do any larger work on WMND as it is without
+YOUR feedback, without SOMEONE that will ever use it. Do you like
+WMND? Do you want to use multiple drivers and/or parameters without
+leaving WMND simply guessing? Do you want better snmp support? Please
+drop me a line, I don't ask anything more. I don't have much time to
+dedicate to myself anymore, so I want to do something really useful
+instead of guessing what you'd like. Thanks to everyone that have done
+it so far. These comments greatly improved WMND over time.
+
