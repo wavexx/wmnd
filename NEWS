@@ -9,7 +9,11 @@ WMND 0.4.4
 	  --with-display_modes is now --with-display-modes
 
 	* WMND is now fully packaged with 'make dist' (fixes some bugs
-	in the installation procedure).
+	in the installation procedure). WMND now requires autoconf 5
+	and automake 1.7 for regenerating the configure script.
+	* Tired of the boring dummy driver? Enable the sine-o-matic
+	bandwidth generator with --enable-sine-dummy!
+	* The --enable-debug switch should now work again.
 
 WMND 0.4.3
 ----------------------------------------------------------------------

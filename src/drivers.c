@@ -364,13 +364,22 @@ solaris_kstat_term(struct Devices* dev)
 #undef drName
 #define drName USE_TESTING_DUMMY
 
+#ifdef USE_SINE_TESTING_DUMMY
+#include <math.h>
+
+/* we need the double of PI, not defined everywhere */
+#undef M_2PI
+#define M_2PI M_PI * 2
+
+#endif
+
 int
 testing_dummy_list(const char* devname, struct Devices* list)
 {
   char* devn;
   struct Devices* ndev;
 
-  if(devname == NULL)
+  if(!devname)
     devn = strdup("off");
   else
     devn = strdup(devname);
@@ -397,7 +406,22 @@ int
 testing_dummy_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
     unsigned long* ib, unsigned long* ob)
 {
+#ifdef USE_SINE_TESTING_DUMMY
+
+  /* some more fun when debugging! */
+  static float v = 0.;
+  static unsigned long is = 0;
+  static unsigned long os = 0;
+
+  *ip = *ib = (is += (16384. * cos(v)) + 16384);
+  *op = *ob = (os += (16384. * sin(v)) + 16384);
+  v += 0.05;
+
+  if(v >= M_PI * 2)
+    v = 0;
+#else
   *ip = *op = *ib = *ob = 0;
+#endif
   return 1;
 }
 
@@ -649,19 +673,24 @@ freebsd_sysctl_term(struct Devices* dev)
 struct drivers_struct drivers_table[] =
 {
 #ifdef USE_FREEBSD_SYSCTL
-  {USE_FREEBSD_SYSCTL, freebsd_sysctl_list, freebsd_sysctl_init, freebsd_sysctl_get, freebsd_sysctl_term},
+  {USE_FREEBSD_SYSCTL, freebsd_sysctl_list, freebsd_sysctl_init,
+    freebsd_sysctl_get, freebsd_sysctl_term},
 #endif
 #ifdef USE_LINUX_PROC
-  {USE_LINUX_PROC, linux_proc_list, linux_proc_init, linux_proc_get, linux_proc_term},
+  {USE_LINUX_PROC, linux_proc_list, linux_proc_init, linux_proc_get,
+    linux_proc_term},
 #endif
 #ifdef USE_SOLARIS_FPPPD
-  {USE_SOLARIS_FPPPD, solaris_fpppd_list, solaris_fpppd_init, solaris_fpppd_get, solaris_fpppd_term},
+  {USE_SOLARIS_FPPPD, solaris_fpppd_list, solaris_fpppd_init,
+    solaris_fpppd_get, solaris_fpppd_term},
 #endif
 #ifdef USE_SOLARIS_KSTAT
-  {USE_SOLARIS_KSTAT, solaris_kstat_list, solaris_kstat_init, solaris_kstat_get, solaris_kstat_term},
+  {USE_SOLARIS_KSTAT, solaris_kstat_list, solaris_kstat_init,
+    solaris_kstat_get, solaris_kstat_term},
 #endif
 #ifdef USE_TESTING_DUMMY
-  {USE_TESTING_DUMMY, testing_dummy_list, testing_dummy_init, testing_dummy_get, testing_dummy_term},
+  {USE_TESTING_DUMMY, testing_dummy_list, testing_dummy_init,
+    testing_dummy_get, testing_dummy_term},
 #endif
   {NULL, NULL, NULL, NULL, NULL}
 };

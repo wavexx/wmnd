@@ -130,6 +130,23 @@ else
 fi
 
 
+# enchanged dummy driver
+AC_ARG_ENABLE(sine-dummy,
+	[AC_HELP_STRING(
+		[--enable-sine-dummy],
+		[enchanged dummy driver]
+	)]
+)
+AC_MSG_CHECKING(whether enchange the dummy driver)
+if test "$enable_sine_dummy" = "yes";
+then
+	AC_DEFINE(USE_SINE_TESTING_DUMMY,, [enchanged dummy driver])
+	AC_MSG_RESULT(yes)
+else
+	AC_MSG_RESULT(no)
+fi
+
+
 # display modes selection
 AC_ARG_WITH(display-modes,
 	[AC_HELP_STRING(
