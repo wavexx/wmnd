@@ -18,7 +18,7 @@ Files
 ----------------------------------------------------------------------
 README		This file.
 INSTALL		Configuration and Installation instructions.
-			(The bottom of this file contains a brief summary)
+		(The bottom of this file contains a brief summary)
 ChangeLog	Description of changes.
 NEWS		Summary of changes between releases.
 TODO		Things we've already planned for WMND.
@@ -237,7 +237,7 @@ To select only some display modes:
   $ ../wmnd-0.4.2/configure --with-display-modes="traditional wmwave"
 
 To forcely build specified drivers (beware that the dummy driver should
-be disabled with --wihout-dummy_driver, also, extra libraries that may
+be disabled with --wihout-dummy-driver, also, extra libraries that may
 be needed by the driver won't be checked automatically):
 
   $ ../wmnd-0.4.2/configure --with-drivers="linux_proc"
@@ -266,7 +266,8 @@ and then proceed as above. You'll notice this big improvement:
 
 This will prevent for make to recall automake later for regenerating
 makefiles (and this happens regardless the date of files!).
-automake 1.14x works without problems.
+automake 1.4 no longer works. automake 1.7 and autoconf 2.5 are now
+_required_ to regenerate the configure script.
 
 Also, on some platforms (linux actually) the solaris_fpppd driver
 would be detected only when the ppp kernel module is installed. To
@@ -284,4 +285,4 @@ be used with configure, they're case sensitive):
 -- GCC 2.96 sucks ----------------------------------------------------
 WMND 0.4 won't compile with RedHat's gcc 2.96. Either downgrade to
 2.95 or upgrade to 3. DON'T SEND bug reports about INLINE not working
-under gcc 2.96, it's a RedHat bug.
+under gcc 2.96, it's a RedHat-only bug.
