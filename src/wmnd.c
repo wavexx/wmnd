@@ -1261,7 +1261,7 @@ draw_max(unsigned long rx, unsigned long tx)
 void
 draw_stats(struct Devices *ptr)
 {
-  int bpp = 1;		/* bytes per pixel */
+  int bpp = 1; /* bytes per pixel */
   unsigned int k;
   unsigned long int *p;
   unsigned int in, out;
@@ -1270,9 +1270,9 @@ draw_stats(struct Devices *ptr)
   unsigned int size;
 
   if(bit_get(CFG_SHOWMAX))
-    size = 35;		/* with max bar mode */
+    size = 35; /* with max bar mode */
   else
-    size = 41;		/* without max bar */
+    size = 41; /* without max bar */
 
   if(bit_get(CFG_MODE))
   {
@@ -1319,7 +1319,7 @@ draw_stats(struct Devices *ptr)
   p = (unsigned long* ) ptr->his;
   (*drwFuncs[wmnd.wavemode].funcPtr)(p, in, out, size, bpp, rx_max, tx_max);
 
-  /* copy PPP connection time over the graph */
+  /* copy connection time over the graph */
   if(bit_get(CFG_SHOWTIME) && wmnd.curdev->devstart)
     copy_xpm_area(70, 36, 23, 7, 37, 46);
 }
@@ -1496,7 +1496,7 @@ usage(void)
       "  -I <interface name> tell to driver/s the interface to monitor\n\n"
       "builtin drivers: ", WMND_VERSION);
 
-  /* display builting drivers */
+  /* display builtin drivers */
   while(drivers_table[cnt].driver_name)
   {
     if(drivers_table[cnt+1].driver_name)
@@ -1506,7 +1506,7 @@ usage(void)
     cnt++;
   }
 
-  /* display builting display modes */
+  /* display builtin display modes */
   fprintf(stderr, "builtin display modes: ");
   cnt = 0;
   while(drwFuncs[cnt].funcName)
