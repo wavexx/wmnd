@@ -1,0 +1,235 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\"
+.\" This documentation may be distributed under the terms of
+.\" the GNU General Public Licence version 2.
+.\"
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH WMND 1 "Jul 1, 2002"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+WMND \- WindowMaker network device monitor
+.SH SYNOPSIS
+.B wmnd
+.RI "{ " options " }"
+.SH DESCRIPTION
+.B WMND
+is a WindowMaker dock application that shows a graph of the network traffic
+of the past few minutes, current activity and current and overall send
+and receive rates. Additionally it can launch any program in response to
+mouse clicks.
+.SH OPTIONS
+.TP
+.BI "\-i " interface
+Select the interface to start with.
+.TP
+.BI "\-I " interface
+Interfaces to monitor. Defaults to all but lo and irda.
+.TP
+.BI "\-D " driver
+Specify a driver to use. Defaults to auto-probe.
+.TP
+.B \-l
+Start using long device names.
+.TP
+.B \-m
+Start with maximal values hidden.
+.TP
+.B \-t
+Start without displaying connection time of ppp links.
+.TP
+.B \-M
+Use the maximal values of the entire history.
+.TP
+.BI "\-w " mode
+Select display mode to start with.
+Use
+.B wmnd \-h
+for a list of available display modes.
+Right clicks on the graph cycle through all available modes.
+.TP
+.BI "\-r " rate
+refresh rate in microseconds
+.TP
+.BI "\-s " scroll
+scroll rate in tenths of seconds
+.TP
+.BI "\-S " steps
+Number of scroll steps to wait before updating the speed rate indicator.
+.TP
+.B \-b
+Scale the values of the maximum and current rate by factors of base 2 instead
+of the default 10-based scaling. (1K equals 1024 in binary mode, but 1000
+in decimal mode.)
+.TP
+.BI "\-c " color
+tx color
+.TP
+.BI "\-C " color
+rx color
+.TP
+.BI "\-L " color
+middle line color
+.TP
+.BI "\-d " display
+Draw onto X11 display \fIdisplay\fP
+.TP
+.BI "\-f " config
+Read \fIconfig\fP instead of \fB~/.wmndrc\fP
+.TP
+.B \-F
+Don't parse \fB~/.wmndrc\fP
+.TP
+.B \-h
+Show summary of options.
+.TP
+.B \-v
+Show version of \fBWMND\fP.
+.TP
+.B \-q
+be less verbose (display only errors).
+.SH USAGE
+.SS Active Interface
+You can cycle in realtime through all available active interfaces
+by simply left-clicking on the interface name gadget on the
+upperleft corner of \fBWMND\fP.
+.PP
+The 'lo' interface is an exception, 'lo' only works when invoked
+from the commandline (\fBwmnd \-I lo\fP), lo was mainly built in for
+testing purposes.
+.SS Device Name
+By default, \fBWMND\fP show device name in short term of four characters,
+for example, the ippp0 will be displayed as ipp0.  You can toggle
+the device name between short and long by right-click on it.
+.SS Graphic Mode
+Left-click on the main graphic area to cycle the graphic mode.
+.SS Max Meter
+Left-click to toggle the history max or screen max, default is
+screen max when \fBWMND\fP is startup.  Right-click to hide or display.
+.SS Byte/Packet Mode
+Left-click on the letter gadgeted on the right-top corner can switch
+between the Byte or Packet counter mode. "B" for byte, "p" for packet.
+.SS User Script
+Click on the bottom rate meter can invoke the user command defined in
+resource file .wmndrc.
+.SS Dragging WMND
+Be sure to drag \fBWMND\fP on it's outer edges, it's a bit picky due
+to the large gfx pixmap it keeps. You can also use a
+keyboard and mouse shortcut (perhaps ALT+left-click) in your window
+manager to drag it around.
+.SS Drivers
+.TP
+.B solaris_fpppd
+Solaris/Linux ppp streams driver. Gathers device data from /dev/ppp. Uses code
+from the Solaris/Linux pppd server and it should work wherever Solaris/Linux
+pppd works.
+.TP
+.B linux_proc
+Reads data from the linux
+.BR proc (5)
+virtual filesystem.
+.TP
+.B freebsd_sysctl
+Uses the MIB to gather device statistics under FreeBSD (offline devices handling
+is buggy, support needed!)
+.TP
+.B solaris_kstat
+Gather all devices of class net from the kstat library.
+.SH FILES
+~/.wmndrc	User configuration.
+.PP
+The format of this file is:
+.nf
+.IP
+# WMND configuration file
+.IP
+# middle line in wave mode color
+md_color=#71e371
+.IP
+# RX/TX color (can be #xxxxxx, or color name from rgb.txt)
+rx_color=#188a86
+tx_color=#00fff2
+.IP
+# refresh between status polling (not graph scroll speed)
+# numbering in nanoseconds
+refresh=50000
+.IP
+# bar graph scroll speed (in tenths of seconds) this setting
+# also affects the rate and max speed displays.  the longer
+# the delay, more inaccurate these are since the max and
+# rate values are averaged across this interval
+scroll=1
+.IP
+# average sampling for the speed display at the bottom of the
+# pixmap. this is the number of times to wait (in terms of
+# scrolling steps) before displaying the average speed of
+# that period. The time of the period can be calculated (in
+# tenth of seconds) with: scroll * avg_steps
+avg_steps=1
+.IP
+# buttons for user scripts
+# bt1_action=su -c ethereal
+# bt2_action=
+# bt3_action=
+.IP
+# respects the -b in command line (yes, no)
+binary_scale=no
+.IP
+# display or not the device uptime (yes, no)
+display_time=yes
+.IP
+# use a specific driver (driver name, %auto for automatic)
+driver=%auto
+.IP
+# driver interface to monitor (interface name, %any for all)
+driver_interface=%any
+.IP
+# automatically select and show the interface on startup
+# if avaible (interface name, %first for first avaible)
+interface_name=%first
+.IP
+# Show max values (yes, no)
+show_max_values=yes
+.IP
+# Use long interface names (yes, no)
+use_long_names=no
+.IP
+# Max values through entire history
+use_max_history=no
+.IP
+# Wave mode (traditional, waveform, wmnet, ...)
+wave_mode=wmnet
+.IP
+# be less verbose (display only errors)
+# quiet=yes
+.fi
+.SH SIGNALS
+.TP
+.B SIGUSR1
+Internally restart all driver's interfaces (only usefull for
+programming/testing purposes).
+.TP
+.B SIGTERM SIGINT
+Clean WMND shutdown.
+.SH BUGS
+Report bugs and suggestion to the current \fBWMND\fR maintainer:
+Wave++ <wavexx@users.sf.net>
+.SH SEE ALSO
+.BR X (3x),
+.BR wmaker (1x).
+.BR proc (5)
+.SH AUTHOR
+This manual page was written by Arthur Korn <arthur@korn.ch>.
+The original \fBWMND\fR authour is Reed Lai <reed@wingeer.org>.

@@ -1,0 +1,61 @@
+# WMND configuration file
+
+# middle line color in wave mode
+md_color=#71e371
+
+# RX/TX color (can be #xxxxxx, or a valid color name from rgb.txt)
+rx_color=#188a86
+tx_color=#00fff2
+
+# refresh between status polling (not graph scroll speed, this affects
+# the speed of those flashing arrows)
+# numbering in microseconds
+refresh=50000
+
+# graph scroll speed (in tenth of seconds). This setting affects
+# the rate and max speed displays. setting a longer the delay will
+# average real values within this interval
+scroll=10
+
+# average sampling for the speed display at the bottom of the pixmap.
+# this is the number of times to wait (in terms of scrolling steps) before
+# displaying the average speed of that period. The time of the period can
+# be calculated (in tenth of seconds) with: scroll * avg_steps
+avg_steps=1
+
+# buttons for user scripts
+# bt1_action=su -c ethereal
+# bt2_action=
+# bt3_action=
+
+# respects the -b in command line (yes, no)
+binary_scale=no
+
+# display or not the device uptime (yes, no)
+display_time=yes
+
+# use a specific driver (driver name, %auto for automatic)
+driver=%auto
+
+# driver interface to monitor (interface name, %any for all)
+driver_interface=%any
+
+# automatically select and show this interface on startup if
+# avaible (interface name, %first for the first one)
+interface_name=%first
+
+# Show max values (yes, no)
+show_max_values=yes
+
+# Use long interface names (yes, no)
+use_long_names=no
+
+# max values through entire history or through lastest ~50 samples
+use_max_history=no
+
+# display mode (traditional, waveform, wmnet, ...)
+wave_mode=wmnet
+
+# be less verbose (display only errors)
+# quiet=yes
+

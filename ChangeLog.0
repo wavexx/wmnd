@@ -1,0 +1,312 @@
+2002-11-29 wave++ <wavexx@users.sf.net>
+
+	* AUTHORS: sync with Reed's version.
+
+2002-10-23 wave++ <wavexx@users.sf.net>
+
+	* configure.ac: inserted stubs for using automake 1.4 for packaging.
+	* doc/Makefile.am: now builds correctly the info file!
+	* example/Makefile.am: now installs correctly wmndrc.
+
+2002-08-27 wave++ <wavexx@users.sf.net>
+
+	* configure.ac: I now use AC_HELP_STRING to format help strings. Done
+	some fixes around the code.
+	* acinclude.m4: now using directly autoconf generated variables
+
+2002-08-20 wave++ <wavexx@users.sf.net>
+
+	* configure.ac: changed release to 0.4.4
+	* wmnc.c: signals are no longer an error
+	* messages.c/h: a filter to displayed messages is now avaible
+	* wmnc.c: added the -q switch
+	* cfgdata.c: added the quiet option
+	* wmnd.1 wmndrc: added the description about -q/quiet
+
+2002-08-06 wave++ <wavexx@users.sf.net>
+
+	* wmnd.1: Added some infos about signals and the new -S flag
+	(as Arthur is getting late).
+	* wmndrc: ispell-ed!
+
+2002-07-25 wave++ <wavexx@users.sf.net>
+
+	* drivers.c: fixed a race condition on freebsd_sysctl_list which would
+	return an invalid (+1, or more) number of devices.
+
+2002-07-22 wave++ <wavexx@users.sf.net>
+
+	* drivers.c: freebsd_sysctl now monitors 'lo' only when specified
+
+2002-07-12 wave++ <wavexx@users.sf.net>
+
+	* wmnd.h: Removed the now useless scale function pointer. Added two new
+	buffers for the average sampling.
+	* wmnd.c: Added the ability to sample a larger time for the speed
+	indicator (specified in number of samples). Removed some useless code
+	inside the X loop.
+	* drivers.c: Now the name of each driver mustn't deallocated by the
+	destructor. wmnd driver subsystems takes care of that when needed.
+	* wmnd.c: sending a SIGUSR1 to wmnd will make wmnd to restart all drivers
+	without quitting. wmnd won't list interfaces again but restart _each_
+	interface manually. This makes this signal useful only for some drivers
+	(actually only solaris_kstat) that performs initialization on a
+	per-interface basis.
+
+2002-07-03 wave++ <wavexx@users.sf.net>
+
+	* wmnd.1: Arthur Korn sent new documentation
+
+2002-07-01 wave++ <wavexx@users.sf.net>
+
+	* wmnd.c: added a check for wmnd.speed == 0 to fix math exceptions,
+	fixed the bad speed division that was stuck with integral seconds.
+
+2002-06-25 wave++ <wavexx@users.sf.net>
+
+	* cfgdata.c: changed the default scrolling speed back to one second.
+
+2002-06-15 wave++ <wavexx@users.sf.net>
+
+	* AUTHORS: updated the position of the WMND debian package.
+	* configure.ac: changed release to 0.4.3
+	* wmnd.1: Arthur Korn sent updated documentation
+
+2002-06-14 wave++ <wavexx@users.sf.net>
+
+	* drivers.c: freebsd_sysctl driver now works again on all MIB interfaces.
+
+2002-06-12 wave++ <wavexx@users.sf.net>
+
+	* drivers.c: the freebsd_sysctl driver now doesn't make wmnd exit when
+	the sysctl call fails.
+	* AUTHORS: updated the status of Arthur Korn.
+
+2002-06-11 wave++ <wavexx@users.sf.net>
+
+	* display.c, configure.ac: Added new visual mode: mgraph
+
+2002-06-10 wave++ <wavexx@users.sf.net>
+
+	* drivers.c: Integrated some differences inside freebsd_sysctl from the
+	freebsd official port.
+	* wmnd.1: integrated the new manpage from Arthur Korn.
+	* configure.ac: drivers can now be manually forced.
+	* README: added the full list of driver names and display modes.
+
+2002-05-29 wave++ <wavexx@users.sf.net>
+
+	* changed a bit the driver detection scheme (driver names are now defined
+	into configure.ac directly)
+	* added the ability to use tenth of seconds instead of seconds for
+	the scrolling graph. Experience now the fluid-motion(tm)!
+	* added generalized message functions
+	* wmnd can now be built using a c++ compiler (export CC=g++)
+	* changed release to 0.4.2
+
+2002-05-28 wave++ <wavexx@users.sf.net>
+
+	* configure.ac: minor corrections for proper kstat configuration
+	under autoconf 2.53
+	* README: added notices about automake 1.5
+	* acinclude.m4: updated the compiler detection
+
+2002-05-22 wave++ <wavexx@users.sf.net>
+
+	* REAME: minor corrections
+	* NEWS, configure.ac: changed release to 0.4.1
+
+2002-05-21 wave++ <wavexx@users.sf.net>
+
+	* drivers.c: fixed all occurences of the old enum
+	solaris_fpppd_connstatus inside the solaris_fpppd driver.
+
+2002-05-17 wave++ <wavexx@users.sf.net>
+
+	* README: corrected some errors and written a little section about
+	rebuilding wmnd using the new configure script
+
+2002-05-08 wave++ <wavexx@users.sf.net>
+
+	* integrated the autodock patch from Michael Shigorin
+	* wmnd files are now compliant to GNU packaging standards
+
+2002-05-03 wave++ <wavexx@users.sf.net>
+
+	* now using autotools for automatic compilation and installation
+	* partial integration with 0.4.0 by Reed
+
+2001-XX-XX wave++ <wavexx@users.sf.net>
+
+	* Check for NULL when displaying "open display" failure that would
+	crash wmnd on some systems with gcc3
+	* Cleaned a bit the drivers code (drivers.(c|h))
+	* General code cleanup (less warnings)
+	* You can now eliminate unnecessary display modes in config.h
+
+2001-XX-XX wave++ <wavexx@users.sf.net>
+
+	* Now capturing also SIGTERM.
+	* solaris kstat driver now also checks for link_up in the devices
+	statistics. wmnd now recognize device status as it always had to do.
+
+2001-XX-XX wave++ <wavexx@users.sf.net>
+
+	* Added file checking in linux_proc_list
+	* Wmnd now handles SIGINT for correct device deallocation
+	* Separation of drawing functions in display.(c|h)
+	* Corrected bug in strval_fe
+	* Now usage shows also builtin visualizations
+	* Added new vis mode: wmwave
+	* Added new vis mode: sepgraphs
+	* Added new vis mode: twisted
+	* Modified original pixmap (inserted shaded graphs, old pixmap is avaible
+	as src/old-master.xpm)
+	* Added new vis mode: charts
+	* Dockapp struct now contains pixel color ids for standard values
+	* Extended pixmap for new needle vis, corrected minor bug in vis charts
+	* Added new vis mode: needle (this one is really cool :))
+
+2001-XX-XX wave++ <wavexx@users.sf.net>
+
+	* Some bugfixes in solaris drivers (testing_dummy, solaris_kstat)
+	* Linux proc driver finally reported to linux, I can't report linux ppp
+	since my linux machine hasn't any ppp connections. Ask to reed :)
+	* Solaris_fpppd works on any streams compatible kernel (some *bsd and svr4),
+	also solaris_kstat works in kstat compatible kernels (some *bsd).
+	* Fine tuneup of makefile version detection, now we can change the wmnd
+	version only touching src/wmnd.h
+
+2001-04-26 wave++ <wavexx@users.sf.net>
+
+	* 26/04/2K+1 wave++ has restarted coding: first fix: now a specific device
+	for a driver can fail without removing the entire driver.
+	* uhm, too many comments here :), I start feeling the need of cvs :).
+	However: minor modification in main: now when a device disconnects the
+	graph won't be fucked up with gigantic values (eg: 2450-2500 on unsigned)
+	* started to develope a kstat driver for solaris. I think also that
+	solaris_fpppd driver with some little hack will work also on linux (just
+	installing mandrake to test it :))
+	* kstat driver completed, how cooool :), new fix for graph scale fuckup with
+	random values ( wmnd.c::main )
+	* It's a good idea to not undefine TESTING_DUMMY in config.h, so
+	when wmnd can't find any device, at least shows the dummy device "off"
+	* Corrected minor bug on MAX history calculation ( has someone noticed that
+	this changelog is in reverse order?)
+	* Minor correction with makefile (directive clean)
+
+2000-XX-XX wave++ <wavexx@users.sf.net>
+
+	* Sorry for new code reindentation, but
+	I'm a c++ developer so I've found this pretty ugly :)
+	* Now main driver selection is done in config.h,
+	warning: some drivers cannot tell the devices list.
+	contact me for any portability issues
+	* removed #include <getopt.h>: it's a portable function but it's definition
+	is in stdio.h (getopt.h it's usually for gnu version)
+	* removed asm/bitops.h and replaced with bits.c/h for more portability
+	see bits.h for infos, functions names terminate with a trailing "bit"
+	* added config.h, devices.h, devices.c, and created 2 drivers, including
+	a dummy test driver for debugging purposes
+	* removed original device handling functions and (for now) moved to drivers.c
+	* moved preprocessor defines in wmnd.h
+	* added definition of MAX in wmnd.h
+	* urgh! beat.c captures a SIGALRM and in the same time we call usleep?
+	removed beat.* and replaced with a time() check (why using microsecond when
+	we need only simple seconds?)
+	* added CFG_SHOWTIME for any device, toggle with main region with Button3
+	* added command line attributes and config file values for any customizable
+	part of wmnd
+	* added more responsiveness to the app :)), look at the X loop
+	* modifyed conf_read so now existing values that differs from standard
+	won't be overwritten
+	* now usage shows also built-in drivers
+	* the draw_error function is now obsolete. still there, commented out
+
+2000-XX-XX Reed Lai <reed@wingeer.org>
+
+	* Wrong scale at 1K, 1M, and 1G.
+	* Wrong display scale when (rx_max + tx_max) is bigger than the value of
+	the unsigned long int.
+
+XXXX-XX-XX Reed Lai <reed@wingeer.org>
+
+	* User configurable items in wmnd source file (.wmndrc)
+	rx/tx graph color, status refresh interval, graph scroll speed
+	user scripts for 3 buttons, PPP conection time.
+
+XXXX-XX-XX Reed Lai <reed@wingeer.org>
+
+	* Changed time gap method from time() to signal driven.  This
+	change resolves the race problem when the system wakes up from
+	hibernation mode.
+	* The values of max-meter and rate-meter are defaultly scaled by
+	base 10 floating point division. K=1000 (10e3), M=10000000 (10e6),
+	G=1000000000 (10e9). Using the option -b scales bitwise instead.
+	K=1024 (2^10), M=1048576 (2^20), G=1073741824 (2^30). There is no
+	floating point in binary mode. 
+	* Displayed device name defaults to short format.  Right click on
+	the device name to toggle between full name and short name. For
+	example, tunl1 is normally shortened to tun1, but in full name
+	mode, tunl1 is displayed.
+	* Added a new graph display mode that is similar to wmnet, right
+	click on the main display area to switch modes.
+	* Now there are two modes for max-meter.  Default shows the
+	maximum value from screen graphed.  The second mode shows the
+	maximum value from historical record since wmnd is started.
+	Left click on max-meter to switch modes, right click on
+	max-meter to toggle the display of the max-meter.
+	* Fixed the overflow bug when reading a statistics value from
+	/proc/net/dev that's larger than INT_MAX by replacing a
+	long integer with an unsigned long integer.
+
+XXXX-XX-XX Reed Lai <reed@wingeer.org>
+
+	* One more bug has been fixed.  Replace line 1200 in wmnd.c
+	  while (!stat_devices[j].name[0] && j < MAX_STAT_DEVICES) {
+	with
+	  while (j < MAX_STAT_DEVICES && !stat_devices[j].name[0]) {
+	This bug allowed stat_devices[j] to be checked even if j is out
+	of the range of stat_devices[], and causes a segmentation fault
+	on some system.  Thanks to Ben (rain@insane.loonybin.net)
+
+XXXX-XX-XX Reed Lai <reed@wingeer.org>
+
+	* The size of the device name buffer from WMiFS is 4.  In other words,
+	if there are more than 4 network devices on system, wmnd will crash.
+	I do not know what the reasonable number is.  Just change 4 to 32 if
+	You need more. Theoretically, it will support up to 32 devices.
+	Thanks to Paul (paul@luon.net)
+
+XXXX-XX-XX Reed Lai <reed@wingeer.org>
+
+	* Changed the size of reading buffer to 256 bytes.  The original
+	size is 128 bytes, and will cause segmentation fault when the
+	line from /proc/net/dev or /proc/net/route is longer than
+	128 bytes.  Thanks to John Bafford (dshadow@zort.net)
+
+XXXX-XX-XX Reed Lai <reed@wingeer.org>
+
+	* Corrected the AddMouseRegion for mouse-triggered user script.
+	Thanks to Anstinus (http://www.acm.rpi.edu/~anstinus/)
+
+	* Added codes to skip the statistics reading of invalid device "irda?." 
+	The invalid entries in /proc/net/dev look like this:
+	  ...
+	  irda0: No statistics available.
+	  irlan0:       0       0       0       0 ...
+	  ...
+	Thanks to Paul (paul@luon.net)
+
+XXXX-XX-XX Reed Lai <reed@wingeer.org>
+
+	* Initially created by Reed Lai (reed@wingeer.org)
+	* Created and modified based on WMiFS-1.3b.
+	* Displays last send and receive bytes/packets.
+	* Displays the maxima for rx and tx in current display history.
+	* Default update time gap is 1 sec.
+	* Defaults to waveform mode.
+	* Runtime switchable to waveform or traditional mode.
+	* Runtime switchable to packets or bytes mode.
+	* Runtime togglable display of maxima.
+

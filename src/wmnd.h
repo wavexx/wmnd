@@ -1,0 +1,153 @@
+/*
+ * wmnd.h - window maker network devices - wmnd.h
+ * common structures and functions
+ */
+
+#ifndef __wmnd_h
+#define __wmnd_h
+
+#include "bits.h" /* portable bit functions */
+
+/* picky time headers, for both time_t and timeval */
+#ifdef TIME_WITH_SYS_TIME
+#include <time.h>
+#include <sys/time.h>
+#else
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#else
+#include <time.h>
+#endif
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/param.h>
+#include <sys/stat.h>
+#include <signal.h>
+
+#include <X11/Xlib.h>
+#include <X11/xpm.h>
+#include <X11/extensions/shape.h>
+
+/* version number is now defined into config.h */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#define WMND_VERSION PACKAGE_VERSION
+#endif
+
+#define MAXBUF 256
+
+#ifndef MAX
+#ifdef __GNUG__
+#define MAX(a, b) (a >? b)
+#else
+#define MAX(a, b) ((a < b)? b: a)
+#endif
+#endif
+
+struct Devices
+{
+  struct Devices* next;         /* ptr to next structure */
+  char* name;                   /* device name from /proc/net/dev */
+  void* drvdata;                /* driver data used by the driver */
+  int drvnum;                   /* driver number */
+  int online;                   /* 0 for online, 1 for offline */
+  time_t devstart;              /* device activity start, 0 for unavaible */
+
+  unsigned long int avg[4];     /* average sampling - last samples */
+  unsigned long int avgBuf[4];  /* average sampling - buffers */
+
+  unsigned long int his[59][4];
+  unsigned long int ib_stat_last;
+  unsigned long int ob_stat_last;
+  unsigned long int ip_stat_last;
+  unsigned long int op_stat_last;
+  unsigned long int ib_max_his; /* maximum input bytes in history */
+  unsigned long int ob_max_his; /* maximum output bytes in history */
+  unsigned long int ip_max_his; /* maximum input packets in history */
+  unsigned long int op_max_his; /* maximum output packets in history */
+};
+
+struct var
+{
+  struct var* v_next; /* ptr to next structure */
+  char* v_name;       /* option name */
+  char* v_value;      /* option value */
+};
+
+typedef struct {
+  unsigned int nr_devices;             /* number of devices in list */
+  unsigned long int flags;             /* big bit-mapped flags mask */
+  unsigned int wavemode;               /* type of wave graph */
+  unsigned int nWavemodes;             /* numbers of wave graph */
+  struct Devices* curdev;	           /* current device */
+  void                                 /* scale function */
+  (*scale)(unsigned char sign, unsigned long value, char* buf); 
+  unsigned int refresh;	               /* speed of the refresh */
+  unsigned int avgSteps;               /* number of steps to average */
+  unsigned int avgRSteps;              /* number of remaining steps */
+  unsigned long scroll;	               /* speed of the graph scrolling */
+} DevTable;
+
+typedef struct
+{
+  unsigned long txColor;
+  unsigned long rxColor;
+  unsigned long mdColor;
+} stdCols;
+
+typedef struct
+{
+  Display* d;
+  int xfd;
+  int screen;
+  Window root;
+  Window win;
+  Window iconwin;
+  Pixmap pixmap;
+  Pixmap mask;
+  GC gc;
+  int width;
+  int height;
+  int x;
+  int y;
+  int button;
+  int update;
+  stdCols stdColors; /* standard allocated colors */
+} Dockapp;
+
+/* I don't like this very much.. */
+extern Dockapp dockapp;
+
+typedef struct
+{
+  int enable;
+  int x;
+  int y;
+  int width;
+  int height;
+} MRegion;
+
+/* store all configuration in one place */
+#define RUN_ONLINE      3  /* current device is online */
+#define LED_POWER       4  /* next 3 are for different leds */
+#define LED_RX          5
+#define LED_TX          6
+#define CFG_SHOWTIME    15
+#define CFG_MAXSCREEN   16 /* 1: yes 0: no, max history */
+#define CFG_SHORTNAME   17 /* 1: use 0: no */
+#define CFG_MODE        18 /* 1: bytes 0: packets */
+#define CFG_SHOWMAX     19 /* 1: yes 0: no */
+
+/* bit ops */
+#define bit_set(n) onbit((__bytearray*)&wmnd.flags, n)
+#define bit_off(n) offbit((__bytearray*)&wmnd.flags, n)
+#define bit_tgl(n) invbit((__bytearray*)&wmnd.flags, n)
+#define bit_get(n) getbit((__bytearray*)&wmnd.flags, n)
+
+#endif
+

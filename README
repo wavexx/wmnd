@@ -1,0 +1,287 @@
+WMND - Window Maker Network Devices
+----------------------------------------------------------------------
+Web site: http://www.wingeer.org/wmnd/
+Mirror: http://www.hydra.ubiest.com/wmnd/
+Author: Reed Lai <reed@wingeer.org> http://www.wingeer.org/bv4qo/
+
+
+Description
+----------------------------------------------------------------------
+WMND (WindowMaker Network Devices) is a network monitoring
+dockapp for Window Maker (and compatibles) for many operative systems.
+Improved and based on WMiFS 1.3b, the version 0.2 of wmnd is almost
+totally written by Timecop, given the optimization and flexibility and
+now consumes less cpu than wmmon. Enjoy!
+
+
+Files
+----------------------------------------------------------------------
+README		This file.
+INSTALL		Configuration and Installation instructions.
+			(The bottom of this file contains a brief summary)
+ChangeLog	Description of changes.
+NEWS		Summary of changes between releases.
+TODO		Things we've already planned for WMND.
+COPYING		GNU General Public License Version 2.
+AUTHORS		Programmers that have contributed to WMND.
+
+
+Bugs
+----------------------------------------------------------------------
+If you discover any bugs in this software, please post it to
+http://www.wingeer.org/wmnd/wall/ or mail the current maintainer:
+Wave++ <wavexx@users.sf.net>. Please describe the problems in as
+much in detail as you can.
+
+
+Copyright
+----------------------------------------------------------------------
+WMND is copyright (c) 2000 by Reed Lai and licensed under the GNU
+General Public License. Read the COPYING file for the complete
+GNU license description.
+
+
+Hints for WMND
+----------------------------------------------------------------------
+-- Generic -----------------------------------------------------------
+WMND supports command-line options, 'wmnd -h' prints help about them.
+
+Use option -i to monitor a particular interface at startup:
+
+  wmnd -i eth0 &
+  wmnd -i ppp0 &
+
+Without the -i option, wmnd will auto-magically use the interface
+that is first found in /proc/net/dev (or the current driver), but
+skip the lo and irda.
+
+Use the -I option to load only a specific interface into wmnd. By
+default wmnd loads all avaible interfaces.
+
+To monitor the lo or irda devices you must manually force wmnd as
+shown below:
+
+  wmnd -I lo &
+  wmnd -I irda &
+
+To monitor dialup interfaces under linux either use the -I ppp0 flag
+or use the streams solaris_fpppd driver (-D solaris_fpppd -I ppp0).
+
+-- GUI Usage ---------------------------------------------------------
+You can cycle in real-time through all available active interfaces
+by simply left-clicking on the interface name gadget on the
+upper-left corner of wmnd.
+
+By default, wmnd show device name in short term of four characters,
+for example, the ippp0 will be displayed as ipp0.  You can toggle
+the device name between short and long by right-click on it.
+
+Left-click on the main graphic area to cycle the graphic mode.
+
+Left-click to toggle the history max or screen max, default is
+screen max when wmnd is startup.  Right-click to hide or display.
+
+Left-click on the letter gadgeted on the right-top corner can switch
+between the Byte or Packet counter mode. "B" for byte, "p" for packet.
+
+Click on the bottom rate meter can invoke the user command defined in
+resource file .wmndrc.
+
+Be sure to drag WMND on it's outer edges, it's a bit picky due
+to the large gfx pixmap it keeps ;-). You can also use a
+keyboard+mouse shortcut (perhaps ALT+left-click) in your window
+manager to drag it around.
+
+-- Internals ---------------------------------------------------------
+Sending a SIGUSR1 (pkill -USR1 wmnd) to wmnd will make itself to
+restart the drivers subsystem. Drivers must be coded correctly to
+support a 'real' restart, thus the only driver that does 'something'
+on restart is the solaris_kstat one.
+
+
+Window Managers
+----------------------------------------------------------------------
+-- WindowMaker -------------------------------------------------------
+
+WindowMaker users simply drag and drop the WMND dock.app on the
+WindowMaker Dock (preferred) or on the Fiend, and then press the
+right mouse button on the outer edges of WMND and then enable
+'Auto launch' from the Dock pop-up menu.
+
+-- AfterSTEP ---------------------------------------------------------
+AfterSTEP users put the following in their .steprc:
+
+  "Wharf wmnd - MaxSwallow "wmnd" wmnd -i eth0 -w &".
+
+-- BlackBox or FluxBox -----------------------------------------------
+You must enable the slit in other make wmnd visible. To add wmnd to
+the slit simply run wmnd from the command line:
+
+  wmnd &
+
+and it will pop-up into a new slot.
+
+-- Other Window managers ---------------------------------------------
+For other windowmanagers, WMND runs nicely as 64x64 pixel shaped icon
+on your desktop.
+
+Under gnome add the "swallow" applet and set it to run wmnd. The same
+thing can be done under KDE using the kdeswallow applet.
+
+PS: FVWM can swallow it too, so we've heard ;-)
+
+
+Creating PPP dialup scripts
+----------------------------------------------------------------------
+Because a very good PPP HowTo already exists, it's quite pointless for
+us to explain to you how you should and can make them.
+
+Read the PPP HowTo, and you'll see that it's very easy to create your
+own PPP scripts.
+
+
+Display modes
+----------------------------------------------------------------------
+-- Traditional -------------------------------------------------------
+Tx and Rx are piled on the same line within a single graph
+(like wmifs original behavior)
+
+-- MGraph ------------------------------------------------------------
+Tx and Rx scale is calculed uniquely and the slower channel is shown
+in front of the other one.
+
+-- Waveform ----------------------------------------------------------
+Tx and Rx are piled on the same line and mirrored using the central
+line, in way to generate a "waveform like" silhouette
+
+-- WmWave ------------------------------------------------------------
+Tx and Rx are opposite to the central line, however the scale is
+calculated using both values
+
+-- WmNet -------------------------------------------------------------
+This graph shows a reversed wmwave mode without the central line.
+(like wmnet behavior)
+
+-- Sepgraphs ---------------------------------------------------------
+Tx and Rx are shown on separated graphs. Tx in top and Rx in bottom,
+divided by a central line. Scales are calculated separately.
+
+-- Twisted -----------------------------------------------------------
+This mode displays two vertical "waveform like" graphs flowing in
+reverse directions. The scale is unique.
+
+-- Charts ------------------------------------------------------------
+Displays four charts disposed in this manner:
+
+  TX Current Speed Indicator
+  TX Average Speed Indicator
+  RX Current Speed Indicator
+  RX Average Speed Indicator
+
+The range is from 0 to the maximal value in history. The average speed
+is calculated using the lastest 58 samples for each channel.
+
+-- Needle ------------------------------------------------------------
+Displays three needles. The arrangement is as follows:
+
+  TX Average Needle
+
+       Bandwidth utilization Needle
+
+  RX Average Needle
+
+The range For TX and RX needles is between 0 and the maximal value in
+history. The bandwidth utilization one uses this formula:
+
+ (tx_med+rx_med)/(tx_max+rx_max)
+
+_med: average speed
+_max: maximal value in history
+
+I particularly like this mode :), the needles speed are slow and
+smooth like a real analog display.
+
+
+Building WMND 0.4
+----------------------------------------------------------------------
+Since release 0.4 WMND is now compliant to the GNU Packaging
+standards and enables to use the GNU autotools to automagically build
+WMND for your box with little or no difficulty.
+
+First of all, unpack the source tarball:
+
+  $ gzcat wmnd-0.4.2.tar.gz | tar xf -
+
+Wmnd will unpack into the wmnd-0.4.2 directory. Create now a build
+directory that will contain objects:
+
+  $ mkdir wmnd-build
+  $ cd wmnd-build
+
+You can now launch configure to 'configure' wmnd as follows:
+
+  $ ../wmnd-0.4.2/configure
+
+And finally make/install it:
+
+  $ make
+  $ make install
+
+Configure accepts several options to enchange/minimize wmnd
+functionality and size.  To forcely disable the dummy driver:
+
+  $ ../wmnd-0.4.2/configure --without-dummy-driver
+
+To select only some display modes:
+
+  $ ../wmnd-0.4.2/configure --with-display-modes="traditional wmwave"
+
+To forcely build specified drivers (beware that the dummy driver should
+be disabled with --wihout-dummy_driver, also, extra libraries that may
+be needed by the driver won't be checked automatically):
+
+  $ ../wmnd-0.4.2/configure --with-drivers="linux_proc"
+
+The --help flag will show you a complete list of command line flags
+that the configure script supports.
+
+-- Autodetection flaws -----------------------------------------------
+The configure autodetection stuff has only been tested on solaris and
+linux due to lack of FreeBSD machines. Report any autodetection
+problem to the current mantainer.
+
+automake 1.5 doesn't seem to cooperate with autoconf 2.5 and so it
+might cause problems if you have it installed. The only thing that you
+can do is making configure failing to find automake:
+
+  $ cd wmnd-0.4.2
+  $ sed -e "s/\<automake\>/fake-automake/" configure > configure.tmp
+  $ mv configure.tmp configure
+  $ chmod +x configure
+
+and then proceed as above. You'll notice this big improvement:
+
+  -checking for working automake... found
+  +checking for working fake-automake... missing
+
+This will prevent for make to recall automake later for regenerating
+makefiles (and this happens regardless the date of files!).
+automake 1.14x works without problems.
+
+Also, on some platforms (linux actually) the solaris_fpppd driver
+would be detected only when the ppp kernel module is installed. To
+forcely enable specified drivers use the --with-drivers="list" flag.
+
+-- Avaible drivers/display modes -------------------------------------
+Actually WMND supports these drivers/display modes (these names should
+be used with configure, they're case sensitive):
+
+  * display modes: traditional mgraph waveform wmwave wmnet sepgraphs
+  twisted charts needle
+
+  * drivers: linux_proc freebsd_sysctl solaris_fpppd solaris_kstat
+
+-- GCC 2.96 sucks ----------------------------------------------------
+WMND 0.4 won't compile with RedHat's gcc 2.96. Either downgrade to
+2.95 or upgrade to 3. DON'T SEND bug reports about INLINE not working
+under gcc 2.96, it's a RedHat bug.

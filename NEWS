@@ -1,0 +1,50 @@
+WMND 0.4.4
+----------------------------------------------------------------------
+
+	* WMND can now be quiet (-q or quiet into ~/.wmndrc).
+	* Fixed some parts of the configure script. Some options have
+	changed their names:
+
+	  --without-dummy_driver is now --without-dummy-driver,
+	  --with-display_modes is now --with-display-modes
+
+	* WMND is now fully packaged with 'make dist' (fixes some bugs
+	in the installation procedure).
+
+WMND 0.4.3
+----------------------------------------------------------------------
+
+	* Fixed a minor bug into the freebsd_sysctl driver that would
+	crash WMND under some circumstances.
+	* Added the new -S flag for slowing down the rate meter.
+	* Minor code/spell corrections.
+
+WMND 0.4.2
+----------------------------------------------------------------------
+
+	* added the missing -lkstat flag to the solaris kstat driver.
+	* the graph scrolling speed is now specified in tenth of seconds
+	(so update your .wmndrc accordingly). wmnet mode under wmnd is
+	now identical to the wmnd dockapp (except for colors). The needle
+	mode is also much nicer with a fast refresh.
+	* big improvements around the code, now wmnd compiles fine with
+	a c++ compiler in strict mode.
+	* man page update (Thanks Arthur Korn).
+	* New visual mode: mgraph
+	* Drivers can be now selected manually again
+	* Tune-up of the freebsd_sysctl driver
+
+WMND 0.4.1
+----------------------------------------------------------------------
+
+	* fixed the solaris fpppd driver
+
+WMND 0.4.0
+----------------------------------------------------------------------
+
+	* auto-detection stuff
+	* remove visualization modes from configure
+	* FreeBSD is now supported
+	* general code cleanup
+	* package reorganization
+
