@@ -396,10 +396,8 @@ testing_dummy_list(const char* devname, struct Devices* list)
     devn = strdup(devname);
 
   ndev = (struct Devices*)malloc(sizeof(struct Devices));
-  list->next = ndev;
-
-  ndev->next = NULL;
   ndev->name = devn;
+  devices_append(list, ndev);
 
   msg_drInfo(drName, "detected %s", devn);
 
@@ -472,8 +470,7 @@ linux_proc_list(const char* devname, struct Devices* list)
     ndev = (struct Devices*)malloc(sizeof(struct Devices));
     ndev->devstart = 0;
     ndev->name = strdup(devname);
-    ndev->next = (struct Devices*)ndev->drvdata = NULL;
-    list->next = ndev;
+    devices_append(list, ndev);
 
     msg_drInfo(drName, "forced %s", devname);
   }
@@ -499,9 +496,7 @@ linux_proc_list(const char* devname, struct Devices* list)
       ndev = (struct Devices*)malloc(sizeof(struct Devices));
       ndev->devstart = 0;
       ndev->name = strdup(p);
-      ndev->next = (struct Devices*)ndev->drvdata = NULL;
-      list->next = ndev;
-      list = ndev;
+      list = devices_append(list, ndev);
 
       msg_drInfo(drName, "detected %s", p);
     }
