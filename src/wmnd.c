@@ -574,7 +574,7 @@ click_event(unsigned int region, unsigned int button)
 void
 smooth(unsigned long* stat, const unsigned long last, const float smooth)
 {
-  *stat = last + smooth * (*stat - last);
+  *stat = (long)(last + smooth * (*stat - last));
 }
 
 void
@@ -898,10 +898,10 @@ int main(int argc, char **argv)
 
         for(ptr = devices; ptr; ptr = ptr->next)
         {
-          ptr->avg[0] = div * (ptr->ib_stat_last - ptr->avgBuf[0]);
-          ptr->avg[1] = div * (ptr->ob_stat_last - ptr->avgBuf[1]);
-          ptr->avg[2] = div * (ptr->ip_stat_last - ptr->avgBuf[2]);
-          ptr->avg[3] = div * (ptr->op_stat_last - ptr->avgBuf[3]);
+          ptr->avg[0] = (long)(div * (ptr->ib_stat_last - ptr->avgBuf[0]));
+          ptr->avg[1] = (long)(div * (ptr->ob_stat_last - ptr->avgBuf[1]));
+          ptr->avg[2] = (long)(div * (ptr->ip_stat_last - ptr->avgBuf[2]));
+          ptr->avg[3] = (long)(div * (ptr->op_stat_last - ptr->avgBuf[3]));
           ptr->avgBuf[0] = ptr->ib_stat_last;
           ptr->avgBuf[1] = ptr->ob_stat_last;
           ptr->avgBuf[2] = ptr->ip_stat_last;

@@ -472,7 +472,7 @@ linux_proc_list(const char* devname, struct Devices* list)
     ndev = (struct Devices*)malloc(sizeof(struct Devices));
     ndev->devstart = 0;
     ndev->name = strdup(devname);
-    ndev->next = ndev->drvdata = NULL;
+    ndev->next = (struct Devices*)ndev->drvdata = NULL;
     list->next = ndev;
 
     msg_drInfo(drName, "forced %s", devname);
@@ -499,7 +499,7 @@ linux_proc_list(const char* devname, struct Devices* list)
       ndev = (struct Devices*)malloc(sizeof(struct Devices));
       ndev->devstart = 0;
       ndev->name = strdup(p);
-      ndev->next = ndev->drvdata = NULL;
+      ndev->next = (struct Devices*)ndev->drvdata = NULL;
       list->next = ndev;
       list = ndev;
 
@@ -929,7 +929,7 @@ generic_snmp_pss(const char* str, char** community,
   if((pos = strchr(str, '@')))
   {
     len = pos - str;
-    *community = malloc(len + 1);
+    *community = (char*)malloc(len + 1);
     memcpy(*community, str, len);
     (*community)[len] = 0;
     str = pos + 1;
@@ -941,7 +941,7 @@ generic_snmp_pss(const char* str, char** community,
   if(!(pos = strchr(str, ':')))
     pos = (char*)str + strlen(str);
   len = pos - str;
-  *host = malloc(len + 1);
+  *host = (char*)malloc(len + 1);
   memcpy(*host, str, len);
   (*host)[len] = 0;
 
@@ -964,7 +964,7 @@ generic_snmp_session(const char* community, const char* host)
   snmp_sess_init(&params);
   params.version = SNMP_VERSION_1;
   params.peername = strdup(host);
-  params.community = strdup(community);
+  params.community = (u_char*)strdup(community);
   params.community_len = strlen(community);
 
   /* try connecting to host */
@@ -985,7 +985,7 @@ generic_snmp_session(const char* community, const char* host)
 char*
 generic_snmp_comp(const char* name, const int num)
 {
-  char* buf = malloc(strlen(name) + 5);
+  char* buf = (char*)malloc(strlen(name) + 5);
   sprintf(buf, "%s.%d", name, num);
   return buf;
 }
@@ -1006,7 +1006,7 @@ generic_snmp_getDesc(struct snmp_session* se, int dev)
   if(snmp_synch_response(se, pdu, &res) == STAT_SUCCESS &&
       res->errstat == SNMP_ERR_NOERROR)
   {
-    name = malloc(res->variables->val_len + 1);
+    name = (char*)malloc(res->variables->val_len + 1);
     memcpy(name, res->variables->val.string, res->variables->val_len);
     name[res->variables->val_len] = 0;
 
@@ -1024,12 +1024,13 @@ generic_snmp_preInit(struct Devices* list, struct snmp_session* se, int dev)
   struct Devices* ndev;
   struct generic_snmp_drvdata* drdata;
 
-  ndev = malloc(sizeof(struct Devices));
+  ndev = (struct Devices*)malloc(sizeof(struct Devices));
   if(!(ndev->name = generic_snmp_getDesc(se, dev)))
     return NULL;
 
   msg_drInfo(drName, "detected %s(%d)", ndev->name, dev);
-  drdata = malloc(sizeof(struct generic_snmp_drvdata));
+  drdata =(struct generic_snmp_drvdata*)
+    malloc(sizeof(struct generic_snmp_drvdata));
   drdata->num = dev;
   drdata->se = se;
   ndev->drvdata = (void*)drdata;
