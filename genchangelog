@@ -1,8 +1,12 @@
 #!/bin/sh
-p4 changes -lt //depot/wmnd/main/... | sed -e '
+path="//depot/wmnd/main/..."
+num="`p4 changes \"$path\" | wc -l`"
+p4 changes -lt "$path" | sed -e '
 	s/ wave\(xx\|mm\)@[^ ]*$/ wave++ <wavexx@users.sf.net>/
 	/^	\[imported from CVS/,/^$/d
 	/^Change 355 on/,/^	$/d
 	s/[ 	]*$//
-'
-
+' | perl -e "
+	\$n = $num - 2;
+	while(<>) { s/^Change (\d+)/Change \$n/ && --\$n; print; }
+"
