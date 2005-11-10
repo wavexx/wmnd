@@ -78,7 +78,6 @@ void devices_prev(void);
 void devices_getstat(struct Devices *device, unsigned long* ip,
     unsigned long* op, unsigned long* ib, unsigned long* ob);
 void devices_destroy(void);
-void devices_restart(int sig);
 
 /* useless shit */
 void reaper(int sig);
@@ -929,7 +928,6 @@ int main(int argc, char* *argv)
   /* now it's safe to connect signals */
   signal(SIGINT, mainExit);
   signal(SIGTERM, mainExit);
-  signal(SIGUSR1, devices_restart);
   signal(SIGCHLD, reaper);
 
   msg_dbg(__POSITION__, "open X display");
@@ -1892,25 +1890,3 @@ devices_destroy(void)
     free(ptr);
   }
 }
-
-
-void
-devices_restart(int sig)
-{
-  /*
-   * restart the driver subsystem without interrupting wmnd.
-   * call each device destructor and recall the constructor.
-   *
-   * TODO: warning! still using usafe signals.
-   */
-
-  struct Devices* ptr = devices;
-  msg_info("restarting devices");
-
-  for(; ptr->next; ptr = ptr->next)
-  {
-    (*drivers_table[ptr->drvnum].terminate_driver)(ptr);
-    (*drivers_table[ptr->drvnum].init_driver)(ptr);
-  }
-}
-
