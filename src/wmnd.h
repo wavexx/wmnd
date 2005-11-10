@@ -27,6 +27,7 @@
 #include <fcntl.h>
 #include <sys/param.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <signal.h>
 
 #include <X11/Xlib.h>

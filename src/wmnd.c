@@ -81,6 +81,7 @@ void devices_destroy(void);
 void devices_restart(int sig);
 
 /* useless shit */
+void reaper(int sig);
 void usage(void);
 void printversion(void);
 
@@ -929,6 +930,7 @@ int main(int argc, char* *argv)
   signal(SIGINT, mainExit);
   signal(SIGTERM, mainExit);
   signal(SIGUSR1, devices_restart);
+  signal(SIGCHLD, reaper);
 
   msg_dbg(__POSITION__, "open X display");
   dispname = value("display");
@@ -1606,6 +1608,14 @@ draw_interface(void)
       k += 6;
     }
   }
+}
+
+
+void
+reaper(int sig)
+{
+  int dummy;
+  wait(&dummy);
 }
 
 
