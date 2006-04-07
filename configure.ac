@@ -14,11 +14,6 @@ AC_SUBST(ISODATE)
 
 # C compiler rules
 AC_PROG_CC
-AC_CC_WARNINGS
-AC_CC_PEDANTIC
-AC_CC_DEBUG
-
-# Checks for some standard header files.
 AC_HEADER_STDC
 AC_HEADER_TIME
 AC_CHECK_HEADERS(sys/time.h)
@@ -222,8 +217,8 @@ fi
 
 
 # check for basic type sizes
-AC_SIZE_CHECK(unsigned int)
-AC_SIZE_CHECK(unsigned long)
+AC_CHECK_SIZEOF(unsigned int)
+AC_CHECK_SIZEOF(unsigned long)
 
 # on all systems char is an 8 bits type
 AC_DEFINE([__u8], [unsigned char], [basic unsigned 8 bits type])
@@ -231,7 +226,7 @@ AC_DEFINE([__u8], [unsigned char], [basic unsigned 8 bits type])
 # on recent HW all int types (int, long) are actually 32 bits types. On old
 # 16bit CPUs this may not be true. Also, I should consider adding a check for
 # unsigned short, just for those future 128 bits CPUs :)).
-AC_SIZE_SEARCH(__u32, 32, ["unsigned int" "unsigned long"])
+AC_SIZE_SEARCH(__u32, 4, ["unsigned int" "unsigned long"])
 
 
 # output files
