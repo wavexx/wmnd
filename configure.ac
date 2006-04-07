@@ -2,34 +2,24 @@
 # report bugs and comments to wavexx@users.sf.net
 
 # initialization
-AC_INIT(wmnd, 0.4.11, wavexx@users.sf.net)
+AC_INIT(wmnd, 0.4.12, wavexx@users.sf.net)
 AC_CONFIG_SRCDIR("src/wmnd.c")
-AM_CONFIG_HEADER(config.h)
-
-# detect terget host
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
+AM_CONFIG_HEADER(config.h)
 
 # build date
 ISODATE="`date +%Y-%m-%d`"
 AC_SUBST(ISODATE)
 
-# Checks for programs.
-AC_PROG_INSTALL
+# C compiler rules
 AC_PROG_CC
-AC_PROG_LN_S
-AC_PROG_AWK
-AC_PROG_MAKE_SET
-
-# add warnings and stricter checking
 AC_CC_WARNINGS
 AC_CC_PEDANTIC
 AC_CC_DEBUG
 
-# Checks for standard header files.
+# Checks for some standard header files.
 AC_HEADER_STDC
-
-# time headers
 AC_HEADER_TIME
 AC_CHECK_HEADERS(sys/time.h)
 
@@ -258,4 +248,3 @@ AC_OUTPUT
 
 AC_MSG_NOTICE([enabled drivers:$drivers])
 AC_MSG_NOTICE([enabled display modes:$dspmodes])
-
