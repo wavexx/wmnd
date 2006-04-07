@@ -430,10 +430,6 @@ testing_dummy_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
   return 1;
 }
 
-void
-testing_dummy_term(struct Devices* dev)
-{}
-
 #endif /* USE_TESTING_DUMMY */
 
 
@@ -509,13 +505,6 @@ linux_proc_list(const char* devname, struct Devices* list)
 }
 
 int
-linux_proc_init(struct Devices* dev)
-{
-  /* linux proc doesn't need single device initialization */
-  return 0;
-}
-
-int
 linux_proc_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
     unsigned long* ib, unsigned long* ob)
 {
@@ -546,10 +535,6 @@ linux_proc_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
 
   return active;
 }
-
-void
-linux_proc_term(struct Devices* dev)
-{}
 
 #endif /* USE_LINUX_PROC */
 
@@ -641,14 +626,6 @@ freebsd_sysctl_list(const char* devname, struct Devices* list)
   }
 
   return numrfaces;
-}
-
-/* per-interface initialization */
-int
-freebsd_sysctl_init(struct Devices* dev)
-{
-  /* FreeBSD doesn't need any device init */
-  return 0;
 }
 
 /* gather stats */
@@ -1233,12 +1210,12 @@ generic_snmp_term(struct Devices* dev)
 struct drivers_struct drivers_table[] =
 {
 #ifdef USE_FREEBSD_SYSCTL
-  {USE_FREEBSD_SYSCTL, freebsd_sysctl_list, freebsd_sysctl_init,
+  {USE_FREEBSD_SYSCTL, freebsd_sysctl_list, NULL,
     freebsd_sysctl_get, freebsd_sysctl_term, NULL},
 #endif
 #ifdef USE_LINUX_PROC
-  {USE_LINUX_PROC, linux_proc_list, linux_proc_init,
-    linux_proc_get, linux_proc_term, NULL},
+  {USE_LINUX_PROC, linux_proc_list, NULL,
+    linux_proc_get, NULL, NULL},
 #endif
 #ifdef USE_SOLARIS_FPPPD
   {USE_SOLARIS_FPPPD, solaris_fpppd_list, solaris_fpppd_init,
@@ -1258,7 +1235,7 @@ struct drivers_struct drivers_table[] =
 #endif
 #ifdef USE_TESTING_DUMMY
   {USE_TESTING_DUMMY, testing_dummy_list, testing_dummy_init,
-    testing_dummy_get, testing_dummy_term, NULL},
+    testing_dummy_get, NULL, NULL},
 #endif
   {NULL, NULL, NULL, NULL, NULL, NULL}
 };

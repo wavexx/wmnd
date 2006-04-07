@@ -1742,7 +1742,8 @@ devices_init(const char* driver, const char* interface)
     {
       prt = prt->next;
       prt->drvnum = cnt; /* set the driver number */
-      if((*drivers_table[cnt].init_device)(prt) == 1)	/* init the device */
+      if(drivers_table[cnt].init_device &&
+	  (*drivers_table[cnt].init_device)(prt) == 1) /* init the device */
       {
 	msg_err("failed to initialize device %s,%d",
 	    drivers_table[cnt].driver_name, in_loop0);
@@ -1899,7 +1900,8 @@ devices_destroy(void)
   {
     ptr = devices;
     devices = devices->next;
-    (*drivers_table[ptr->drvnum].terminate_device)(ptr);
+    if(drivers_table[ptr->drvnum].terminate_device)
+      (*drivers_table[ptr->drvnum].terminate_device)(ptr);
     free(ptr->name);
     free(ptr);
   }
