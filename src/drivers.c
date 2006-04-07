@@ -342,17 +342,25 @@ solaris_kstat_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
     (struct solaris_kstat_drvdata*)dev->drvdata;
   *ip = *op = *ib = *ob = 0;
 
+  /* a bit ugly, but use the correct type on either 32 or 64bit builds
+     without having to check data_type dynamically or truncate. */
+#if (SIZEOF_UNSIGNED_LONG < 8)
+#define KSTAT_WORD_TYPE ui32
+#else
+#define KSTAT_WORD_TYPE ui64
+#endif
+
   if(kstat_read(solaris_kstat_kc, drvdata->ksp, NULL) == -1)
     return 1;
   else
   {
-    *ip = (drvdata->in_pkt->value.ui32);
-    *op = (drvdata->out_pkt->value.ui32);
-    *ib = (drvdata->in_byte->value.ui32);
-    *ob = (drvdata->out_byte->value.ui32);
+    *ip = (drvdata->in_pkt->value.KSTAT_WORD_TYPE);
+    *op = (drvdata->out_pkt->value.KSTAT_WORD_TYPE);
+    *ib = (drvdata->in_byte->value.KSTAT_WORD_TYPE);
+    *ob = (drvdata->out_byte->value.KSTAT_WORD_TYPE);
   }
 
-  return !drvdata->active->value.ui32;
+  return !drvdata->active->value.KSTAT_WORD_TYPE;
 }
 
 void
