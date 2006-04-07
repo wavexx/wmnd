@@ -106,8 +106,8 @@ check_mr(int x, int y)
   for(i = 0; i < 32 && !found; i++)
   {
     if(mr[i].enable && x >= mr[i].x &&
-        x <= mr[i].x + mr[i].width &&
-        y >= mr[i].y && y <= mr[i].y + mr[i].height)
+	x <= mr[i].x + mr[i].width &&
+	y >= mr[i].y && y <= mr[i].y + mr[i].height)
       found = 1;
   }
   if(!found)
@@ -123,9 +123,9 @@ redraw_window(void)
   {
     msg_dbg(__POSITION__, "redrawing window");
     XCopyArea(dockapp.d, dockapp.pixmap, dockapp.iconwin, dockapp.gc,
-        0, 0, dockapp.width, dockapp.height, 0, 0);
+	0, 0, dockapp.width, dockapp.height, 0, 0);
     XCopyArea(dockapp.d, dockapp.pixmap, dockapp.win, dockapp.gc,
-        0, 0, dockapp.width, dockapp.height, 0, 0);
+	0, 0, dockapp.width, dockapp.height, 0, 0);
     dockapp.update = 0;
   }
 }
@@ -203,7 +203,7 @@ new_window(char* res_name, char* res_class,
 	ButtonReleaseMask | StructureNotifyMask)
   XSelectInput(dockapp.d, dockapp.win, EVENTS);
   XSelectInput(dockapp.d, dockapp.iconwin, EVENTS);
-  
+
   XStoreName(dockapp.d, dockapp.win, res_name);
   XSetIconName(dockapp.d, dockapp.win, res_name);
 
@@ -285,19 +285,19 @@ conf_read(char* filename)
     while (fgets(buf, 1024, fp)) {
       line++;
       if(buf[0] == '#' || (strlen(buf) < 2))
-        continue;
+	continue;
       chomp(buf);
       pos = strcspn(buf, "=");
       if(pos < strlen(buf))
       {
-        buf[pos++] = '\0';
+	buf[pos++] = '\0';
 
-        /* check for existent value */
-        exist = defcon_lk(buf); /* search for buf in defaults */
-        if(exist != -1 && !pss_defcon[exist].used)
-          exist = -1;
-        if(exist == -1) /* only if isn't a default or it's not on cmdline */
-          assign(buf, buf+pos);
+	/* check for existent value */
+	exist = defcon_lk(buf); /* search for buf in defaults */
+	if(exist != -1 && !pss_defcon[exist].used)
+	  exist = -1;
+	if(exist == -1) /* only if isn't a default or it's not on cmdline */
+	  assign(buf, buf+pos);
       }
       memset(buf, 0, 1024);
     }
@@ -361,7 +361,7 @@ assign(char* name, char* value)
       return;
     }
   }
-   
+
   /* append the value */
   newv = (struct var*)malloc(sizeof(struct var));
   newv->v_name = vcopy(name);
@@ -658,9 +658,9 @@ click_event(unsigned int region, unsigned int button)
     if(button == Button1)
     {
       if(wmnd.wavemode < (wmnd.nWavemodes - 1))
-        wmnd.wavemode++;
+	wmnd.wavemode++;
       else
-        wmnd.wavemode = 0;
+	wmnd.wavemode = 0;
       msg_dbg(__POSITION__, "wavemode: %d", wmnd.wavemode);
     }
     else if(button == Button3)
@@ -739,6 +739,7 @@ int main(int argc, char* *argv)
   int rgn = -1;
   XEvent event;
   const struct drwStruct* drwPtr;
+  sigset_t masked;
 #ifdef INEXACT_TIMING
   int beats;
 #else
@@ -929,6 +930,9 @@ int main(int argc, char* *argv)
   signal(SIGINT, mainExit);
   signal(SIGTERM, mainExit);
   signal(SIGCHLD, reaper);
+  sigemptyset(&masked);
+  sigaddset(&masked, SIGTERM);
+  sigaddset(&masked, SIGINT);
 
   msg_dbg(__POSITION__, "open X display");
   dispname = value("display");
@@ -975,10 +979,14 @@ int main(int argc, char* *argv)
   for(;;)
   {
     unsigned int j;
+    sigset_t mask;
 #ifndef INEXACT_TIMING
     struct timeval beat_ctime;
     unsigned long beat_gap;
 #endif
+
+    /* mask INT/TERM in get_stats */
+    sigprocmask(SIG_BLOCK, &masked, &mask);
 
     /* get statistics for each existing device */
     for(ptr = devices; ptr; ptr = ptr->next)
@@ -987,13 +995,13 @@ int main(int argc, char* *argv)
 
       /* check for device shutdown */
       if(ib < ptr->ib_stat_last)
-        ptr->ib_stat_last = ib;
+	ptr->ib_stat_last = ib;
       if(ob < ptr->ob_stat_last)
-        ptr->ob_stat_last = ob;
+	ptr->ob_stat_last = ob;
       if(ip < ptr->ip_stat_last)
-        ptr->ip_stat_last = ip;
+	ptr->ip_stat_last = ip;
       if(op < ptr->op_stat_last)
-        ptr->op_stat_last = op;
+	ptr->op_stat_last = op;
 
       /*
        * smoothing is performed before led setup and only on bytes, in order to
@@ -1002,22 +1010,22 @@ int main(int argc, char* *argv)
        */
       if(wmnd.smooth)
       {
-        smooth(&ib, ptr->ib_stat_last, wmnd.smooth);
-        smooth(&ob, ptr->ob_stat_last, wmnd.smooth);
+	smooth(&ib, ptr->ib_stat_last, wmnd.smooth);
+	smooth(&ob, ptr->ob_stat_last, wmnd.smooth);
       }
 
       /* setup leds */
       if(ptr == wmnd.curdev)
       {
-        if(ptr->ip_stat_last == ip)
-          led_control(LED_RX, 0);
-        else
-          led_control(LED_RX, 1);
+	if(ptr->ip_stat_last == ip)
+	  led_control(LED_RX, 0);
+	else
+	  led_control(LED_RX, 1);
 
-        if(ptr->op_stat_last == op)
-          led_control(LED_TX, 0);
-        else
-          led_control(LED_TX, 1);
+	if(ptr->op_stat_last == op)
+	  led_control(LED_TX, 0);
+	else
+	  led_control(LED_TX, 1);
       }
 
       /* save values in history */
@@ -1036,6 +1044,9 @@ int main(int argc, char* *argv)
       ptr->ip_stat_last = ip;
       ptr->op_stat_last = op;
     }
+
+    /* restore mask */
+    sigprocmask(SIG_SETMASK, &mask, NULL);
 
 #ifdef INEXACT_TIMING
     /* cosmetic fix: use the number of effectively elapsed beats instead of a
@@ -1059,26 +1070,26 @@ int main(int argc, char* *argv)
 
       /* Do not use the instant time gap for averaging, it's useless */
       if(wmnd.avgSteps != 1)
-        beat_gap = wmnd.scroll;
+	beat_gap = wmnd.scroll;
 #endif
 
       /* drift the average stats */
       if(!--wmnd.avgRSteps)
       {
-        float div = 1. / wmnd.avgSteps;
+	float div = 1. / wmnd.avgSteps;
 
-        for(ptr = devices; ptr; ptr = ptr->next)
-        {
-          ptr->avg[0] = (unsigned long)(div * (ptr->ib_stat_last - ptr->avgBuf[0]));
-          ptr->avg[1] = (unsigned long)(div * (ptr->ob_stat_last - ptr->avgBuf[1]));
-          ptr->avg[2] = (unsigned long)(div * (ptr->ip_stat_last - ptr->avgBuf[2]));
-          ptr->avg[3] = (unsigned long)(div * (ptr->op_stat_last - ptr->avgBuf[3]));
-          ptr->avgBuf[0] = ptr->ib_stat_last;
-          ptr->avgBuf[1] = ptr->ob_stat_last;
-          ptr->avgBuf[2] = ptr->ip_stat_last;
-          ptr->avgBuf[3] = ptr->op_stat_last;
-        }
-        wmnd.avgRSteps = wmnd.avgSteps;
+	for(ptr = devices; ptr; ptr = ptr->next)
+	{
+	  ptr->avg[0] = (unsigned long)(div * (ptr->ib_stat_last - ptr->avgBuf[0]));
+	  ptr->avg[1] = (unsigned long)(div * (ptr->ob_stat_last - ptr->avgBuf[1]));
+	  ptr->avg[2] = (unsigned long)(div * (ptr->ip_stat_last - ptr->avgBuf[2]));
+	  ptr->avg[3] = (unsigned long)(div * (ptr->op_stat_last - ptr->avgBuf[3]));
+	  ptr->avgBuf[0] = ptr->ib_stat_last;
+	  ptr->avgBuf[1] = ptr->ob_stat_last;
+	  ptr->avgBuf[2] = ptr->ip_stat_last;
+	  ptr->avgBuf[3] = ptr->op_stat_last;
+	}
+	wmnd.avgRSteps = wmnd.avgSteps;
       }
 
       /* cause a beat_event to parse pending x requests */
@@ -1088,14 +1099,14 @@ int main(int argc, char* *argv)
       draw_stats(wmnd.curdev, beat_gap);
       for(ptr = devices; ptr; ptr = ptr->next)
       {
-        for(j = 1; j < 58; j++)
-        {
-          ptr->his[j - 1][0] = ptr->his[j][0];
-          ptr->his[j - 1][1] = ptr->his[j][1];
-          ptr->his[j - 1][2] = ptr->his[j][2];
-          ptr->his[j - 1][3] = ptr->his[j][3];
-        }
-        memset(ptr->his[57], 0, sizeof(ptr->his[57]));
+	for(j = 1; j < 58; j++)
+	{
+	  ptr->his[j - 1][0] = ptr->his[j][0];
+	  ptr->his[j - 1][1] = ptr->his[j][1];
+	  ptr->his[j - 1][2] = ptr->his[j][2];
+	  ptr->his[j - 1][3] = ptr->his[j][3];
+	}
+	memset(ptr->his[57], 0, sizeof(ptr->his[57]));
       }
     }
 
@@ -1110,27 +1121,27 @@ int main(int argc, char* *argv)
       switch (event.type)
       {
       case Expose:
-        dockapp.update = 1;
-        break;
+	dockapp.update = 1;
+	break;
       case DestroyNotify:
-        XCloseDisplay(dockapp.d);
-        exit(0);
-        break;
+	XCloseDisplay(dockapp.d);
+	exit(0);
+	break;
       case ButtonPress:
-        btn = event.xbutton.button;
-        rgn = check_mr(event.xbutton.x, event.xbutton.y);
-        break;
+	btn = event.xbutton.button;
+	rgn = check_mr(event.xbutton.x, event.xbutton.y);
+	break;
       case ButtonRelease:
-        if(btn == event.xbutton.button)
-        {
-          if(rgn == check_mr(event.xbutton.x, event.xbutton.y))
-          {
-            click_event(rgn, btn);
-            beat_event();
-            draw_stats(wmnd.curdev, beat_gap);
-          }
-        }
-        break;
+	if(btn == event.xbutton.button)
+	{
+	  if(rgn == check_mr(event.xbutton.x, event.xbutton.y))
+	  {
+	    click_event(rgn, btn);
+	    beat_event();
+	    draw_stats(wmnd.curdev, beat_gap);
+	  }
+	}
+	break;
       }
     }
 
@@ -1308,13 +1319,13 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
       w = 6;
       if(bit_get(CFG_MAXSCREEN))
       {
-        sx = 133;
-        sy = 93;
+	sx = 133;
+	sy = 93;
       }
       else
       {
-        sx = 66;
-        sy = 46;
+	sx = 66;
+	sy = 46;
       }
       draw = 1;
     }
@@ -1324,13 +1335,13 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
       w = 6;
       if(bit_get(CFG_MAXSCREEN))
       {
-        sx = 139;
-        sy = 93;
+	sx = 139;
+	sy = 93;
       }
       else
       {
-        sx = 72;
-        sy = 46;
+	sx = 72;
+	sy = 46;
       }
       draw = 1;
     }
@@ -1340,13 +1351,13 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
       w = 6;
       if(bit_get(CFG_MAXSCREEN))
       {
-        sx = 145;
-        sy = 93;
+	sx = 145;
+	sy = 93;
       }
       else
       {
-        sx = 78;
-        sy = 46;
+	sx = 78;
+	sy = 46;
       }
       draw = 1;
     }
@@ -1356,13 +1367,13 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
       w = 6;
       if(bit_get(CFG_MAXSCREEN))
       {
-        sx = 151;
-        sy = 93;
+	sx = 151;
+	sy = 93;
       }
       else
       {
-        sx = 84;
-        sy = 46;
+	sx = 84;
+	sy = 46;
       }
       draw = 1;
     }
@@ -1486,20 +1497,20 @@ led_control(const unsigned char led, const unsigned char mode)
     case 1:
       /* bytes */
       if(mode)
-        /* on-line */
-        copy_xpm_area(116, 64, 5, 7, 55, 4)
+	/* on-line */
+	copy_xpm_area(116, 64, 5, 7, 55, 4)
       else
-        /* off-line */
-        copy_xpm_area(122, 64, 5, 7, 55, 4);
+	/* off-line */
+	copy_xpm_area(122, 64, 5, 7, 55, 4);
       break;
     case 0:
       /* packets */
       if(mode)
-        /* on-line */
-        copy_xpm_area(128, 64, 5, 7, 55, 4)
+	/* on-line */
+	copy_xpm_area(128, 64, 5, 7, 55, 4)
       else
-        /* off-line */
-        copy_xpm_area(134, 64, 5, 7, 55, 4);
+	/* off-line */
+	copy_xpm_area(134, 64, 5, 7, 55, 4);
       break;
     }
     break;
@@ -1509,8 +1520,8 @@ led_control(const unsigned char led, const unsigned char mode)
       /* turn on */
       if(bit_get(LED_RX))
       {
-        msg_dbg(__POSITION__, "RX led already on");
-        return;
+	msg_dbg(__POSITION__, "RX led already on");
+	return;
       }
       copy_xpm_area(86, 69, 5, 4, 41, 4);
       bit_set(LED_RX);
@@ -1521,8 +1532,8 @@ led_control(const unsigned char led, const unsigned char mode)
       /* turn off */
       if(!bit_get(LED_RX))
       {
-        msg_dbg(__POSITION__, "RX led already off");
-        return;
+	msg_dbg(__POSITION__, "RX led already off");
+	return;
       }
       copy_xpm_area(92, 69, 5, 4, 41, 4);
       bit_off(LED_RX);
@@ -1535,8 +1546,8 @@ led_control(const unsigned char led, const unsigned char mode)
       /* turn on */
       if(bit_get(LED_TX))
       {
-        msg_dbg(__POSITION__, "TX led already on");
-        return;
+	msg_dbg(__POSITION__, "TX led already on");
+	return;
       }
       copy_xpm_area(86, 64, 5, 4, 48, 4);
       bit_set(LED_TX);
@@ -1547,8 +1558,8 @@ led_control(const unsigned char led, const unsigned char mode)
       /* turn off */
       if(!bit_get(LED_TX))
       {
-        msg_dbg(__POSITION__, "TX led already off");
-        return;
+	msg_dbg(__POSITION__, "TX led already off");
+	return;
       }
       copy_xpm_area(92, 64, 5, 4, 48, 4);
       bit_off(LED_TX);
@@ -1600,7 +1611,7 @@ draw_interface(void)
       k += 6;
     } else {
       if(c >= 'a' && c <= 'z')
-        c = c - 'a' + 'A';
+	c = c - 'a' + 'A';
       c -= 'A';
       copy_xpm_area(c * 6, 74, 6, 9, k, 3);
       k += 6;
@@ -1722,6 +1733,7 @@ devices_init(const char* driver, const char* interface)
     msg_dbg(__POSITION__, "probing %s", drivers_table[cnt].driver_name);
     aftPrt = prt;
     devnum = (*drivers_table[cnt].list_devices)(interface, prt);
+    drivers_table[cnt].status = devnum;
     if(!devnum)
       continue;
 
@@ -1730,54 +1742,54 @@ devices_init(const char* driver, const char* interface)
     {
       prt = prt->next;
       prt->drvnum = cnt; /* set the driver number */
-      if((*drivers_table[cnt].init_driver)(prt) == 1)	/* init the device */
+      if((*drivers_table[cnt].init_device)(prt) == 1)	/* init the device */
       {
-        msg_err("failed to initialize device %s,%d",
-            drivers_table[cnt].driver_name, in_loop0);
-        devnum--;
+	msg_err("failed to initialize device %s,%d",
+	    drivers_table[cnt].driver_name, in_loop0);
+	devnum--;
 
-        /* last element in list */
-        if(in_loop0 == devnum-1 || !devnum)
-        {
-          free(prt);
-          prt = aftPrt;
-          continue;
-        }
+	/* last element in list */
+	if(in_loop0 == devnum-1 || !devnum)
+	{
+	  free(prt);
+	  prt = aftPrt;
+	  continue;
+	}
 
-        /* remove device from list */
-        tmpPrt = prt->next;
-        free(prt);
-        prt = tmpPrt;
+	/* remove device from list */
+	tmpPrt = prt->next;
+	free(prt);
+	prt = tmpPrt;
 
-        if(in_loop0 == devnum) continue;
-        aftPrt = prt;
-        in_loop0--;							
+	if(in_loop0 == devnum) continue;
+	aftPrt = prt;
+	in_loop0--;
       }
       else
       {
-        /* initialize statistics for this device */
-        int cnt;
-        unsigned long int ib, ob, ip, op;
+	/* initialize statistics for this device */
+	int cnt;
+	unsigned long int ib, ob, ip, op;
 
-        /* sample some stats to inizialize cleanly the graph */
-        (*drivers_table[prt->drvnum].get_stats)(prt, &ip, &op, &ib, &ob);
+	/* sample some stats to inizialize cleanly the graph */
+	(*drivers_table[prt->drvnum].get_stats)(prt, &ip, &op, &ib, &ob);
 
-        prt->ib_max_his = prt->ob_max_his =
-          prt->ip_max_his = prt->op_max_his = 0;
-        prt->ib_stat_last = ib;
-        prt->ob_stat_last = ob;
-        prt->ip_stat_last = ip;
-        prt->op_stat_last = op;
+	prt->ib_max_his = prt->ob_max_his =
+	  prt->ip_max_his = prt->op_max_his = 0;
+	prt->ib_stat_last = ib;
+	prt->ob_stat_last = ob;
+	prt->ip_stat_last = ip;
+	prt->op_stat_last = op;
 
-        /* cleaning history */
-        for(cnt = 0; cnt < 58; cnt++)
-          memset(prt->his, 0, sizeof(prt->his));
+	/* cleaning history */
+	for(cnt = 0; cnt < 58; cnt++)
+	  memset(prt->his, 0, sizeof(prt->his));
 
-        /* clean average sampling buffers */
-        prt->avgBuf[0] = ib;
-        prt->avgBuf[1] = ob;
-        prt->avgBuf[2] = ip;
-        prt->avgBuf[3] = op;
+	/* clean average sampling buffers */
+	prt->avgBuf[0] = ib;
+	prt->avgBuf[1] = ob;
+	prt->avgBuf[2] = ip;
+	prt->avgBuf[3] = op;
       }
     }
 
@@ -1829,9 +1841,9 @@ devices_select(const char* interface)
     {
       if(!strcmp(interface, prt->name))
       {
-        /* name matches */
-        wmnd.curdev = prt;
-        break;
+	/* name matches */
+	wmnd.curdev = prt;
+	break;
       }
       prt = prt->next;
     }
@@ -1881,12 +1893,20 @@ devices_destroy(void)
    */
 
   struct Devices *ptr;
+  int cnt;
+
   while(devices->next)
   {
     ptr = devices;
     devices = devices->next;
-    (*drivers_table[ptr->drvnum].terminate_driver)(ptr);
+    (*drivers_table[ptr->drvnum].terminate_device)(ptr);
     free(ptr->name);
     free(ptr);
   }
+
+  for(cnt = 0; drivers_table[cnt].driver_name; ++cnt)
+  {
+    if(drivers_table[cnt].status && drivers_table[cnt].terminate_driver)
+      (*drivers_table[cnt].terminate_driver)();
+  } 
 }

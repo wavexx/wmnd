@@ -1234,30 +1234,31 @@ struct drivers_struct drivers_table[] =
 {
 #ifdef USE_FREEBSD_SYSCTL
   {USE_FREEBSD_SYSCTL, freebsd_sysctl_list, freebsd_sysctl_init,
-    freebsd_sysctl_get, freebsd_sysctl_term},
+    freebsd_sysctl_get, freebsd_sysctl_term, NULL},
 #endif
 #ifdef USE_LINUX_PROC
-  {USE_LINUX_PROC, linux_proc_list, linux_proc_init, linux_proc_get,
-    linux_proc_term},
+  {USE_LINUX_PROC, linux_proc_list, linux_proc_init,
+    linux_proc_get, linux_proc_term, NULL},
 #endif
 #ifdef USE_SOLARIS_FPPPD
   {USE_SOLARIS_FPPPD, solaris_fpppd_list, solaris_fpppd_init,
-    solaris_fpppd_get, solaris_fpppd_term},
+    solaris_fpppd_get, solaris_fpppd_term, NULL},
 #endif
 #ifdef USE_SOLARIS_KSTAT
   {USE_SOLARIS_KSTAT, solaris_kstat_list, solaris_kstat_init,
-    solaris_kstat_get, solaris_kstat_term},
+    solaris_kstat_get, solaris_kstat_term, NULL},
 #endif
 #ifdef USE_IRIX_PCP
-  {USE_IRIX_PCP, irix_pcp_list, irix_pcp_init, irix_pcp_get, irix_pcp_term},
+  {USE_IRIX_PCP, irix_pcp_list, irix_pcp_init,
+    irix_pcp_get, irix_pcp_term, NULL},
 #endif
 #ifdef USE_GENERIC_SNMP
   {USE_GENERIC_SNMP, generic_snmp_list, generic_snmp_init,
-    generic_snmp_get, generic_snmp_term},
+    generic_snmp_get, generic_snmp_term, NULL},
 #endif
 #ifdef USE_TESTING_DUMMY
   {USE_TESTING_DUMMY, testing_dummy_list, testing_dummy_init,
-    testing_dummy_get, testing_dummy_term},
+    testing_dummy_get, testing_dummy_term, NULL},
 #endif
-  {NULL, NULL, NULL, NULL, NULL}
+  {NULL, NULL, NULL, NULL, NULL, NULL}
 };
