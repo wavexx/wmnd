@@ -1,7 +1,7 @@
 /*
  * wmnd - window maker network devices - drivers.c
  * drivers definitions - implementation
- * Copyright(c) 2001-2004 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * Copyright(c) 2001-2006 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
  */
 
 /* local headers */
@@ -9,22 +9,16 @@
 #include "drivers.h"
 #include "messages.h"
 
-/*
- * _list: allocate new elements in the list and assign a name for each device
- * _init: callled for each device allocated by *_list. Prepare device status
- * _getstats: obtain infos about the device
- * _term: eventually deallocate drvdata and close fds
- */
 
-/* helper functions */
+/* common helper functions */
 struct Devices*
 devices_append(struct Devices* list, struct Devices* src)
 {
   list->next = src;
   src->next = NULL;
-
   return src;
 }
+
 
 #ifdef USE_SOLARIS_FPPPD
 #undef drName
@@ -1259,4 +1253,3 @@ struct drivers_struct drivers_table[] =
 #endif
   {NULL, NULL, NULL, NULL, NULL}
 };
-

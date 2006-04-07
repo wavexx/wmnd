@@ -3,8 +3,8 @@
  * common structures and functions
  */
 
-#ifndef __wmnd_h
-#define __wmnd_h
+#ifndef WMND_H
+#define WMND_H
 
 #include "bits.h" /* portable bit functions */
 

@@ -1,6 +1,6 @@
 /* messages - generalized information reporting */
-#ifndef messages_hh
-#define messages_hh
+#ifndef MESSAGES_H
+#define MESSAGES_H
 
 /* local headers */
 #ifdef HAVE_CONFIG_H

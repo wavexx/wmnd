@@ -1,30 +1,31 @@
 /*
  * wmnd - window maker network devices - drivers.h
- *
- * drivers prototypes and includes
+ * drivers definitions - interface
+ * Copyright(c) 2001-2006 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
  */
 
-#ifndef __drivers_h
-#define __drivers_h
+#ifndef DRIVERS_H
+#define DRIVERS_H
 
 #include "config.h"
 #include "wmnd.h"
 
 /*
- * how a driver works:
- * first wmnd calls p_list_devs, for populating the Devices struct. If the
- * driver does not support listing, then only requested device in devname
- * must be listed. this function returns the number of devices avaible for
- * this driver and fills up the Devices struct.
- * Than the driver will be initialized using p_init_drv. The function
- * must return 0 if successfull.
- * When the driver is up&running p_updt_stats will be called periodically to
- * get device statistics. If it returns 0 the device is ok, 1 for offline.
- * wmnd will continue calling it, even if the device is offline. The driver
- * must detect by itself the device status.
- * finally, when removing a device or exiting, p_term_drv will be called.
- * Actually you can't plug devices on-the-fly so inside p_init_drv you must
- * list ALL devices, whenever they're online or not.
+ * Note to driver implementors:
+ *
+ * - p_list_devs is called first to list all the *supported* interfaces.
+ *   Loopback/testing interfaces must be skipped unless specified.
+ *   If a device name is specified, only this device must be listed.
+ *   The driver "should" support comma-separated list of interfaces as the
+ *   "devname" argument, but this is subject to change.
+ *   The number of allocated interfaces is returned.
+ *
+ * - p_init_drv is called for each allocated interface.
+ *
+ * - p_updt_stats is polled to gather interface statistics.
+ *   The function must return the interface status.
+ *
+ * - p_term_drv is called during shutdown for each interface.
  */
 
 typedef int (*p_list_devs) (const char* devname, struct Devices* list);
@@ -47,4 +48,3 @@ struct drivers_struct
 extern struct drivers_struct drivers_table[];
 
 #endif
-

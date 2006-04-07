@@ -1,5 +1,5 @@
-#ifndef __MISC_H
-#define __MISC_H
+#ifndef MISC_H
+#define MISC_H
 
 /* Tokenize a shell command */
 void

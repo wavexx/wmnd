@@ -5,8 +5,8 @@
  * Originally an hpp extended file. Distributed under GNU GPL
  */
 
-#ifndef __bits_h
-#define __bits_h
+#ifndef BITS_H
+#define BITS_H
 
 #include <config.h>
 
