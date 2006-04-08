@@ -328,7 +328,7 @@ be used with configure, they're case sensitive):
   twisted charts needle lines
 
   * drivers: linux_proc freebsd_sysctl solaris_fpppd solaris_kstat
-  irix_pcp generic_snmp
+  irix_pcp generic_snmp netbsd_ioctl
 
 -- GCC 2.96 sucks ----------------------------------------------------
 WMND 0.4 won't compile with RedHat's gcc 2.96. Either downgrade to

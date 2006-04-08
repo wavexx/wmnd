@@ -60,13 +60,12 @@ then
 	)
 	
 	# freebsd sysctl driver
-	AC_MSG_CHECKING([for *BSD net/if_mib.h presence])
-	AC_PREPROC_IFELSE([#include <net/if_mib.h>],
-		[AC_MSG_RESULT([yes])
-		AC_CHECK_HEADERS(sys/sysctl.h,
-			[ac_drivers="$ac_drivers freebsd_sysctl"]
-		)],
-		[AC_MSG_RESULT([no])]
+	AC_PREPROC_IFELSE(
+	[
+		#include <net/if_mib.h>
+		#include <sys/sysctl.h>
+	],
+		[ac_drivers="$ac_drivers freebsd_sysctl"]
 	)
 	
 	# solaris/linux streams pppd driver
@@ -81,6 +80,19 @@ then
 		[AC_SEARCH_LIBS(kstat_open, kstat,
 			[ac_drivers="$ac_drivers solaris_kstat"]
 		)]
+	)
+
+	# check whether enable the netbsd ioctl driver
+	AC_COMPILE_IFELSE([
+		#include <sys/types.h>
+		#include <sys/sockio.h>
+		#include <sys/ioctl.h>
+		#include <net/if.h>
+		#include <ifaddrs.h>
+
+		void aFunc() { ioctl(0, SIOCGIFDATA, NULL); }
+	],
+		[ac_drivers="$ac_drivers netbsd_ioctl"]
 	)
 
 	# irix pcp
@@ -104,6 +116,7 @@ do
 	case "$driver" in
 	linux_proc)	AC_DEFINE(USE_LINUX_PROC, "linux_proc", [enable linux proc driver]);;
 	freebsd_sysctl)	AC_DEFINE(USE_FREEBSD_SYSCTL, "freebsd_sysctl", [enable freebsd sysctl driver]);;
+	netbsd_ioctl)	AC_DEFINE(USE_NETBSD_IOCTL, "netbsd_ioctl", [enable nebsd ioctl driver]);;
 	solaris_fpppd)	AC_DEFINE(USE_SOLARIS_FPPPD, "solaris_fpppd", [solaris streams pppd]);;
 	solaris_kstat)	AC_DEFINE(USE_SOLARIS_KSTAT, "solaris_kstat", [enable solaris kstat driver]);;
 	irix_pcp)	AC_DEFINE(USE_IRIX_PCP, "irix_pcp", [IRIX Performance Co-Pilot]);;

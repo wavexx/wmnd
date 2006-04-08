@@ -72,7 +72,7 @@ solaris_fpppd_strioctl(int fd, int cmd, char* ptr, int ilen, int olen)
     return -1;
   if(str.ic_len != olen)
     msg_drInfo(drName, "strioctl expected %d bytes, got %d for cmd %x",
-        olen, str.ic_len, cmd);
+	olen, str.ic_len, cmd);
   return 0;
 }
 
@@ -95,9 +95,9 @@ solaris_fpppd_init(struct Devices* dev)
     {
       if(drvdata->mustconnect == sfpppd_untested)
       {
-        /* supposing the device is down */
-        drvdata->mustconnect = sfpppd_opened;
-        return 0;
+	/* supposing the device is down */
+	drvdata->mustconnect = sfpppd_opened;
+	return 0;
       }
       drvdata->mustconnect = sfpppd_opened;
     }
@@ -107,7 +107,7 @@ solaris_fpppd_init(struct Devices* dev)
   if(drvdata->mustconnect < sfpppd_connected)
   {
     if(solaris_fpppd_strioctl(drvdata->fd, PPPIO_ATTACH,
-        (char*)&drvdata->unit, sizeof(int), 0) < 0)
+	(char*)&drvdata->unit, sizeof(int), 0) < 0)
     {
       drvdata->mustconnect = sfpppd_opened;
       dev->devstart = 0;
@@ -139,12 +139,12 @@ solaris_fpppd_list(const char* devname, struct Devices* list)
   struct solaris_fpppd_drvdata* ndata;
   struct Devices* ptr;
   int dta;
-  
+
   /* device name testing */
   if(devname)
     devn = strdup(devname);
-  
-  if(devn) /* device specified */	
+
+  if(devn) /* device specified */
   {
     if (sscanf(devn, "ppp%d", &unit) != 1)
     {
@@ -171,8 +171,8 @@ solaris_fpppd_list(const char* devname, struct Devices* list)
       solaris_fpppd_term(ndev);
 
       if(dta)
-        /* device initialization failed */
-        break; 
+	/* device initialization failed */
+	break;
 
       msg_drInfo(drName, "detected ppp%d",unit);
       unit++;
@@ -181,11 +181,11 @@ solaris_fpppd_list(const char* devname, struct Devices* list)
 
     if(!unit)
       return 0;
-      
+
     dta = unit;
     unit = 0;
   }
-  
+
   /* allocate new dta devices structures */
   ptr = list;
   while(dta--)
@@ -291,26 +291,26 @@ solaris_kstat_list(const char* devname, struct Devices* list)
     {
       kstat_read(solaris_kstat_kc, ksp, NULL);
       if((!devname || (devname && !strcmp(devname,ksp->ks_name))) &&
-          kstat_data_lookup(ksp, "link_up") &&
-          kstat_data_lookup(ksp, "ipackets") &&
-          kstat_data_lookup(ksp, "opackets") &&
-          kstat_data_lookup(ksp, "rbytes") &&
-          kstat_data_lookup(ksp, "obytes"))
+	  kstat_data_lookup(ksp, "link_up") &&
+	  kstat_data_lookup(ksp, "ipackets") &&
+	  kstat_data_lookup(ksp, "opackets") &&
+	  kstat_data_lookup(ksp, "rbytes") &&
+	  kstat_data_lookup(ksp, "obytes"))
       {
-        /* device is suitable */
-        ndev = (struct Devices*)malloc(sizeof(struct Devices));
-        ndev->devstart = 0;
-        ndev->name = strdup(ksp->ks_name);
-        ndata = (struct solaris_kstat_drvdata*)
-          malloc(sizeof(struct solaris_kstat_drvdata));
-        ndata->ksp = ksp;
-        ptr->next = ndev;
-        ndev->next = NULL;
-        ndev->drvdata = ndata;
-        ptr = ndev;
+	/* device is suitable */
+	ndev = (struct Devices*)malloc(sizeof(struct Devices));
+	ndev->devstart = 0;
+	ndev->name = strdup(ksp->ks_name);
+	ndata = (struct solaris_kstat_drvdata*)
+	  malloc(sizeof(struct solaris_kstat_drvdata));
+	ndata->ksp = ksp;
+	ptr->next = ndev;
+	ndev->next = NULL;
+	ndev->drvdata = ndata;
+	ptr = ndev;
 
-        msg_drInfo(drName, "detected %s",ndev->name);
-        dta++;
+	msg_drInfo(drName, "detected %s",ndev->name);
+	dta++;
       }
     }
   }
@@ -487,8 +487,8 @@ linux_proc_list(const char* devname, struct Devices* list)
       /* grab all active devices, adding them as we go */
       p = strtok(temp, tokens);
       if(!strncmp(p, "dummy", 5) ||
-          !strncmp(p, "irda", 4) || !strncmp(p, "lo", 3))
-        continue;
+	  !strncmp(p, "irda", 4) || !strncmp(p, "lo", 3))
+	continue;
 
       dta++;
       ndev = (struct Devices*)malloc(sizeof(struct Devices));
@@ -570,18 +570,18 @@ freebsd_sysctl_list(const char* devname, struct Devices* list)
   int numifaces, numrfaces = 0;
   int mib[5], datamib[6];
   int i, len, len2;
-  
+
   mib[0] = CTL_NET;
   mib[1] = PF_LINK;
   mib[2] = NETLINK_GENERIC;
   mib[3] = IFMIB_SYSTEM;
   mib[4] = IFMIB_IFCOUNT;
-         
+
   datamib[0] = CTL_NET;
   datamib[1] = PF_LINK;
   datamib[2] = NETLINK_GENERIC;
   datamib[3] = IFMIB_IFDATA;
-  datamib[4] = 1; 
+  datamib[4] = 1;
   datamib[5] = IFDATA_GENERAL;
 
   len = sizeof(numifaces);
@@ -604,7 +604,7 @@ freebsd_sysctl_list(const char* devname, struct Devices* list)
     }
 
     if((devname && !strcmp(devname, tempndata.ifmd_name)) || (!devname &&
-        strcmp(tempndata.ifmd_name, "lo")))
+	strcmp(tempndata.ifmd_name, "lo")))
     {
       ndev = malloc(sizeof(struct Devices));
       ndev->devstart = 0;
@@ -646,7 +646,7 @@ freebsd_sysctl_get(struct Devices*dev, unsigned long* ip,
   datamib[4] = drdata->id;
   datamib[5] = IFDATA_GENERAL;
 
-  len = sizeof(struct ifmibdata); 
+  len = sizeof(struct ifmibdata);
 
   if(sysctl(datamib, 6, drdata->data, &len, NULL, 0) < 0)
     return 1;
@@ -706,7 +706,7 @@ irix_pcp_resDom(char* dom, pmID* pmId, pmDesc* pmD)
   if((r = pmLookupDesc(*pmId, pmD)) < 0)
   {
     msg_drInfo(drName, "unable to get descriptions about %s: %s",
-        dom, pmErrStr(r));
+	dom, pmErrStr(r));
     return -1;
   }
 
@@ -748,7 +748,7 @@ irix_pcp_list(const char* devname, struct Devices* list)
   if((dta = pmGetInDom(pmD->indom, &inst, &desc)) < 0)
   {
     msg_drInfo(drName, "unable to get instances of " PCPNS_NETINBDOM
-        ": %s", pmErrStr(dta));
+	": %s", pmErrStr(dta));
     return 0;
   }
 
@@ -758,7 +758,7 @@ irix_pcp_list(const char* devname, struct Devices* list)
   for(i = 0; i < dta; ++i)
   {
     if((devname && !strcmp(devname, *p)) ||
-        (!devname && strcmp(*p, "lo0")))
+	(!devname && strcmp(*p, "lo0")))
     {
       msg_drInfo(drName, "detected %s(%d)", *p, *t);
       ndev = (struct Devices*)malloc(sizeof(struct Devices));
@@ -815,7 +815,7 @@ irix_pcp_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
   pmUseContext(drdata->ph);
   if(pmFetch(4, drdata->pmId, &pmR))
     return 1;
-  
+
   *ib = pmR->vset[0]->vlist->value.lval;
   *ip = pmR->vset[1]->vlist->value.lval;
   *ob = pmR->vset[2]->vlist->value.lval;
@@ -1083,7 +1083,7 @@ generic_snmp_list(const char* devname, struct Devices* list)
     snmp_add_null_var(pdu, OID, OIDLen);
 
     if(snmp_synch_response(se, pdu, &res) == STAT_SUCCESS &&
-        res->errstat == SNMP_ERR_NOERROR)
+	res->errstat == SNMP_ERR_NOERROR)
       dta = *res->variables->val.integer;
     else
     {
@@ -1101,8 +1101,8 @@ generic_snmp_list(const char* devname, struct Devices* list)
       ndev = generic_snmp_preInit(list, se, rad + 1);
       if(!ndev)
       {
-        snmp_close(se);
-        continue;
+	snmp_close(se);
+	continue;
       }
 
       list = ndev;
@@ -1153,7 +1153,7 @@ generic_snmp_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
   /* switch to the right context */
   struct generic_snmp_drvdata* drdata =
     (struct generic_snmp_drvdata*)dev->drvdata;
-  
+
   struct snmp_pdu* pdu;
   struct snmp_pdu* res;
   struct variable_list* var;
@@ -1165,7 +1165,7 @@ generic_snmp_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
   snmp_add_null_var(pdu, drdata->oidPIn, drdata->oidPInLen);
   snmp_add_null_var(pdu, drdata->oidBOut, drdata->oidBOutLen);
   snmp_add_null_var(pdu, drdata->oidPOut, drdata->oidPOutLen);
-  
+
   if(snmp_synch_response(drdata->se, pdu, &res) == STAT_SUCCESS &&
       res->errstat == SNMP_ERR_NOERROR)
   {
@@ -1205,6 +1205,93 @@ generic_snmp_term(struct Devices* dev)
 
 #endif /* USE_GENERIC_SNMP */
 
+/* NetBSD ioctl driver */
+#ifdef USE_NETBSD_IOCTL
+#undef drName
+#define drName USE_NETBSD_IOCTL
+
+/* system headers */
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/sockio.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <ifaddrs.h>
+
+int s;
+struct ifdatareq ifdreq;
+
+/* device listing */
+int
+netbsd_ioctl_list(const char *devname, struct Devices *list)
+{
+  struct Devices *ndev;
+  struct ifaddrs *ifap, *ifa;
+  unsigned int ifn;
+
+  if((s = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+  {
+    msg_drInfo(drName, "unable to create socket");
+    return 0;
+  }
+
+  if(getifaddrs(&ifap) != 0)
+  {
+    msg_drInfo(drName, "failed to perform getifaddrs");
+    return 0;
+  }
+
+  ifn = 0;
+  for(ifa = ifap; ifa; ifa = ifa->ifa_next)
+  {
+    if(ifa->ifa_addr->sa_family == AF_LINK)
+    {
+      if((devname && !strcmp(devname, ifa->ifa_name)) || !devname)
+      {
+	ndev = NULL;
+	ndev = malloc(sizeof(struct Devices));
+	if(!ndev)
+	  continue;
+	ndev->devstart = 0;
+	ndev->name = strdup(ifa->ifa_name);
+	ndev->next = NULL;
+	list->next = ndev;
+	list = ndev;
+
+	msg_drInfo(drName, "detected %s", ndev->name);
+	ifn++;
+      }
+    }
+  }
+  freeifaddrs(ifap);
+
+  return ifn;
+}
+
+/* gather stats */
+int
+netbsd_ioctl_get(struct Devices *dev, unsigned long *ip,
+    unsigned long *op, unsigned long *ib, unsigned long *ob)
+{
+  strncpy(ifdreq.ifdr_name, dev->name, IFNAMSIZ - 1);
+  if(ioctl(s, SIOCGIFDATA, &ifdreq) < 0)
+    return 1;
+
+  *ip = ifdreq.ifdr_data.ifi_ipackets;
+  *ib = ifdreq.ifdr_data.ifi_ibytes;
+  *op = ifdreq.ifdr_data.ifi_opackets;
+  *ob = ifdreq.ifdr_data.ifi_obytes;
+
+  return 0;
+}
+
+void
+netbsd_ioctl_unlist()
+{
+  close(s);
+}
+
+#endif /* USE_NETBSD_IOCTL */
 
 /* define the drivers list */
 struct drivers_struct drivers_table[] =
@@ -1212,6 +1299,10 @@ struct drivers_struct drivers_table[] =
 #ifdef USE_FREEBSD_SYSCTL
   {USE_FREEBSD_SYSCTL, freebsd_sysctl_list, NULL,
     freebsd_sysctl_get, freebsd_sysctl_term, NULL},
+#endif
+#ifdef USE_NETBSD_IOCTL
+  {USE_NETBSD_IOCTL, netbsd_ioctl_list, NULL,
+    netbsd_ioctl_get, NULL, netbsd_ioctl_unlist},
 #endif
 #ifdef USE_LINUX_PROC
   {USE_LINUX_PROC, linux_proc_list, NULL,
