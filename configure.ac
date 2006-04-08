@@ -60,8 +60,7 @@ then
 	)
 	
 	# freebsd sysctl driver
-	AC_PREPROC_IFELSE(
-	[
+	AC_PREPROC_IFELSE([
 		#include <net/if_mib.h>
 		#include <sys/sysctl.h>
 	],
@@ -194,40 +193,8 @@ done
 
 
 # check for inline statement useability
-AC_MSG_CHECKING([for inline optimization])
-AC_TRY_COMPILE(, [
-  #undef INLINE
-  #if !(defined(__STRICT_ANSI__) || defined(__cplusplus))
-  #define INLINE inline
-  #endif
-
-  INLINE void
-  aFunc()
-  {} 
-], inlineDef="inline")
-if test -z "$inlineDef"
-then
-	# try again with __inline
-	AC_TRY_COMPILE(, [
-	  #undef INLINE
-	  #if !(defined(__STRICT_ANSI__) || defined(__cplusplus))
-	  #define INLINE __inline
-	  #endif
-	  
-	  INLINE void
-	  aFunc()
-	  {} 
-	], inlineDef="__inline")
-fi
-AC_DEFINE_UNQUOTED(INLINE, $inlineDef, [inline useability])
-
-if test -n "$inlineDef"
-then
-	AC_MSG_RESULT([$inlineDef])
-else
-	AC_MSG_RESULT(no)
-fi
-
+AC_C_INLINE
+AC_DEFINE(INLINE, inline, [code compatibility stub])
 
 # check for basic type sizes
 AC_CHECK_SIZEOF(unsigned int)
@@ -244,12 +211,12 @@ AC_SIZE_SEARCH(__u32, 4, ["unsigned int" "unsigned long"])
 
 # output files
 AC_CONFIG_FILES([
-  Makefile
-  doc/Makefile
-  examples/Makefile
-  src/Makefile
-  wmnd.lsm
-  wmnd.spec
+	Makefile
+	doc/Makefile
+	examples/Makefile
+	src/Makefile
+	wmnd.lsm
+	wmnd.spec
 ])
 
 AC_OUTPUT
