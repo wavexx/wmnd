@@ -19,13 +19,12 @@ COPYING file for the complete GNU license description.
 
 Description
 ----------------------------------------------------------------------
-WMND (WindowMaker Network Devices) is a network monitoring
-dockapp for Window Maker (and compatibles) for many operative systems.
-Improved and based on WMiFS 1.3b, the version 0.2 of WMND is almost
-totally written by Timecop, given the optimization and flexibility and
-now consumes less cpu than wmmon. Version >= 0.3 WMND is now
-maintained by wave++, which added new display modes and several new
-drivers. Enjoy!
+WMND (WindowMaker Network Devices) is a network monitoring dockapp for
+Window Maker (and compatibles) for many operative systems.  Improved
+and based on WMiFS 1.3b, the version 0.2 of WMND is almost totally
+written by Timecop, given the optimization and flexibility and now
+consumes less cpu than wmmon. Version >= 0.3 WMND is now maintained by
+wave++, which added new display modes and several new drivers. Enjoy!
 
 
 Files
@@ -57,9 +56,9 @@ Use option -i to monitor a particular interface at startup:
   wmnd -i eth0 &
   wmnd -i ppp0 &
 
-Without the -i option, wmnd will auto-magically use the interface
-that is first found in /proc/net/dev (or the current driver), but
-skip the lo and irda.
+Without the -i option, wmnd will auto-magically use the interface that
+is first found in /proc/net/dev (or the current driver), but skip the
+lo and irda.
 
 Use the -I option to load only a specific interface into wmnd. By
 default wmnd loads all available interfaces.
@@ -84,18 +83,18 @@ interface name and status on the command line). Look at the example
 wmndrc file for details.
 
 -- GUI Usage ---------------------------------------------------------
-You can cycle in real-time through all available active interfaces
-by simply left-clicking on the interface name gadget on the
-upper-left corner of wmnd.
+You can cycle in real-time through all available active interfaces by
+simply left-clicking on the interface name gadget on the upper-left
+corner of wmnd.
 
 By default, wmnd show device name in short term of four characters,
-for example, the ippp0 will be displayed as ipp0.  You can toggle
-the device name between short and long by right-click on it.
+for example, the ippp0 will be displayed as ipp0.  You can toggle the
+device name between short and long by right-click on it.
 
 Left-click on the main graphic area to cycle the graphic mode.
 
-Left-click to toggle the history max or screen max, default is
-screen max when wmnd is startup.  Right-click to hide or display.
+Left-click to toggle the history max or screen max, default is screen
+max when wmnd is startup.  Right-click to hide or display.
 
 Left-click on the letter gadgeted on the right-top corner can switch
 between the Byte or Packet counter mode. "B" for byte, "p" for packet.
@@ -103,10 +102,10 @@ between the Byte or Packet counter mode. "B" for byte, "p" for packet.
 Click on the bottom rate meter can invoke the user command defined in
 resource file .wmndrc.
 
-Be sure to drag WMND on it's outer edges, it's a bit picky due
-to the large gfx pixmap it keeps ;-). You can also use a
-keyboard+mouse shortcut (perhaps ALT+left-click) in your window
-manager to drag it around.
+Be sure to drag WMND on it's outer edges, it's a bit picky due to the
+large gfx pixmap it keeps ;-). You can also use a keyboard+mouse
+shortcut (perhaps ALT+left-click) in your window manager to drag it
+around.
 
 If trend support is enabled (--enable-trend at configure time) and
 trend is installed, the history can be viewed and inspected more
@@ -120,9 +119,9 @@ changed. Copy a fresh wmndrc from the source distribution
 (examples/wmndrc) or erase your old wmndrc to get the new defaults.
 
 -- Firing up WMND with sensible defaults -----------------------------
-Default values are easily changed from the command line or through
-the ~/.wmndrc file. The ~/.wmndrc file gets created automatically
-the first time you execute WMND (unless you use -F) using the internal
+Default values are easily changed from the command line or through the
+~/.wmndrc file. The ~/.wmndrc file gets created automatically the
+first time you execute WMND (unless you use -F) using the internal
 defaults and command line flags. That is, if you want to change
 "permanently" the defaults (so you can start it without command line
 fuss) just remove ~/.wmndrc and launch WMND using all the flags
@@ -133,11 +132,10 @@ reading the example wmndrc that comes with the distribution.
 Window Managers
 ----------------------------------------------------------------------
 -- WindowMaker -------------------------------------------------------
-
 WindowMaker users simply drag and drop the WMND dock.app on the
-WindowMaker Dock (preferred) or on the Fiend, and then press the
-right mouse button on the outer edges of WMND and then enable
-'Auto launch' from the Dock pop-up menu.
+WindowMaker Dock (preferred) or on the Fiend, and then press the right
+mouse button on the outer edges of WMND and then enable 'Auto launch'
+from the Dock pop-up menu.
 
 -- AfterSTEP ---------------------------------------------------------
 AfterSTEP users put the following in their .steprc:
@@ -177,8 +175,8 @@ own PPP scripts.
 Display modes
 ----------------------------------------------------------------------
 -- Traditional -------------------------------------------------------
-Tx and Rx are piled on the same line within a single graph
-(like wmifs original behavior)
+Tx and Rx are piled on the same line within a single graph (like wmifs
+original behavior)
 
 -- MGraph ------------------------------------------------------------
 Tx and Rx scale is calculated uniquely and the slower channel is shown
@@ -241,9 +239,9 @@ Displays a trend graph using two lines.
 
 Building WMND 0.4
 ----------------------------------------------------------------------
-Since release 0.4 WMND is now compliant to the GNU Packaging
-standards and enables to use the GNU autotools to automagically build
-WMND for your box with little or no difficulty.
+Since release 0.4 WMND is now compliant to the GNU Packaging standards
+and enables to use the GNU autotools to automagically build WMND for
+your box with little or no difficulty.
 
 First of all, unpack the source tarball:
 
@@ -265,19 +263,19 @@ And finally make/install it:
   $ make install
 
 Configure accepts several options to enchange/minimize wmnd
-functionality and size.  To forcely disable the dummy driver:
+functionality and size. To forcely disable the dummy driver:
 
-  $ ../wmnd-0.4.8/configure --without-dummy-driver
+  $ ../wmnd-0.4.8/configure --disable-dummy-driver
 
 To select only some display modes:
 
-  $ ../wmnd-0.4.8/configure --with-display-modes="traditional wmwave"
+  $ ../wmnd-0.4.8/configure --enable-modes="traditional wmwave"
 
-To forcely build specified drivers (beware that the dummy driver should
-be disabled with --wihout-dummy-driver, also, extra libraries that may
-be needed by the driver won't be checked automatically):
+To forcely build specified drivers (beware that the dummy driver
+should be disabled with --disable-dummy-driver, also, extra libraries
+that may be needed by the driver won't be checked automatically):
 
-  $ ../wmnd-0.4.8/configure --with-drivers="linux_proc"
+  $ ../wmnd-0.4.8/configure --enable-drivers="linux_proc"
 
 To enchange the dummy driver (shows a sine function instead of a plain
 empty graph):
@@ -318,7 +316,7 @@ _required_ to regenerate the configure script.
 
 Also, on some platforms (linux actually) the solaris_fpppd driver
 would be detected only when the ppp kernel module is installed. To
-forcedly enable specified drivers use the --with-drivers="list" flag.
+forcedly enable specified drivers use the --enable-drivers="list" flag.
 
 -- Available drivers/display modes -----------------------------------
 Actually WMND supports these drivers/display modes (these names should
@@ -422,8 +420,8 @@ notes to improve the WMND package.
 
 The irix_pcp and generic_snmp drivers depends upon libraries that are
 not installed on a distribution/OS by default. Both these drivers are
-supported by different operating systems. I suggest you to build
-three different packages of WMND, respectively:
+supported by different operating systems. I suggest you to build three
+different packages of WMND, respectively:
 
  - wmnd-pcp: built with irix_pcp and OS's drivers.
  - wmnd-snmp: built with generic_snmp and OS's drivers.

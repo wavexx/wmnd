@@ -54,8 +54,8 @@ driver=%auto
 # This is actually a parameter to the driver, and may have different
 # meanings on different drivers.
 #
-# linux_proc, freebsd_sysctl, solaris_kstat, solaris_fpppd: a simple
-#   interface name on the current host.
+# linux_proc, freebsd_sysctl, netbsd_ioctl,
+#   solaris_kstat, solaris_fpppd: a simple interface name on the current host.
 # irix_pcp: [host@]interface
 # generic_snmp: [community@]host[:interface number]
 driver_interface=%any

@@ -2,7 +2,9 @@ WMND 0.4.12
 ----------------------------------------------------------------------
 
 	* Executed processes are no longer left as zombies.
-	* Solaris 7 build fixes.
+	* Solaris 7 build fixes and kstat enhancements.
+	* NetBSD ioctl support.
+	* Maintainers warning: some flag names changed in 'configure'.
 
 WMND 0.4.11
 ----------------------------------------------------------------------

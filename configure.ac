@@ -3,7 +3,7 @@
 
 # initialization
 AC_INIT(wmnd, 0.4.12, wavexx@users.sf.net)
-AC_CONFIG_SRCDIR("src/wmnd.c")
+AC_CONFIG_SRCDIR(src/wmnd.c)
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
@@ -37,52 +37,76 @@ AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 
 
-# drivers selection
-AC_ARG_WITH(drivers,
-	[AC_HELP_STRING(
-		[--with-drivers="..."],
-		[manually selects drivers. defaults to auto])],
-	[ac_drivers="$with_drivers"],
-	[ac_drivers="auto"]
-)
+# like AC_ARG_ENABLE, but with COMMON SENSE(tm) added
+AC_DEFUN([ARG_ENABLE],
+[
+	AC_ARG_ENABLE([$1], [$2],, [enableval="no"])
+	AS_IF([test "$enableval" = "no"], [$4], [$3])
+])
 
+AC_DEFUN([ARG_DISABLE],
+[
+	AC_ARG_ENABLE([$1], [$2],, [enableval="yes"])
+	AS_IF([test "$enableval" = "no"], [$3], [$4])
+])
+
+
+# drivers selection
+ARG_ENABLE(drivers,
+	[AS_HELP_STRING(
+		[--enable-drivers="..."],
+		[manually selects drivers. defaults to auto])],
+[
+	ac_drivers="$enable_drivers"
+	AC_MSG_NOTICE([overriding driver autodetection: $ac_drivers])
+], [
+	# let the user specify an empty set
+	ac_drivers="auto"
+])
 
 # driver detection block: skip this block if the user manually specify
 # drivers on the command line
-if test "$ac_drivers" = "auto";
-then
+AS_IF([test "$ac_drivers" = "auto"],
+[
 	# reset the state variable
 	ac_drivers=""
 	
-	# check whether enable the LINUX_PROC driver
+	# linux_proc
 	AC_CHECK_FILE(/proc/net/dev,
 		[ac_drivers="$ac_drivers linux_proc"]
 	)
 	
-	# freebsd sysctl driver
-	AC_PREPROC_IFELSE([
+	# freebsd_sysctl
+	AC_MSG_CHECKING(for FreeBSD sysctl availability)
+	AC_PREPROC_IFELSE(
+	[
 		#include <net/if_mib.h>
 		#include <sys/sysctl.h>
-	],
-		[ac_drivers="$ac_drivers freebsd_sysctl"]
-	)
+	], [
+		ac_drivers="$ac_drivers freebsd_sysctl"
+		AC_MSG_RESULT(yes)
+	], [
+		AC_MSG_RESULT(no)
+	])
 	
-	# solaris/linux streams pppd driver
+	# solaris_fpppd
 	AC_CHECK_HEADER(sys/stropts.h,
 		[AC_CHECK_FILE(/dev/ppp,
 			[ac_drivers="$ac_drivers solaris_fpppd"]
 		)]
 	)
 	
-	# check whether enable the KSTAT driver
+	# solaris_kstat
 	AC_CHECK_HEADER(kstat.h,
 		[AC_SEARCH_LIBS(kstat_open, kstat,
 			[ac_drivers="$ac_drivers solaris_kstat"]
 		)]
 	)
 
-	# check whether enable the netbsd ioctl driver
-	AC_COMPILE_IFELSE([
+	# netbsd_ioctl
+	AC_MSG_CHECKING(for NetBSD ioctl availability)
+	AC_COMPILE_IFELSE(
+	[
 		#include <sys/types.h>
 		#include <sys/sockio.h>
 		#include <sys/ioctl.h>
@@ -90,24 +114,27 @@ then
 		#include <ifaddrs.h>
 
 		void aFunc() { ioctl(0, SIOCGIFDATA, NULL); }
-	],
-		[ac_drivers="$ac_drivers netbsd_ioctl"]
-	)
+	], [
+		ac_drivers="$ac_drivers netbsd_ioctl"
+		AC_MSG_RESULT(yes)
+	], [
+		AC_MSG_RESULT(no)
+	])
 
-	# irix pcp
+	# irix_pcp
 	AC_CHECK_HEADER(pcp/pmapi.h,
 		[AC_SEARCH_LIBS(pmLookupName, pcp,
 			[ac_drivers="$ac_drivers irix_pcp"]
 		)]
 	)
 
-	# generic snmp
+	# generic_snmp
 	AC_CHECK_HEADER(net-snmp/net-snmp-config.h,
-		[AC_SEARCH_LIBS(snmp_sess_init, snmp,
+		[AC_SEARCH_LIBS(snmp_sess_init, [snmp netsnmp],
 			[ac_drivers="$ac_drivers generic_snmp"]
 		)]
 	)
-fi
+])
 for driver in $ac_drivers;
 do
 	# we must repeat the define constants many times
@@ -127,50 +154,44 @@ do
 done
 
 
-# Dumb driver
-AC_ARG_WITH(dummy-driver,
-	[AC_HELP_STRING(
-		[--without-dummy-driver],
-		[compile without the dumb driver])])
-AC_MSG_CHECKING(whether enable dummy driver)
-if test "$with_dummy_driver" != "no";
-then
-	AC_DEFINE(USE_TESTING_DUMMY, "testing_dummy", [internal fallback driver])
+# creates a new switch (--enable-) with and help string which controls
+# the definition of a conditional.
+AC_DEFUN([ARG_EC],
+[
+	ARG_ENABLE([$1], [AS_HELP_STRING([--enable-$1], [$3])],	[
+		AC_DEFINE([$2],, [$3])
+	])
+])
+
+
+# Dummy driver
+ARG_DISABLE(dummy-driver,
+	[AS_HELP_STRING([--disable-dummy-driver],
+		[disable the dummy driver])],,
+[
 	drivers="$drivers testing_dummy"
-	AC_MSG_RESULT(yes)
-else
-	AC_MSG_RESULT(no)
-fi
+	AC_DEFINE(USE_TESTING_DUMMY,, [enable the dummy driver])
+])
 
-
-# Enchanged dummy driver
-AC_ARG_EC([sine-dummy], [sine_dummy], [USE_SINE_TESTING_DUMMY],
-	[enchanged dummy driver],
-	[whether enchange the dummy driver])
-
-# SNMP driver workaround
-AC_ARG_EC([snmp-descr], [snmp_descr], [USE_GENERIC_SNMP_DESCR],
-	[Use ifDescr instead of ifName for snmp devices],
-	[whether generic_snmp should use ifDescr instead of ifName])
-
-# Inexact timing
-AC_ARG_EC([inexact-timing], [inexact_timing], [INEXACT_TIMING],
-	[Use an inexact (but smoother/faster) timing method],
-	[whether use an inexact timing method])
-
-# Trend support
-AC_ARG_EC([trend], [trend], [USE_TREND],
-	[Enable support for trend (history zoom/inspection)],
-	[whether enable trend support])
+# Simple options
+ARG_EC(sine-dummy, USE_SINE_TESTING_DUMMY,
+	[enhanged dummy driver])
+ARG_EC(snmp-descr, USE_GENERIC_SNMP_DESCR,
+	[prefer ifDescr instead of ifName for snmp devices])
+ARG_EC(inexact-timing, INEXACT_TIMING,
+	[use an inexact (but smoother/faster) timing method])
+ARG_EC(trend, USE_TREND,
+	[enable support for trend (history zoom/inspection)])
 
 
 # display modes selection
-AC_ARG_WITH(display-modes,
-	[AC_HELP_STRING(
-		[--with-display-modes="..."],
+ARG_ENABLE(modes,
+	[AS_HELP_STRING(
+		[--enable-modes="..."],
 		[manually select visual modes. defaults to all])],,
-	[with_display_modes="traditional mgraph waveform wmwave wmnet sepgraphs twisted charts needle lines"])
-for mode in $with_display_modes;
+	[enable_modes="traditional mgraph waveform wmwave wmnet sepgraphs twisted charts needle lines"]
+)
+for mode in $enable_modes;
 do
 	# we must repeat the define constants many times
 	# to make autoheader automatically recognize them all
@@ -200,14 +221,9 @@ AC_DEFINE(INLINE, inline, [code compatibility stub])
 AC_CHECK_SIZEOF(unsigned int)
 AC_CHECK_SIZEOF(unsigned long)
 
-# on all systems char is an 8 bits type
+# some types needed for pppio
 AC_DEFINE([__u8], [unsigned char], [basic unsigned 8 bits type])
-
-# on recent HW all int types (int, long) are actually 32 bits types. On old
-# 16bit CPUs this may not be true. Also, I should consider adding a check for
-# unsigned short, just for those future 128 bits CPUs :)).
-AC_SIZE_SEARCH(__u32, 4, ["unsigned int" "unsigned long"])
-
+AC_DEFINE([__u32], [unsigned int], [basic unsigned 32 bits type])
 
 # output files
 AC_CONFIG_FILES([
@@ -221,5 +237,12 @@ AC_CONFIG_FILES([
 
 AC_OUTPUT
 
-AC_MSG_NOTICE([enabled drivers:$drivers])
-AC_MSG_NOTICE([enabled display modes:$dspmodes])
+AC_MSG_NOTICE([configuration:
+
+trend support:         ${enable_trend:-no}
+enhanged dummy driver: ${enable_sine_dummy:-no}
+inexact timing:        ${enable_inexact_timing:-no}
+prefer snmp ifDescr:   ${enable_snmp_descr:-no}
+enabled drivers:      ${drivers:- none}
+enabled display modes:${dspmodes:- none}
+])

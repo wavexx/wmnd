@@ -26,10 +26,7 @@ devices_append(struct Devices* list, struct Devices* src)
 
 /*
  * this driver should work on any system that could compile and execute pppd
- * for linux/solaris. Had require some hacking and has some drawbacks but
- * finally works. always detect at least one device since you can't detect the
- * number of futher connections. The _get function also required a bit of hack
- * to manage correctly the status of the device without messing the graph
+ * for linux/solaris.
  */
 
 /* some needed headers */
@@ -126,7 +123,7 @@ solaris_fpppd_init(struct Devices* dev)
 void
 solaris_fpppd_term(struct Devices* dev)
 {
-  close(((struct solaris_fpppd_drvdata*) dev->drvdata)->fd);
+  close(((struct solaris_fpppd_drvdata*)dev->drvdata)->fd);
   free(dev->drvdata);
 }
 
@@ -146,7 +143,7 @@ solaris_fpppd_list(const char* devname, struct Devices* list)
 
   if(devn) /* device specified */
   {
-    if (sscanf(devn, "ppp%d", &unit) != 1)
+    if(sscanf(devn, "ppp%d", &unit) != 1)
     {
       msg_drInfo(drName, "invalid specified interface '%s'", devn);
       free(devn);
@@ -217,17 +214,17 @@ solaris_fpppd_get(struct Devices* dev, unsigned long* ip,
   static struct ppp_stats curp;
   struct solaris_fpppd_drvdata* drvdata = dev->drvdata;
 
-  /* clear vars (not clearing will fuck up all scales when disconnecting */
+  /* clear vars (not clearing will fuck up all scales when disconnecting) */
   *ip = *op = *ib = *ob = 0;
 
   if(drvdata->mustconnect < sfpppd_connected)
   {
     /* trying to activate the device */
-    if (solaris_fpppd_init(dev))
+    if(solaris_fpppd_init(dev))
       return 1;
   }
-  if(solaris_fpppd_strioctl(drvdata->fd, PPPIO_GETSTAT, (char* )&curp,
-      0, sizeof(curp)) < 0)
+  if(solaris_fpppd_strioctl(drvdata->fd, PPPIO_GETSTAT,
+	 (char*)&curp, 0, sizeof(curp)) < 0)
   {
     /* the connection has probably shutted down */
     drvdata->mustconnect = sfpppd_failed;
@@ -381,7 +378,7 @@ solaris_kstat_term(struct Devices* dev)
 
 /* we need the double of PI, not defined everywhere */
 #undef M_2PI
-#define M_2PI M_PI * 2
+#define M_2PI (M_PI * 2)
 
 #endif
 
@@ -539,7 +536,7 @@ linux_proc_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
 #endif /* USE_LINUX_PROC */
 
 
-/* FreeBDS sysctl driver */
+/* FreeBSD sysctl driver */
 #ifdef USE_FREEBSD_SYSCTL
 #undef drName
 #define drName USE_FREEBSD_SYSCTL
