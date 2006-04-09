@@ -1,347 +1,297 @@
 WMND - Window Maker Network Devices
-----------------------------------------------------------------------
-Current development: http://www.yuv.info/wmnd/
-Old web site: http://wmnd.wingeer.org/
-Copyright information:
-
-  Reed "Reed Lai" <reed@wingeer.org> http://www.wingeer.org/bv4qo/
-  Copyright (c) 2000-2001
-  
-  Timecop <timecop@japan.co.jp> http://www.ne.jp/asahi/linux/timecop/
-  Copyright (c) 2001
-  
-  wave++ "Yuri D'Elia" <wavexx@yuv.info> http://www.yuv.info/
-  Copyright (c) 2001-2006
-
-WMND is licensed under the GNU General Public License. Read the
-COPYING file for the complete GNU license description.
-
+===================================
 
 Description
-----------------------------------------------------------------------
-WMND (WindowMaker Network Devices) is a network monitoring dockapp for
-Window Maker (and compatibles) for many operative systems.  Improved
-and based on WMiFS 1.3b, the version 0.2 of WMND is almost totally
-written by Timecop, given the optimization and flexibility and now
-consumes less cpu than wmmon. Version >= 0.3 WMND is now maintained by
-wave++, which added new display modes and several new drivers. Enjoy!
+-----------
+
+WMND (WindowMaker Network Devices) is a network monitoring dockapp for Window
+Maker (and compatibles) for many operative systems. Improved and based on WMiFS
+1.3b, the version 0.2 of WMND is almost totally written by Timecop, given the
+optimization and flexibility and now consumes less cpu than wmmon. Version >=
+0.3 WMND is now maintained by wave++, which added new display modes and several
+new drivers. Enjoy! WMND can be found at http://www.yuv.info/wmnd/
 
 
-Files
-----------------------------------------------------------------------
-README		This file.
-INSTALL		Configuration and Installation instructions.
-		(The bottom of this file contains a brief summary)
-ChangeLog	Description of changes.
-NEWS		Summary of changes between releases.
-TODO		Things we've already planned for WMND.
-COPYING		GNU General Public License Version 2.
-AUTHORS		Programmers that have contributed to WMND.
+Copyright
+---------
+
+Copyright(c) 2000-2001 by Reed "Reed Lai" <reed@wingeer.org>
+http://www.wingeer.org/bv4qo/
+  
+Copyright(c) 2001 by Timecop <timecop@japan.co.jp>
+http://www.ne.jp/asahi/linux/timecop/
+  
+Copyright(c) 2001-2006 by wave++ "Yuri D'Elia" <wavexx@yuv.info>
+http://www.yuv.info/
+
+WMND is licensed under the GNU General Public License. Read the COPYING file
+for the complete GNU license description.
 
 
 Bugs
-----------------------------------------------------------------------
-If you discover any bugs in this software, please submit a bug report
-to the current maintainer: wave++ <wavexx@users.sf.net>. Please
-describe the problems in as much in detail as you can.
+----
+
+If you discover any bugs in this software, please submit a bug report to the
+current maintainer: wave++ <wavexx@users.sf.net>. Please describe the problems
+in as much in detail as you can.
 
 
 Hints for WMND
-----------------------------------------------------------------------
--- Generic -----------------------------------------------------------
+--------------
+
+Generic
+~~~~~~~
+
 WMND supports command-line options, 'wmnd -h' prints help about them.
 
-Use option -i to monitor a particular interface at startup:
+Use option -i to monitor a particular interface at startup::
 
   wmnd -i eth0 &
   wmnd -i ppp0 &
 
-Without the -i option, wmnd will auto-magically use the interface that
-is first found in /proc/net/dev (or the current driver), but skip the
-lo and irda.
+Without the -i option, wmnd will auto-magically use the interface that is first
+found in /proc/net/dev (or the current driver), but skip the lo and irda.
 
-Use the -I option to load only a specific interface into wmnd. By
-default wmnd loads all available interfaces.
+Use the -I option to load only a specific interface into wmnd. By default wmnd
+loads all available interfaces.
 
-To monitor the lo or irda devices you must manually force wmnd as
-shown below:
+To monitor the lo or irda devices you must manually force wmnd as shown below::
 
   wmnd -I lo &
   wmnd -I irda &
 
-To monitor dialup interfaces under linux either use the -I ppp0 flag
-or use the streams solaris_fpppd driver (-D solaris_fpppd -I ppp0).
-The linux_proc driver supports multiple interfaces on the command line
-through the -I flag:
+To monitor dialup interfaces under linux either use the -I ppp0 flag or use the
+streams solaris_fpppd driver (-D solaris_fpppd -I ppp0).  The linux_proc driver
+supports multiple interfaces on the command line through the -I flag::
 
   wmnd -D linux_proc -I eth0,eth1,ppp0
 
-This way you can combine multiple interfaces (whether they're online
-or not) on the same WMND instance. This trick allows also to create
-handy dialup shortcuts using the button actions (by passing the active
-interface name and status on the command line). Look at the example
-wmndrc file for details.
+This way you can combine multiple interfaces (whether they're online or not) on
+the same WMND instance. This trick allows also to create handy dialup shortcuts
+using the button actions (by passing the active interface name and status on
+the command line). Look at the example wmndrc file for details.
 
--- GUI Usage ---------------------------------------------------------
-You can cycle in real-time through all available active interfaces by
-simply left-clicking on the interface name gadget on the upper-left
-corner of wmnd.
 
-By default, wmnd show device name in short term of four characters,
-for example, the ippp0 will be displayed as ipp0.  You can toggle the
-device name between short and long by right-click on it.
+GUI Usage
+~~~~~~~~~
+
+You can cycle in real-time through all available active interfaces by simply
+left-clicking on the interface name gadget on the upper-left corner of wmnd.
+
+By default, wmnd show device name in short term of four characters, for
+example, the ippp0 will be displayed as ipp0.  You can toggle the device name
+between short and long by right-click on it.
 
 Left-click on the main graphic area to cycle the graphic mode.
 
-Left-click to toggle the history max or screen max, default is screen
-max when wmnd is startup.  Right-click to hide or display.
+Left-click to toggle the history max or screen max, default is screen max when
+wmnd is startup.  Right-click to hide or display.
 
-Left-click on the letter gadgeted on the right-top corner can switch
-between the Byte or Packet counter mode. "B" for byte, "p" for packet.
+Left-click on the letter gadgeted on the right-top corner can switch between
+the Byte or Packet counter mode. "B" for byte, "p" for packet.
 
-Click on the bottom rate meter can invoke the user command defined in
-resource file .wmndrc.
+Click on the bottom rate meter can invoke the user command defined in resource
+file .wmndrc.
 
-Be sure to drag WMND on it's outer edges, it's a bit picky due to the
-large gfx pixmap it keeps ;-). You can also use a keyboard+mouse
-shortcut (perhaps ALT+left-click) in your window manager to drag it
-around.
+Be sure to drag WMND on it's outer edges, it's a bit picky due to the large gfx
+pixmap it keeps ;-). You can also use a keyboard+mouse shortcut (perhaps
+ALT+left-click) in your window manager to drag it around.
 
-If trend support is enabled (--enable-trend at configure time) and
-trend is installed, the history can be viewed and inspected more
-conveniently by clicking with the middle button on the scale meter.
-See the "trend" section below.
+If trend support is enabled (--enable-trend at configure time) and trend is
+installed, the history can be viewed and inspected more conveniently by
+clicking with the middle button on the scale meter.  See the "trend" section
+below.
 
--- Transition from 0.2/0.3 -------------------------------------------
-If you are coming from an old release of WMND (0.2/0.3 series) you
-must be aware that some values/scales of the ~/.wmndrc file have
-changed. Copy a fresh wmndrc from the source distribution
-(examples/wmndrc) or erase your old wmndrc to get the new defaults.
 
--- Firing up WMND with sensible defaults -----------------------------
+Transition from 0.2/0.3
+~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are coming from an old release of WMND (0.2/0.3 series) you must be
+aware that some values/scales of the ~/.wmndrc file have changed. Copy a fresh
+wmndrc from the source distribution (examples/wmndrc) or erase your old wmndrc
+to get the new defaults.
+
+
+Firing up WMND with sensible defaults
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Default values are easily changed from the command line or through the
-~/.wmndrc file. The ~/.wmndrc file gets created automatically the
-first time you execute WMND (unless you use -F) using the internal
-defaults and command line flags. That is, if you want to change
-"permanently" the defaults (so you can start it without command line
-fuss) just remove ~/.wmndrc and launch WMND using all the flags
-again. Beware however that internal defaults may change. Consider
-reading the example wmndrc that comes with the distribution.
+~/.wmndrc file. The ~/.wmndrc file gets created automatically the first time
+you execute WMND (unless you use -F) using the internal defaults and command
+line flags. That is, if you want to change "permanently" the defaults (so you
+can start it without command line fuss) just remove ~/.wmndrc and launch WMND
+using all the flags again. Beware however that internal defaults may
+change. Consider reading the example wmndrc that comes with the distribution.
+
+
+Creating PPP dialup scripts
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Because a very good PPP HowTo already exists, it's quite pointless for us to
+explain to you how you should and make them. Look for mouse button actions
+(bt?_action) into the example wmndrc.
+
+Read the PPP HowTo, and you'll see that it's very easy to create your own PPP
+scripts.
 
 
 Window Managers
-----------------------------------------------------------------------
--- WindowMaker -------------------------------------------------------
-WindowMaker users simply drag and drop the WMND dock.app on the
-WindowMaker Dock (preferred) or on the Fiend, and then press the right
-mouse button on the outer edges of WMND and then enable 'Auto launch'
-from the Dock pop-up menu.
+---------------
 
--- AfterSTEP ---------------------------------------------------------
-AfterSTEP users put the following in their .steprc:
+WindowMaker
+~~~~~~~~~~~
+
+WindowMaker users simply drag and drop the WMND dock.app on the WindowMaker
+Dock (preferred) or on the Fiend, and then press the right mouse button on the
+outer edges of WMND and then enable 'Auto launch' from the Dock pop-up menu.
+
+
+AfterSTEP
+~~~~~~~~~
+
+AfterSTEP users put the following in their .steprc::
 
   "Wharf wmnd - MaxSwallow "wmnd" wmnd -i eth0 -w &".
 
-Change the WMND's title name in order to not swallow multiple
-instances into a single dock (see -n).
+Change the WMND's title name in order to not swallow multiple instances into a
+single dock (see -n).
 
--- BlackBox or FluxBox -----------------------------------------------
-You must enable the slit in other make wmnd visible. To add wmnd to
-the slit simply run wmnd from the command line:
+
+BlackBox or FluxBox
+~~~~~~~~~~~~~~~~~~~
+
+You must enable the slit in other make wmnd visible. To add wmnd to the slit
+simply run wmnd from the command line::
 
   wmnd &
 
 and it will pop-up into a new slot.
 
--- Other Window managers ---------------------------------------------
-For other windowmanagers, WMND runs nicely as 64x64 pixel shaped icon
-on your desktop.
 
-Under gnome add the "swallow" applet and set it to run wmnd. The same
-thing can be done under KDE using the kdeswallow applet.
+Other Window managers
+~~~~~~~~~~~~~~~~~~~~~
+
+For other windowmanagers, WMND runs nicely as 64x64 pixel shaped icon on your
+desktop.
+
+Under gnome add the "swallow" applet and set it to run wmnd. The same thing can
+be done under KDE using the kdeswallow applet.
 
 PS: FVWM can swallow it too, so we've heard ;-)
 
 
-Creating PPP dialup scripts
-----------------------------------------------------------------------
-Because a very good PPP HowTo already exists, it's quite pointless for
-us to explain to you how you should and can make them.
-
-Read the PPP HowTo, and you'll see that it's very easy to create your
-own PPP scripts.
-
-
 Display modes
-----------------------------------------------------------------------
--- Traditional -------------------------------------------------------
-Tx and Rx are piled on the same line within a single graph (like wmifs
-original behavior)
+-------------
 
--- MGraph ------------------------------------------------------------
-Tx and Rx scale is calculated uniquely and the slower channel is shown
-in front of the other one.
+Configure --enable-modes flags (space separated): traditional mgraph waveform
+wmwave wmnet sepgraphs twisted charts needle lines.
 
--- Waveform ----------------------------------------------------------
-Tx and Rx are piled on the same line and mirrored using the central
-line, in way to generate a "waveform like" silhouette
+Traditional:
+	Tx and Rx are piled on the same line within a single graph (like wmifs
+	original behavior).
 
--- WmWave ------------------------------------------------------------
-Tx and Rx are opposite to the central line, however the scale is
-calculated using both values
+MGraph:
+	Tx and Rx scale is calculated uniquely and the slower channel is shown
+	in front of the other one.
 
--- WmNet -------------------------------------------------------------
-This graph shows a reversed wmwave mode without the central line.
-(like wmnet behavior)
+Waveform:
+	Tx and Rx are piled on the same line and mirrored using the central
+	line, in way to generate a "waveform like" silhouette
 
--- Sepgraphs ---------------------------------------------------------
-Tx and Rx are shown on separated graphs. Tx in top and Rx in bottom,
-divided by a central line. Scales are calculated separately.
+WmWave:
+	Tx and Rx are opposite to the central line, however the scale is
+	calculated using both values
 
--- Twisted -----------------------------------------------------------
-This mode displays two vertical "waveform like" graphs flowing in
-reverse directions. The scale is unique.
+WmNet:
+	This graph shows a reversed wmwave mode without the central line.
+	(like wmnet behavior)
 
--- Charts ------------------------------------------------------------
-Displays four charts disposed in this manner:
+Sepgraphs:
+	Tx and Rx are shown on separated graphs. Tx in top and Rx in bottom,
+	divided by a central line. Scales are calculated separately.
 
-  TX Current Speed Indicator
-  TX Average Speed Indicator
-  RX Current Speed Indicator
-  RX Average Speed Indicator
+Twisted:
+	This mode displays two vertical "waveform like" graphs flowing in
+	reverse directions. The scale is unique.
 
-The range is from 0 to the maximal value in history. The average speed
-is calculated using the lastest 58 samples for each channel.
+Charts:
+	Displays four charts disposed in this manner:
 
--- Needle ------------------------------------------------------------
-Displays three needles. The arrangement is as follows:
+	  | TX Current Speed Indicator
+	  | TX Average Speed Indicator
+	  | RX Current Speed Indicator
+	  | RX Average Speed Indicator
 
-  TX Average Needle
+	The range is from 0 to the maximal value in history. The average speed
+	is calculated using the latest 58 samples for each channel.
 
-       Bandwidth utilization Needle
+Needle:
+	Displays three needles. The arrangement is as follows:
 
-  RX Average Needle
+	  | TX Average Needle
+	  |   Bandwidth utilization Needle
+	  | RX Average Needle
 
-The range For TX and RX needles is between 0 and the maximal value in
-history. The bandwidth utilization one uses this formula:
+	The range For TX and RX needles is between 0 and the maximal value in
+	history. The bandwidth utilization one uses this formula:
 
- (tx_med+rx_med)/(tx_max+rx_max)
+	  (tx_avg+rx_avg)/(tx_max+rx_max)
 
-_med: average speed
-_max: maximal value in history
+	I particularly like this mode :), the needles speed are slow and smooth
+	like a real analog display.
 
-I particularly like this mode :), the needles speed are slow and
-smooth like a real analog display.
-
--- Lines -------------------------------------------------------------
-Displays a trend graph using two lines.
+Lines:
+	Displays a trend graph using two lines.
 
 
-Building WMND 0.4
-----------------------------------------------------------------------
-Since release 0.4 WMND is now compliant to the GNU Packaging standards
-and enables to use the GNU autotools to automagically build WMND for
-your box with little or no difficulty.
+Drivers
+-------
 
-First of all, unpack the source tarball:
+Introduction
+~~~~~~~~~~~~
 
-  $ gzcat wmnd-0.4.8.tar.gz | tar xf -
+Since release 0.3, WMND is now portable to many operating systems by using
+compile-time defines and an internal driver table (now it should be possible to
+make WMND monitor just about anything). Current supported OSs/drivers includes:
 
-WMND will unpack into the wmnd-0.4.8 directory. Create now a build
-directory that will contain objects:
+Configure --enable-drivers flags (space separated) drivers: linux_proc
+freebsd_sysctl solaris_fpppd solaris_kstat irix_pcp generic_snmp netbsd_ioctl.
 
-  $ mkdir wmnd-build
-  $ cd wmnd-build
+linux_proc:
+	Supports Linux >2.2 by using the /proc/net/dev file.
 
-You can now launch configure to 'configure' wmnd as follows:
+freebsd_sysctl:
+	FreeBSD (and Darwin) sysctl based.
 
-  $ ../wmnd-0.4.8/configure
+solaris_fpppd:
+	Free PPPd (for Linux, Solaris, and maybe others) for ppp dialup
+	interfaces.
 
-And finally make/install it:
+solaris_kstat:
+	Solaris kstat based.
 
-  $ make
-  $ make install
+irix_pcp:
+	Based on PCP (Performance Co-Pilot API 2).
 
-Configure accepts several options to enchange/minimize wmnd
-functionality and size. To forcely disable the dummy driver:
+generic_snmp:
+	Since WMND 0.4.5 you can now monitor IF-MIB local and/or remote snmp
+	interfaces a-la MRTG, but in realtime!
 
-  $ ../wmnd-0.4.8/configure --disable-dummy-driver
+netbsd_ioctl:
+	NetBSD ioctl based.
 
-To select only some display modes:
+Due to the new handling of the drivers, WMND won't add new devices (like PPP
+interfaces in /proc/net/dev) and remove them as they appear on the
+/proc/net/dev file. Offline devices are now shown as red (disabled). If you're
+under linux and still require to monitor a dialup interface you'll need to feed
+it on the command line through the -I flag.
 
-  $ ../wmnd-0.4.8/configure --enable-modes="traditional wmwave"
 
-To forcely build specified drivers (beware that the dummy driver
-should be disabled with --disable-dummy-driver, also, extra libraries
-that may be needed by the driver won't be checked automatically):
+irix_pcp
+~~~~~~~~
 
-  $ ../wmnd-0.4.8/configure --enable-drivers="linux_proc"
-
-To enchange the dummy driver (shows a sine function instead of a plain
-empty graph):
-
-  $ ../wmnd-0.4.8/configure --enable-sine-dummy
-
-To use an innacurate (but smoother, if you don't mind about stats)
-timing method:
-
-  $ ../wmnd-0.4.8/configure --enable-inexact-timing
-
-The --help flag will show you a complete list of command line flags
-that the configure script supports.
-
--- Autodetection flaws -----------------------------------------------
-The configure autodetection stuff has only been tested on solaris and
-linux due to lack of FreeBSD machines. Report any autodetection
-problem to the current mantainer.
-
-automake 1.5 doesn't seem to cooperate with autoconf 2.5 and so it
-might cause problems if you have it installed. The only thing that you
-can do is making configure failing to find automake:
-
-  $ cd wmnd-0.4.8
-  $ sed -e "s/\<automake\>/fake-automake/" configure > configure.tmp
-  $ mv configure.tmp configure
-  $ chmod +x configure
-
-and then proceed as above. You'll notice this big improvement:
-
-  -checking for working automake... found
-  +checking for working fake-automake... missing
-
-This will prevent for make to recall automake later for regenerating
-makefiles (and this happens regardless the date of files!). automake
-1.4 no longer works. automake >= 1.7 and autoconf >= 2.5 are now
-_required_ to regenerate the configure script.
-
-Also, on some platforms (linux actually) the solaris_fpppd driver
-would be detected only when the ppp kernel module is installed. To
-forcedly enable specified drivers use the --enable-drivers="list" flag.
-
--- Available drivers/display modes -----------------------------------
-Actually WMND supports these drivers/display modes (these names should
-be used with configure, they're case sensitive):
-
-  * display modes: traditional mgraph waveform wmwave wmnet sepgraphs
-  twisted charts needle lines
-
-  * drivers: linux_proc freebsd_sysctl solaris_fpppd solaris_kstat
-  irix_pcp generic_snmp netbsd_ioctl
-
--- GCC 2.96 sucks ----------------------------------------------------
-WMND 0.4 won't compile with RedHat's gcc 2.96. Either downgrade to
-2.95 or upgrade to 3. DON'T SEND bug reports about INLINE not working
-under gcc 2.96, it's a RedHat-only bug.
-
--- IRIX MIPSPro 7.3 / AIX VaCPP 5.0 ----------------------------------
-These compilers ignores what variable arguments macros are! A
-work-around has been found so WMND can be built with these compilers
-now. MIPSPro 7.4 works correctly. Drivers for AIX, however, are still
-missing (and I'll probably never code them unless someone asks).
-
-Actually, the IRIX driver is based on the PCP API 2.x (Performance
-Co-Pilot). You'll need `pcpd' running for WMND to work. These filesets
-are required:
+The IRIX driver is based on the PCP API 2.x (Performance Co-Pilot). You'll need
+'pcpd' running for WMND to work. These filesets are required::
 
   pcp_eoe.sw.eoe
   pcp.sw.base
@@ -350,103 +300,132 @@ If you don't have these, you can download PCP directly from here:
 http://www.sgi.com/software/co-pilot/ (pcp_eoe.* filesets are into
 "IRIX Overlays, 2/4" and "Foundation 2").
 
-In some cases WMND may fail to compile due to the presence of Motif
-XPM headers: be sure to have freeware's XPM installed (see
-http://freeware.sgi.com/) and have "/usr/freeware/include" paths
-before any other.
+In some cases WMND may fail to compile due to the presence of Motif XPM
+headers: be sure to have freeware's XPM installed (see
+http://freeware.sgi.com/) and have "/usr/freeware/include" paths before any
+other.
 
-There seems to be a Linux version of PCP, but I can't (don't) want to
-try it. It will probably work.
+There seems to be a Linux version of PCP, but I can't (don't) want to try
+it. It will probably work.
 
--- IF-MIB snmp driver ------------------------------------------------
+
+generic_snmp
+~~~~~~~~~~~~
+
 Since 0.4.5 wmnd adds a new snmp driver for local and/or remote IF-MIB
-compliant devices. This driver requires the NET-SNMP library,
-available at http://www.net-snmp.org/, version 5 or higher. The
-drivers name is generic_snmp. It uses the parameters sent through the
--I flag to initialize the device/s list. The format is as follows:
+compliant devices. This driver requires the NET-SNMP library, available at
+http://www.net-snmp.org/, version 5 or higher. The drivers name is
+generic_snmp. It uses the parameters sent through the -I flag to initialize the
+device/s list. The format is as follows::
 
   [community@]host[:interface]
 
-Parameters inside [] are optional. If you do not explicitly supply
-these parameters, generic_snmp will use "public@localhost".
+Parameters inside [] are optional. If you do not explicitly supply these
+parameters, generic_snmp will use "public@localhost".
 
-To monitor an entire switch, you can usually do:
+To monitor an entire switch, you can usually do::
 
   wmnd -D generic_snmp -I public@switch
 
-(or "-I switch", which is shorter).
-To monitor only a specific interface:
+(or "-I switch", which is shorter). To monitor only a specific interface::
 
   wmnd -D generic_snmp -I public@switch:1
 
-Interface numbers start at 1 (0 means all interfaces, like an empty
-interface specification). Beware that EACH remote interface, at the
-default refresh speed, burns AT LEAST 2kB/s of continuous data stream
-through your network. Monitoring a complete switch (24 ports), always
-at the default refresh speed, burns circa 30kB/s. You can slow down
-the refresh speed (-r) to reduce this traffic. The extremely fast
-queries done by wmnd can also reduce the available cpu of your snmp
-server/hardware and decrease overall performance.
+Interface numbers start at 1 (0 means all interfaces, like an empty interface
+specification). Beware that EACH remote interface, at the default refresh
+speed, burns AT LEAST 2kB/s of continuous data stream through your
+network. Monitoring a complete switch (24 ports), always at the default refresh
+speed, burns circa 30kB/s. You can slow down the refresh speed (-r) to reduce
+this traffic. The extremely fast queries done by wmnd can also reduce the
+available cpu of your snmp server/hardware and decrease overall performance.
 
-Also beware that using the -I flag on the command-line can potentially
-expose the community name of your remote snmp server. Better to use
-~/.wmndrc and chmod it to 600 in this case.
+Also beware that using the -I flag on the command-line can potentially expose
+the community name of your remote snmp server. Better to use ~/.wmndrc and
+chmod it to 600 in this case.
 
 WMND will use ifName to display interface names, which is usually
-shorter. DLINK switches seems to hang (or even flood the network) with
-this, so you can switch back to ifDescr using the --enable-snmp-descr
-option at the configure command line.
+shorter. DLINK switches seems to hang (or even flood the network) with this, so
+you can switch back to ifDescr using the --enable-snmp-descr option at the
+configure command line.
 
-Personal note: this driver shows both the potential and the side
-effects of the current driver layout. You can make drivers for almost
-anything, but as you need initialization parameters, you'll loose the
-ability to have multiple interfaces/drivers inside a single wmnd
-instance, that has always been a nice feature of wmnd.
 
-WMND now needs a mayor rewrite, definitively! The snmp driver itself
-needs more work to the able to monitor non IF-MIB devices. But I want
-your comments. I won't do any larger work on WMND as it is without
-YOUR feedback, without SOMEONE that will ever use it. Do you like
-WMND? Do you want to use multiple drivers and/or parameters without
-leaving WMND simply guessing? Do you want better snmp support? Please
-drop me a line, I don't ask anything more. I don't have much time to
-dedicate to myself anymore, so I want to do something really useful
-instead of guessing what you'd like. Thanks to everyone that have done
-it so far. These comments greatly improved WMND over time.
+Building WMND 0.4
+-----------------
 
--- Packager's notes --------------------------------------------------
-I'm not a professional packager, but you may want to consider these
-notes to improve the WMND package.
+Configure flags
+~~~~~~~~~~~~~~~
 
-The irix_pcp and generic_snmp drivers depends upon libraries that are
-not installed on a distribution/OS by default. Both these drivers are
-supported by different operating systems. I suggest you to build three
-different packages of WMND, respectively:
+Since release 0.4 WMND is now compliant to the GNU Packaging standards and
+enables to use the GNU autotools to automagically build WMND for your box with
+little or no difficulty. See INSTALL for a first-time introduction.
 
- - wmnd-pcp: built with irix_pcp and OS's drivers.
- - wmnd-snmp: built with generic_snmp and OS's drivers.
- - wmnd: standard WMND, built without generic drivers
-   (actually only irix_pcp and generic_snmp)
+Configure accepts several options to enchance/minimize wmnd functionality and
+size. To forcely disable the dummy driver::
 
-Finally, --enable-sine-dummy should be really a default :).
+  $ ./configure --disable-dummy-driver
 
--- Trend support -----------------------------------------------------
-If proper support has been compiled-in (with --enable-trend) and trend
-is installed[1], you can examine the current history in a larger
-window by clicking with the middle mouse button on the scale meter
-(the panel under the device name). A middle-click on the left side
-will inspect RX, TX on the right side. Bytes/Packets mode affects the
-counters involved.
+To select only some display modes::
+
+  $ ./configure --enable-modes="traditional wmwave"
+
+To forcely build specified drivers (beware that the dummy driver should be
+disabled with --disable-dummy-driver, also, extra libraries that may be needed
+by the driver won't be checked automatically)::
+
+  $ ./configure --enable-drivers="linux_proc"
+
+To enchance the dummy driver (shows a sine function instead of a plain empty
+graph)::
+
+  $ ./configure --enable-sine-dummy
+
+To use an innacurate (but smoother, if you don't mind about stats) timing
+method::
+
+  $ ./configure --enable-inexact-timing
+
+The --help flag will show you a complete list of command line flags that the
+configure script supports.
+
+
+GCC 2.96 sucks
+~~~~~~~~~~~~~~
+
+WMND 0.4 won't compile with RedHat's gcc 2.96. Either downgrade to 2.95 or
+upgrade to 3. DON'T SEND bug reports about INLINE not working under gcc 2.96,
+it's a RedHat-only bug.
+
+
+Notes for packagers
+~~~~~~~~~~~~~~~~~~~
+
+I'm not a professional packager, but you may want to consider these notes to
+improve the WMND package.
+
+The irix_pcp and generic_snmp drivers depends upon libraries that are not
+installed on a distribution/OS by default. Both these drivers are supported by
+different operating systems. I suggest you to build at least one package that
+doesn't require them.
+
+
+Trend support
+~~~~~~~~~~~~~
+
+If proper support has been compiled-in (with --enable-trend) and trend is
+installed[1], you can examine the current history in a larger window by
+clicking with the middle mouse button on the scale meter (the panel under the
+device name). A middle-click on the left side will inspect RX, TX on the right
+side. Bytes/Packets mode affects the counters involved.
 
 [1] http://www.yuv.info/~wavexx/hacks/trend/
 
-Upon click, WMND will execute trend as a separate process and feed the
-latest 59 sampled values to it.
+Upon click, WMND will execute trend as a separate process and feed the latest
+59 sampled values to it.
 
 Since this feature requires additional software, it's disabled by
-default. Enabling trend support however does not cause any slow-down
-or runtime-dependencies so it's still safe to enable it in packages.
-If trend support is enabled but trend isn't installed, WMND will
-simply print a warning on the console when clicking.
+default. Enabling trend support however does not cause any slow-down or
+runtime-dependencies so it's still safe to enable it in packages.  If trend
+support is enabled but trend isn't installed, WMND will simply print a warning
+on the console when clicking.
 
 Any version of trend starting with Rev #11 21/09/2004 should work.
