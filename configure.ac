@@ -17,6 +17,7 @@ AC_PROG_CC
 AC_HEADER_STDC
 AC_HEADER_TIME
 AC_CHECK_HEADERS(sys/time.h)
+AC_CHECK_HEADERS(net/ppp_defs.h)
 
 # math library
 AC_SEARCH_LIBS(sin, m,, [AC_MSG_ERROR(math library is required)])
@@ -24,7 +25,7 @@ AC_SEARCH_LIBS(sin, m,, [AC_MSG_ERROR(math library is required)])
 # X libraries
 AC_PATH_XTRA
 CFLAGS="$CFLAGS $X_CFLAGS"
-LDFLAGS="$LDFLAGS $X_LIBS $X_EXTRA_LIBS"
+LDFLAGS="$LDFLAGS $X_PRE_LIBS $X_LIBS $X_EXTRA_LIBS"
 
 # check for XPM headers, libraries
 AC_HAVE_LIBRARY(X11,, [AC_MSG_ERROR(X11 library is required)])
@@ -175,7 +176,7 @@ ARG_DISABLE(dummy-driver,
 
 # Simple options
 ARG_EC(sine-dummy, USE_SINE_TESTING_DUMMY,
-	[enhanged dummy driver])
+	[enhanced dummy driver])
 ARG_EC(snmp-descr, USE_GENERIC_SNMP_DESCR,
 	[prefer ifDescr instead of ifName for snmp devices])
 ARG_EC(inexact-timing, INEXACT_TIMING,
@@ -221,15 +222,9 @@ AC_DEFINE(INLINE, inline, [code compatibility stub])
 AC_CHECK_SIZEOF(unsigned int)
 AC_CHECK_SIZEOF(unsigned long)
 
-# some types needed for pppio
-AC_DEFINE([__u8], [unsigned char], [basic unsigned 8 bits type])
-AC_DEFINE([__u32], [unsigned int], [basic unsigned 32 bits type])
-
 # output files
 AC_CONFIG_FILES([
 	Makefile
-	doc/Makefile
-	examples/Makefile
 	src/Makefile
 	wmnd.lsm
 	wmnd.spec
@@ -240,7 +235,7 @@ AC_OUTPUT
 AC_MSG_NOTICE([configuration:
 
 trend support:         ${enable_trend:-no}
-enhanged dummy driver: ${enable_sine_dummy:-no}
+enhanced dummy driver: ${enable_sine_dummy:-no}
 inexact timing:        ${enable_inexact_timing:-no}
 prefer snmp ifDescr:   ${enable_snmp_descr:-no}
 enabled drivers:      ${drivers:- none}

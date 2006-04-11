@@ -41,9 +41,16 @@
 #define _PPP_DEFS_H_
 
 /*
- * Include the configuration to use __u8/__u32 typedefs
+ * Define __u8/__u32 if not already defined
  */
-#include <config.h>
+#ifndef __u8
+#define __u8 unsigned char
+#endif
+
+#ifndef __u32
+#define __u32 unsigned int
+#endif
+
 
 /*
  * The basic PPP frame.
@@ -128,7 +135,7 @@ struct pppstat	{
     __u32	ppp_obytes;	/* raw bytes sent */
     __u32	ppp_ooctects;	/* frame bytes sent */
     __u32	ppp_opackets;	/* packets sent */
-    __u32	ppp_oerrors;	/* transmit errors */ 
+    __u32	ppp_oerrors;	/* transmit errors */
     __u32	ppp_olqrs;	/* # LQR frames sent */
 };
 

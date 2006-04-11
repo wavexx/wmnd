@@ -31,7 +31,11 @@ devices_append(struct Devices* list, struct Devices* src)
 
 /* some needed headers */
 #include <sys/stropts.h>
+#ifdef HAVE_NET_PPP_DEFS_H
+#include <net/ppp_defs.h>
+#else
 #include "ppp_defs.h"
+#endif
 #include "pppio.h"
 #include <errno.h>
 
