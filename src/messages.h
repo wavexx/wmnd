@@ -3,9 +3,7 @@
 #define MESSAGES_H
 
 /* local headers */
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 /* system headers */
 #include <stdio.h>
@@ -48,7 +46,7 @@ msg_drInfo(const char* driver, const char* fmt, ...);
  * C99 aware). This way, the function evaluates to a NULL statement and
  * gets removed like a macro when NDEBUG is defined.
  */
-static INLINE void
+static inline void
 msg_dbg(const char* file, const int line, const char* fmt, ...)
 {
 #ifndef NDEBUG

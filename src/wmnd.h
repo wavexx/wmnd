@@ -35,10 +35,8 @@
 #include <X11/extensions/shape.h>
 
 /* version number is now defined into config.h */
-#ifdef HAVE_CONFIG_H
 #include "config.h"
 #define WMND_VERSION PACKAGE_VERSION
-#endif
 
 #define MAXBUF 256
 
@@ -82,12 +80,12 @@ struct var
 
 typedef struct {
   unsigned int nr_devices;              /* number of devices in list */
-  unsigned long flags;                  /* big bit-mapped flags mask */
+  _bits_type flags;                     /* big bit-mapped flags mask */
   unsigned int wavemode;                /* type of wave graph */
   unsigned int nWavemodes;              /* numbers of wave graph */
   struct Devices* curdev;               /* current device */
   void                                  /* scale function */
-  (*scale)(unsigned char sign, unsigned long value, char* buf); 
+  (*scale)(unsigned char sign, unsigned long value, char* buf);
   unsigned int refresh;	                /* speed of the refresh */
   unsigned int avgSteps;                /* number of steps to average */
   unsigned int avgRSteps;               /* number of remaining steps */
@@ -156,10 +154,10 @@ typedef struct
 #define REG_SCALE_TX	4
 #define REG_SCRIPT	5
 
-/* bit ops */
-#define bit_set(n) onbit((__bytearray*)&wmnd.flags, n)
-#define bit_off(n) offbit((__bytearray*)&wmnd.flags, n)
-#define bit_tgl(n) invbit((__bytearray*)&wmnd.flags, n)
-#define bit_get(n) getbit((__bytearray*)&wmnd.flags, n)
+/* bit ops on wmnd.flags */
+#define bit_set(n) onbit(&wmnd.flags, n)
+#define bit_off(n) offbit(&wmnd.flags, n)
+#define bit_tgl(n) invbit(&wmnd.flags, n)
+#define bit_get(n) getbit(&wmnd.flags, n)
 
 #endif

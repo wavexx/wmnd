@@ -216,7 +216,6 @@ done
 
 # check for inline statement useability
 AC_C_INLINE
-AC_DEFINE(INLINE, inline, [code compatibility stub])
 
 # check for basic type sizes
 AC_CHECK_SIZEOF(unsigned int)
