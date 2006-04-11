@@ -31,9 +31,26 @@ for the complete GNU license description.
 Bugs
 ----
 
-If you discover any bugs in this software, please submit a bug report to the
-current maintainer: wave++ <wavexx@users.sf.net>. Please describe the problems
-in as much in detail as you can.
+A list of wishes and bugs can be found at the Debian WMND bugs page[1]. Special
+thanks goes to Arthur Korn for updating this list and mantaining the WMND
+Debian package.
+
+[1] http://bugs.debian.org/cgi-bin/pkgreport.cgi?src=wmnd
+
+The FreeBSD driver is known to have problems on laptop systems where you can
+dynamically insert/remove addictional PCMCIA interfaces. This is rather a
+design problem of the driver. A developer with FreeBSD's MIB knowledge would be
+helpful.
+
+Certainly there are more. I actually test WMND only on Solaris, Linux and IRIX
+boxes. You can report bugs to the current maintainer's email:
+<wavexx@users.sf.net>. Please be as descriptive as possible and always include
+at least:
+
+* WMND version
+* your host/target operating system
+* compiler used
+* A backtrace of the crash would be helpful, but less essential.
 
 
 Hints for WMND
@@ -291,7 +308,11 @@ irix_pcp
 ~~~~~~~~
 
 The IRIX driver is based on the PCP API 2.x (Performance Co-Pilot). You'll need
-'pcpd' running for WMND to work. These filesets are required::
+'pcpd' running for WMND to work. Interface format::
+
+  [host@]interface
+
+These filesets are required::
 
   pcp_eoe.sw.eoe
   pcp.sw.base

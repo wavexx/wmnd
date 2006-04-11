@@ -26,7 +26,7 @@ avg_steps=1
 # smooth: smoothing factor. A float value ranging from 0 to 1. This is
 # really the "amount" of the new speed against the history each time is
 # sampled from the device. A low value (0.1) will remove random spikes
-# from the graph. Values higher than 1 will instead enchange spikes. Only
+# from the graph. Values higher than 1 will instead enchance spikes. Only
 # the 'bytes' mode is affected by this switch.
 # Disabled by default (0).
 smooth=0

@@ -162,12 +162,18 @@ virtual filesystem.
 Uses the MIB to gather device statistics under FreeBSD (offline
 devices handling is buggy, support needed!)
 .TP
+.B netbsd_ioctl
+Read statistics through the NetBSD ioctl call.
+.TP
 .B solaris_kstat
 Gather all devices of class net from the kstat library.
 .TP
 .B irix_pcp
-Reads metrics from the IRIX Performance Co-Pilot daemon. Read
-the README for problems with this driver.
+Reads metrics from the IRIX Performance Co-Pilot daemon.
+Interface format:
+
+.RB [ host@ ] interface
+
 .TP
 .B generic_snmp
 Query an IF-MIB capable snmp server for gathering interface
@@ -188,7 +194,7 @@ details.
 .B testing_dummy
 This is the "last resort" driver, it shows a null device useful only
 to make \fBWMND\fP don't exit when all other drivers failed. Can be
-enchanged to display something at compile time.
+enchanced to display something at compile time.
 .SH FILES
 ~/.wmndrc	User configuration.
 .PP
