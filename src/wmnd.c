@@ -909,6 +909,8 @@ int main(int argc, char* *argv)
     drv_interface = NULL;
   if(strval_fe(psi_bool, value("quiet")))
     msg_messages = MSG_FERR;
+  if(strval_fe(psi_bool, value("debug")))
+    msg_messages |= MSG_FDBG;
 
   /* check for at least one display mode */
   if(!drwFuncs->funcName)
@@ -1910,5 +1912,5 @@ devices_destroy(void)
   {
     if(drivers_table[cnt].status && drivers_table[cnt].terminate_driver)
       (*drivers_table[cnt].terminate_driver)();
-  } 
+  }
 }

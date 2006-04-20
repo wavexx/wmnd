@@ -171,7 +171,7 @@ ARG_DISABLE(dummy-driver,
 		[disable the dummy driver])],,
 [
 	drivers="$drivers testing_dummy"
-	AC_DEFINE(USE_TESTING_DUMMY,, [enable the dummy driver])
+	AC_DEFINE(USE_TESTING_DUMMY, "testing_dummy", [fallback driver])
 ])
 
 # Simple options
@@ -184,6 +184,13 @@ ARG_EC(inexact-timing, INEXACT_TIMING,
 ARG_EC(trend, USE_TREND,
 	[enable support for trend (history zoom/inspection)])
 
+# debugging
+ARG_ENABLE(debug,
+	[AS_HELP_STRING(
+		[--enable-debug],
+		[find the meaning of life, and everything])],,
+	[AC_DEFINE(NDEBUG, 42, [shameless(tm)])]
+)
 
 # display modes selection
 ARG_ENABLE(modes,

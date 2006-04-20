@@ -34,7 +34,7 @@ struct pair_strstr pss_defcon[] =
   {"scroll",          "10",      0},
   {"avg_steps",       "1",       0},
   {"binary_scale",    "no",      0},
-  {"interface_name",  "%first",  0}, 
+  {"interface_name",  "%first",  0},
   {"use_long_names",  "no",      0},
   {"show_max_values", "yes",     0},
   {"use_max_history", "no",      0},
@@ -48,5 +48,6 @@ struct pair_strstr pss_defcon[] =
   {"fixed_max",       "0",       0},
   {"display",         NULL,      0},
   {"geometry",        NULL,      0},
+  {"debug",           "no",      0},
   {NULL,              NULL,      0}
 };
