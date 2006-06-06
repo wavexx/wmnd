@@ -8,10 +8,6 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
 
-# build date
-ISODATE="`date +%Y-%m-%d`"
-AC_SUBST(ISODATE)
-
 # C compiler rules
 AC_PROG_CC
 AC_HEADER_STDC
@@ -232,8 +228,6 @@ AC_CHECK_SIZEOF(unsigned long)
 AC_CONFIG_FILES([
 	Makefile
 	src/Makefile
-	wmnd.lsm
-	wmnd.spec
 ])
 
 AC_OUTPUT
