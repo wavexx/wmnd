@@ -1,3 +1,8 @@
+WMND 0.4.13:
+
+	* Fixed crash due to buffer overflow on 64bit systems.
+
+
 WMND 0.4.12:
 
 	* Executed processes are no longer left as zombies.

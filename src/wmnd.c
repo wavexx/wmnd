@@ -1190,7 +1190,7 @@ binary_scale(unsigned char sign, unsigned long value, char* buf)
   else
     scale = ' ';
 
-  sprintf(buf, "%c%lu", sign, value);
+  snprintf(buf, 7, "%c%lu", sign, value);
   r = buf;
   r++;
 
@@ -1237,7 +1237,7 @@ metric_scale(unsigned char sign, unsigned long value, char* buf)
   else
     scale = ' ';
 
-  sprintf(buf, "%c%f", sign, f);	/* to string */
+  snprintf(buf, 7, "%c%f", sign, f);
   r = buf;
   r++;
 
@@ -1392,8 +1392,8 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
 void
 draw_rate(unsigned long rx, unsigned long tx, const int gap)
 {
-  char rx_buf[16];
-  char tx_buf[16];
+  char rx_buf[8];
+  char tx_buf[8];
 
   /* clear rate bar */
   copy_xpm_area(100, 85, 58, 7, 3, 54);
