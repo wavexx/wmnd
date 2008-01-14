@@ -446,6 +446,7 @@ testing_dummy_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
  */
 
 const char* linux_proc_netDevice = "/proc/net/dev";
+const char* linux_proc_tokens = " :\t\n"; /* parse tokens */
 
 int
 linux_proc_list(const char* devname, struct Devices* list)
@@ -453,7 +454,6 @@ linux_proc_list(const char* devname, struct Devices* list)
   FILE* fd;
   int dta = 0;
   char temp[MAXBUF]; /* string buffer */
-  char* tokens = " :\t\n"; /* parse tokens */
   struct Devices* ndev;
   char* p;
 
@@ -486,7 +486,7 @@ linux_proc_list(const char* devname, struct Devices* list)
     while(fgets(temp, MAXBUF, fd))
     {
       /* grab all active devices, adding them as we go */
-      p = strtok(temp, tokens);
+      p = strtok(temp, linux_proc_tokens);
       if(!strncmp(p, "dummy", 5) ||
 	  !strncmp(p, "irda", 4) || !strncmp(p, "lo", 3))
 	continue;
@@ -524,14 +524,15 @@ linux_proc_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
   *ib = *ob = *ip = *op = 0;
 
   while(fgets(temp, MAXBUF, fp))
-    if(strstr(temp, dev->name))
+  {
+    if(!strcmp(strtok(temp, linux_proc_tokens), dev->name))
     {
-      p = strchr(temp, ':');
-      ++p;
+      p = strchr(temp, 0) + 1;
       sscanf(p, "%lu %lu %*s %*s %*s %*s %*s %*s %lu %lu", ib, ip, ob, op);
       active = 0;
       break;
     }
+  }
   fclose(fp);
 
   return active;

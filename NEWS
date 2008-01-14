@@ -1,6 +1,7 @@
 WMND 0.4.13:
 
 	* Fixed crash due to buffer overflow on 64bit systems.
+	* Fixed incorrent device name lookup on linux.
 
 
 WMND 0.4.12:
