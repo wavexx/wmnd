@@ -571,7 +571,8 @@ freebsd_sysctl_list(const char* devname, struct Devices* list)
   struct freebsd_sysctl_drvdata* drdata;
   int numifaces, numrfaces = 0;
   int mib[5], datamib[6];
-  int i, len, len2;
+  int i; 
+  size_t len, len2;
 
   mib[0] = CTL_NET;
   mib[1] = PF_LINK;
@@ -637,7 +638,7 @@ freebsd_sysctl_get(struct Devices*dev, unsigned long* ip,
 {
   struct freebsd_sysctl_drvdata* drdata = dev->drvdata;
   int datamib[6];
-  int len;
+  size_t len;
 
   *ip = *op = *ib = *ob = 0;
 
