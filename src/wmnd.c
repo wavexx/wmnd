@@ -549,6 +549,9 @@ tmpfifo()
   return NULL;
 }
 
+/* static data for trend instance sharing */
+static FILE* trendFd = NULL;
+static int trendIdx = -1;
 
 void
 exec_trend(int rt, int bp)
@@ -556,7 +559,6 @@ exec_trend(int rt, int bp)
   int idx, i;
   const char* title;
   const char* file;
-  FILE* fd;
 
   idx = (bp? 0: 2);	/* bytes or packets */
   idx += (rt? 0: 1);	/* input or output */
@@ -570,42 +572,61 @@ exec_trend(int rt, int bp)
   case 3: title = "output packets"; break;
   }
 
-  /* create the fifo */
-  file = tmpfifo();
-  if(!file)
+  if(idx != trendIdx || !trendFd || write(fileno(trendFd), 0, 0))
   {
-    msg_err("cannot create temporary fifo");
-    return;
-  }
-
-  /* execute */
-  switch(fork())
-  {
-  case -1:
-    msg_err("cannot fork!");
-    break;
-
-  case 0:
-    execlp("trend", "trend", "-t", title, "-G", (bp? "1000": "10"),
-	"-d", "-m", file, "59", "58", NULL);
-
-    /* exec failed, unlock the parent anyway! */
-    msg_err("cannot execute trend!");
-    fd = fopen(file, "r");
-    exit(1);
-
-  default:
-    /* feed the pipe */
-    if((fd = fopen(file, "w")))
+    /* new trend instance required */
+    if(trendFd)
     {
-      for(i = 0; i != 59; ++i)
-	fprintf(fd, "%lu\n", wmnd.curdev->his[i][idx]);
-      fclose(fd);
+      fclose(trendFd);
+      trendFd = NULL;
+    }
+
+    /* create the fifo */
+    file = tmpfifo();
+    if(!file)
+    {
+      msg_err("cannot create temporary fifo");
+      return;
+    }
+
+    /* execute */
+    switch(fork())
+    {
+    case -1:
+      msg_err("cannot fork!");
+      return;
+
+    case 0:
+      execlp("trend", "trend", "-t", title, "-G", (bp? "1000": "10"),
+	  "-d", "-m", file, "59", "58", NULL);
+
+      /* exec failed, unlock the parent anyway! */
+      msg_err("cannot execute trend!");
+      trendFd = fopen(file, "r");
+      exit(1);
+
+    default:
+      trendFd = fopen(file, "w");
+      if(!trendFd)
+	msg_err("cannot open temporary fifo");
+      else
+      {
+	/* ensure the endpoint is connected before removal */
+	fputs("\n", trendFd);
+	fflush(trendFd);
+	unlink(file);
+      }
     }
   }
 
-  /* remove the fifo */
-  unlink(file);
+  /* feed the pipe */
+  if(trendFd)
+  {
+    trendIdx = idx;
+    for(i = 0; i != 59; ++i)
+      fprintf(trendFd, "%lu\n", wmnd.curdev->his[i][idx]);
+    fflush(trendFd);
+  }
 }
 #endif
 
@@ -718,6 +739,9 @@ void
 mainExit(int sig)
 {
   msg_info("caught signal %d, terminating...", sig);
+#ifdef USE_TREND
+  if(trendFd) fclose(trendFd);
+#endif
   devices_destroy();
   exit(1);
 }
@@ -932,6 +956,9 @@ int main(int argc, char* *argv)
   signal(SIGINT, mainExit);
   signal(SIGTERM, mainExit);
   signal(SIGCHLD, reaper);
+#ifdef USE_TREND
+  signal(SIGPIPE, SIG_IGN);
+#endif
   sigemptyset(&masked);
   sigaddset(&masked, SIGTERM);
   sigaddset(&masked, SIGINT);
