@@ -5,6 +5,9 @@
 #ifndef CFGDATA_H
 #define CFGDATA_H
 
+#include "config.h"
+
+
 /* configuration enums */
 struct pair_strint
 {
@@ -27,4 +30,3 @@ struct pair_strstr
 extern struct pair_strstr pss_defcon[];
 
 #endif
-

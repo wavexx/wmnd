@@ -53,6 +53,7 @@ struct Devices
   struct Devices* next;     /* ptr to next structure */
   char* name;               /* device name from /proc/net/dev */
   void* drvdata;            /* driver data used by the driver */
+  int devnum;		    /* overall device number */
   int drvnum;               /* driver number */
   int online;               /* 0 for online, 1 for offline */
   time_t devstart;          /* device activity start, 0 for unavaible */

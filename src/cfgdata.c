@@ -49,5 +49,10 @@ struct pair_strstr pss_defcon[] =
   {"display",         NULL,      0},
   {"geometry",        NULL,      0},
   {"debug",           "no",      0},
+#ifdef USE_TREND
+  {"trend_flags",     "",        0},
+  {"trend_update",    "yes",     0},
+  {"trend_history",   "58",      0},
+#endif
   {NULL,              NULL,      0}
 };

@@ -423,7 +423,7 @@ testing_dummy_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
   *op = *ob = (os += (16384. * sin(v)) + 16384);
   v += 0.05;
 
-  if(v >= M_PI * 2)
+  if(v >= M_2PI)
     v = 0;
 #else
   *ip = *op = *ib = *ob = 0;
@@ -571,7 +571,7 @@ freebsd_sysctl_list(const char* devname, struct Devices* list)
   struct freebsd_sysctl_drvdata* drdata;
   int numifaces, numrfaces = 0;
   int mib[5], datamib[6];
-  int i; 
+  int i;
   size_t len, len2;
 
   mib[0] = CTL_NET;

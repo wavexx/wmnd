@@ -529,103 +529,82 @@ exec_perc_command(const char* cmd, int button)
 
 
 #ifdef USE_TREND
-const char*
-tmpfifo()
+/* static data for trend instance sharing */
+static FILE** trendFd;
+static int trendUpd;
+
+
+static inline int
+trend_idx(int d, int bp)
 {
-  const char* file;
-  int retries = 26;
-
-  while(retries--)
-  {
-    /* Nouuuuuu (sound of a lemming exploding)!
-     * Don't use THAT function! IT'S BAD! BAD BAAAD! Will kill 'ya!
-     * MAVAFF... I'd use tmpfile _anyway_ */
-    file = tmpnam(NULL);
-    if(!file) return NULL;
-    if(!mkfifo(file, 0600))
-      return file;
-  }
-
-  return NULL;
+  return(d * 2 + bp);
 }
 
-/* static data for trend instance sharing */
-static FILE* trendFd = NULL;
-static int trendIdx = -1;
 
 void
-exec_trend(int rt, int bp)
+close_trend(int i)
 {
-  int idx, i;
-  const char* title;
-  const char* file;
-
-  idx = (bp? 0: 2);	/* bytes or packets */
-  idx += (rt? 0: 1);	/* input or output */
-
-  /* title */
-  switch(idx)
+  if(trendFd[i])
   {
-  case 0: title = "input bytes"; break;
-  case 1: title = "ouput bytes"; break;
-  case 2: title = "input packets"; break;
-  case 3: title = "output packets"; break;
+    pclose(trendFd[i]);
+    trendFd[i] = NULL;
   }
+}
 
-  if(idx != trendIdx || !trendFd || write(fileno(trendFd), 0, 0))
+
+void
+close_trends()
+{
+  int i;
+  for(i = 0; i != wmnd.nr_devices * 2; ++i)
+    close_trend(i);
+  free(trendFd);
+}
+
+
+int
+check_trend(int i)
+{
+  return(fputs("\n", trendFd[i]) == EOF || fflush(trendFd[i]) == EOF);
+}
+
+
+void
+exec_trend(struct Devices* dev, int bp)
+{
+  int d = dev->devnum;
+  int i = trend_idx(d, bp);
+
+  if(!trendFd[i] || check_trend(i))
   {
     /* new trend instance required */
-    if(trendFd)
-    {
-      fclose(trendFd);
-      trendFd = NULL;
-    }
+    char cmd[256];
 
-    /* create the fifo */
-    file = tmpfifo();
-    if(!file)
-    {
-      msg_err("cannot create temporary fifo");
-      return;
-    }
+    /* cmdline */
+    snprintf(cmd, sizeof(cmd),
+	"trend -t '%s %s' -G %d -d -s -c2a -Lin,out %s - %s",
+	dev->name, (bp? "bytes": "packets"),
+	(wmnd.scale == binary_scale? 1024: 1000) / (bp? 1: 100),
+	value("trend_flags"), value("trend_history"));
 
     /* execute */
-    switch(fork())
+    close_trend(i);
+    if(!(trendFd[i] = popen(cmd, "w")))
     {
-    case -1:
-      msg_err("cannot fork!");
-      return;
-
-    case 0:
-      execlp("trend", "trend", "-t", title, "-G", (bp? "1000": "10"),
-	  "-d", "-m", file, "59", "58", NULL);
-
-      /* exec failed, unlock the parent anyway! */
       msg_err("cannot execute trend!");
-      trendFd = fopen(file, "r");
-      exit(1);
-
-    default:
-      trendFd = fopen(file, "w");
-      if(!trendFd)
-	msg_err("cannot open temporary fifo");
-      else
-      {
-	/* ensure the endpoint is connected before removal */
-	fputs("\n", trendFd);
-	fflush(trendFd);
-	unlink(file);
-      }
+      return;
     }
   }
 
   /* feed the pipe */
-  if(trendFd)
+  if(trendFd[i])
   {
-    trendIdx = idx;
-    for(i = 0; i != 59; ++i)
-      fprintf(trendFd, "%lu\n", wmnd.curdev->his[i][idx]);
-    fflush(trendFd);
+    int x, idx;
+    idx = (bp? 0: 2);
+    for(x = 0; x != 58; ++x)
+      fprintf(trendFd[i], "%lu %lu\n",
+	  dev->his[x][idx + 0], dev->his[x][idx + 1]);
+    fflush(trendFd[i]);
   }
 }
 #endif
@@ -699,7 +678,7 @@ click_event(unsigned int region, unsigned int button)
 #ifdef USE_TREND
     case Button2:
       /* launch trend */
-      exec_trend((region == REG_SCALE_RX), bit_get(CFG_MODE));
+      exec_trend(wmnd.curdev, bit_get(CFG_MODE));
       break;
 #endif
     case Button3:
@@ -740,7 +719,7 @@ mainExit(int sig)
 {
   msg_info("caught signal %d, terminating...", sig);
 #ifdef USE_TREND
-  if(trendFd) fclose(trendFd);
+  close_trends();
 #endif
   devices_destroy();
   exit(1);
@@ -956,12 +935,16 @@ int main(int argc, char* *argv)
   signal(SIGINT, mainExit);
   signal(SIGTERM, mainExit);
   signal(SIGCHLD, reaper);
-#ifdef USE_TREND
-  signal(SIGPIPE, SIG_IGN);
-#endif
   sigemptyset(&masked);
   sigaddset(&masked, SIGTERM);
   sigaddset(&masked, SIGINT);
+
+#ifdef USE_TREND
+  /* initialize trend's data */
+  signal(SIGPIPE, SIG_IGN);
+  trendFd = (FILE**)calloc(sizeof(FILE*), wmnd.nr_devices * 2);
+  trendUpd = strval_fe(psi_bool, value("trend_update"));
+#endif
 
   msg_dbg(__POSITION__, "open X display");
   dispname = value("display");
@@ -1128,6 +1111,30 @@ int main(int argc, char* *argv)
       draw_stats(wmnd.curdev, beat_gap);
       for(ptr = devices; ptr; ptr = ptr->next)
       {
+#ifdef USE_TREND
+	if(trendUpd)
+	{
+	  int i, bp, idx;
+
+	  for(bp = 0; bp != 2; ++bp)
+	  {
+	    idx = (bp? 0: 2);
+	    i = trend_idx(ptr->devnum, bp);
+	    if(trendFd[i])
+	    {
+	      if(check_trend(i))
+		close_trend(i);
+	      else
+	      {
+		fprintf(trendFd[i], "%lu %lu\n",
+		    ptr->his[57][idx + 0], ptr->his[57][idx + 1]);
+		fflush(trendFd[i]);
+	      }
+	    }
+	  }
+	}
+#endif
+
 	for(j = 1; j < 58; j++)
 	{
 	  ptr->his[j - 1][0] = ptr->his[j][0];
@@ -1182,6 +1189,9 @@ int main(int argc, char* *argv)
     usleep(wmnd.refresh);
   }
 
+#ifdef USE_TREND
+  close_trends();
+#endif
   devices_destroy();
   exit(0);
 }
@@ -1770,6 +1780,7 @@ devices_init(const char* driver, const char* interface)
     for(in_loop0 = 0; in_loop0 < devnum; in_loop0++)
     {
       prt = prt->next;
+      prt->devnum = wmnd.nr_devices + in_loop0;
       prt->drvnum = cnt; /* set the driver number */
       if(drivers_table[cnt].init_device &&
 	  (*drivers_table[cnt].init_device)(prt) == 1) /* init the device */
