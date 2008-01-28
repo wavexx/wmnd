@@ -363,11 +363,6 @@ Also beware that using the -I flag on the command-line can potentially expose
 the community name of your remote snmp server. Better to use ~/.wmndrc and
 chmod it to 600 in this case.
 
-WMND will use ifName to display interface names, which is usually
-shorter. DLINK switches seems to hang (or even flood the network) with this, so
-you can switch back to ifDescr using the --enable-snmp-descr option at the
-configure command line.
-
 
 Building WMND 0.4
 -----------------

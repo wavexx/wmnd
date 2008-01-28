@@ -179,8 +179,6 @@ ARG_DISABLE(trend,
 # Simple options
 ARG_EC(sine-dummy, USE_SINE_TESTING_DUMMY,
 	[enhanced dummy driver])
-ARG_EC(snmp-descr, USE_GENERIC_SNMP_DESCR,
-	[prefer ifDescr instead of ifName for snmp devices])
 
 # debugging
 ARG_ENABLE(debug,
@@ -238,7 +236,6 @@ AC_MSG_NOTICE([configuration:
 
 disable trend support: ${disable_trend:-no}
 enhanced dummy driver: ${enable_sine_dummy:-no}
-prefer snmp ifDescr:   ${enable_snmp_descr:-no}
 enabled drivers:      ${drivers:- none}
 enabled display modes:${dspmodes:- none}
 ])

@@ -863,20 +863,6 @@ irix_pcp_term(struct Devices* dev)
 #define SNMPMIB_IFOUTBDEF "ifOutOctets"
 #define SNMPMIB_IFOUTPDEF "ifOutUcastPkts"
 
-/*
- * In WMND 0.4.5 I fetch ifName instead of ifDescr (ifName is shorter). I
- * noticed however that ifName is buggy on some firmware vendors (DLINK) and
- * there's no way to get around the bug without causing a network flood, so
- * simply invert the order.
- */
-#ifndef USE_GENERIC_SNMP_DESCR
-#define SNMPMIB_NAME_A "ifName"
-#define SNMPMIB_NAME_B "ifDescr"
-#else
-#define SNMPMIB_NAME_A "ifDescr"
-#define SNMPMIB_NAME_B "ifName"
-#endif
-
 struct generic_snmp_drvdata
 {
   struct snmp_session* se;
@@ -1017,8 +1003,8 @@ generic_snmp_getDesc(struct snmp_session* se, int dev)
 {
   char* desc;
 
-  return ((desc = generic_snmp_getNodeDesc(se, SNMPMIB_NAME_A, dev))? desc:
-      generic_snmp_getNodeDesc(se, SNMPMIB_NAME_B, dev));
+  return ((desc = generic_snmp_getNodeDesc(se, "ifName", dev))? desc:
+      generic_snmp_getNodeDesc(se, "ifDescr", dev));
 }
 
 struct Devices*
