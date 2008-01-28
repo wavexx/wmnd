@@ -743,11 +743,7 @@ int main(int argc, char* *argv)
   XEvent event;
   const struct drwStruct* drwPtr;
   sigset_t masked;
-#ifdef INEXACT_TIMING
-  int beats;
-#else
   struct timeval beat_time;
-#endif
 
   /* initialize messaging functions */
   msg_prgName = argv[0];
@@ -968,11 +964,7 @@ int main(int argc, char* *argv)
   add_mr(REG_SCRIPT, 3, 54, 58, 7);	/* user script */
 
   /* updates should begin immediately */
-#ifdef INEXACT_TIMING
-  beats = wmnd.scroll * 100000 / wmnd.refresh;
-#else
   memset(&beat_time, 0, sizeof(beat_time));
-#endif
 
   /* clear the number of remaining steps */
   wmnd.avgRSteps = 1;
@@ -992,10 +984,8 @@ int main(int argc, char* *argv)
   {
     unsigned int j;
     sigset_t mask;
-#ifndef INEXACT_TIMING
     struct timeval beat_ctime;
     unsigned long beat_gap;
-#endif
 
     /* mask INT/TERM in get_stats */
     sigprocmask(SIG_BLOCK, &masked, &mask);
@@ -1060,15 +1050,6 @@ int main(int argc, char* *argv)
     /* restore mask */
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
-#ifdef INEXACT_TIMING
-    /* cosmetic fix: use the number of effectively elapsed beats instead of a
-     * time based check to distribute timing discrepancies and rounding
-     * errors. This will also save us a syscall */
-    if((wmnd.refresh * beats / 100000) >= wmnd.scroll)
-    {
-      beats = 0;
-#define beat_gap wmnd.scroll
-#else
     /* fetch current time */
     gettimeofday(&beat_ctime, NULL);
 
@@ -1083,7 +1064,6 @@ int main(int argc, char* *argv)
       /* Do not use the instant time gap for averaging, it's useless */
       if(wmnd.avgSteps != 1)
 	beat_gap = wmnd.scroll;
-#endif
 
       /* drift the average stats */
       if(!--wmnd.avgRSteps)
@@ -1182,9 +1162,6 @@ int main(int argc, char* *argv)
     }
 
 
-#ifdef INEXACT_TIMING
-    ++beats;
-#endif
     redraw_window();
     usleep(wmnd.refresh);
   }

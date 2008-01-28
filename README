@@ -399,11 +399,6 @@ graph)::
 
   $ ./configure --enable-sine-dummy
 
-To use an innacurate (but smoother, if you don't mind about stats) timing
-method::
-
-  $ ./configure --enable-inexact-timing
-
 The --help flag will show you a complete list of command line flags that the
 configure script supports.
 
