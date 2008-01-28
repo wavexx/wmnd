@@ -114,10 +114,9 @@ Be sure to drag WMND on it's outer edges, it's a bit picky due to the large gfx
 pixmap it keeps ;-). You can also use a keyboard+mouse shortcut (perhaps
 ALT+left-click) in your window manager to drag it around.
 
-If trend support is enabled (--enable-trend at configure time) and trend is
-installed, the history can be viewed and inspected more conveniently by
-clicking with the middle button on the scale meter.  See the "trend" section
-below.
+The history/graph can be viewed and inspected more conveniently by clicking
+with the middle button on the scale meter. With this feature, multiple
+interfaces can be monitored concurrently. See the "trend" section below.
 
 
 Transition from 0.2/0.3
@@ -432,21 +431,16 @@ doesn't require them.
 Trend support
 ~~~~~~~~~~~~~
 
-If proper support has been compiled-in (with --enable-trend) and trend is
-installed[1], you can examine the current history in a larger window by
-clicking with the middle mouse button on the scale meter (the panel under the
-device name). A middle-click on the left side will inspect RX, TX on the right
-side. Bytes/Packets mode affects the counters involved.
+You can examine the current history in a larger window by clicking with the
+middle mouse button on the scale meter (the panel under the device name).
+Bytes/Packets mode affects the counters involved.
 
-[1] http://www.yuv.info/~wavexx/hacks/trend/
+You can leave the trend's window open, cycle the active interface and
+middle-click again to monitor multiple interfaces concurrently. trend settings
+and history can be adjusted via wmndrc. Read the sample file coming in the
+source for details.
 
-Upon click, WMND will execute trend as a separate process and feed the latest
-59 sampled values to it.
+You will need trend[1] to be installed for this feature to work.
+Any version of trend starting with Rev #68 02/11/2007 should work.
 
-Since this feature requires additional software, it's disabled by
-default. Enabling trend support however does not cause any slow-down or
-runtime-dependencies so it's still safe to enable it in packages.  If trend
-support is enabled but trend isn't installed, WMND will simply print a warning
-on the console when clicking.
-
-Any version of trend starting with Rev #11 21/09/2004 should work.
+[1] http://www.thregr.org/~wavexx/software/trend/

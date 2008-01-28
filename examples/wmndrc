@@ -88,3 +88,15 @@ wave_mode=wmnet
 # use a fixed scale (specified in bytes per second) for the bytes modes.
 # by default use an automatic scale (0).
 # fixed_max=12000
+
+# disable live updating of the trend windows (shown when middle-clicking on
+# scale meter (trend must be installed for this to work).
+# trend_update=no
+
+# specify any command line flag for the trend window, except for -f or -c.
+# be sure to quote spaces correctly. check the trend(1) man page.
+# trend_flags=-s
+
+# specify a valid trend hist-spec (history specification).
+# the default is "58". check the trend(1) man page for details.
+# trend_history=58x2

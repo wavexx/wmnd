@@ -133,11 +133,14 @@ the device name between short and long by right-click on it.
 .SS Graphic Mode
 Left-click on the main graphic area to cycle the graphic mode.
 .SS Max Meter
-Left-click to toggle the history max or screen max, default is
-screen max when \fBWMND\fP is startup.  Right-click to hide or display.
+Left-click to toggle the history max or screen max, default is screen max when
+\fBWMND\fP is startup. Right-click to hide or show.  Middle-click to zoom the
+statistics in a separated \fBtrend\fP window. You can cycle the active
+interface and middle-click again to monitor multiple interfaces concurrently.
 .SS Byte/Packet Mode
 Left-click on the letter gadgeted on the right-top corner can switch
-between the Byte or Packet counter mode. "B" for byte, "p" for packet.
+between the Byte or Packet counter mode. "B" for byte, "p" for packet. The
+current mode affects the external \fBtrend\fP window too.
 .SS User Script
 Click on the bottom rate meter can invoke the user command defined in
 resource file .wmndrc.
@@ -211,8 +214,9 @@ instructions) can be found into the README file found into the
 distribution. These informations should be integrated here too.
 .SH SEE ALSO
 .BR X (3x),
-.BR wmaker (1x).
-.BR proc (5)
+.BR wmaker (1x),
+.BR proc (5),
+.BR trend (1)
 .SH AUTHOR
 This manual page was written by Arthur Korn <arthur@korn.ch>.
 The original \fBWMND\fR authour is Reed Lai <reed@wingeer.org>.

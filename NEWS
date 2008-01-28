@@ -2,8 +2,10 @@ WMND 0.4.13:
 
 	* Fixed crash due to buffer overflow on 64bit systems.
 	* Fixed incorrect display on linux for devices having similar names.
-	* Enhanced trend support.
 	* Fixed FreeBSD driver on 64bit systems.
+	* Enhanced trend support with live monitoring (even with multiple
+	  interfaces at once), customizable flags and history.
+	  Trend support is now on by default.
 
 
 WMND 0.4.12:

@@ -170,6 +170,12 @@ ARG_DISABLE(dummy-driver,
 	AC_DEFINE(USE_TESTING_DUMMY, "testing_dummy", [fallback driver])
 ])
 
+# trend support
+ARG_DISABLE(trend,
+	[AS_HELP_STRING([--disable-trend], [disable trend support])],,
+	[AC_DEFINE(USE_TREND,, [trend support])]
+)
+
 # Simple options
 ARG_EC(sine-dummy, USE_SINE_TESTING_DUMMY,
 	[enhanced dummy driver])
@@ -177,8 +183,6 @@ ARG_EC(snmp-descr, USE_GENERIC_SNMP_DESCR,
 	[prefer ifDescr instead of ifName for snmp devices])
 ARG_EC(inexact-timing, INEXACT_TIMING,
 	[use an inexact (but smoother/faster) timing method])
-ARG_EC(trend, USE_TREND,
-	[enable support for trend (history zoom/inspection)])
 
 # debugging
 ARG_ENABLE(debug,
@@ -234,7 +238,7 @@ AC_OUTPUT
 
 AC_MSG_NOTICE([configuration:
 
-trend support:         ${enable_trend:-no}
+disable trend support: ${disable_trend:-no}
 enhanced dummy driver: ${enable_sine_dummy:-no}
 inexact timing:        ${enable_inexact_timing:-no}
 prefer snmp ifDescr:   ${enable_snmp_descr:-no}
