@@ -1,7 +1,8 @@
 /*
- * display.h - window maker network devices
- *
- * common drawing functions
+ * display: commod graphic functions
+ * Copyright(c) 1997 by Alfredo K. Kojima
+ * Copyright(c) 2001-2008 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * Distributed under GNU GPL (v2 or above) WITHOUT ANY WARRANTY.
  */
 
 #ifndef DISPLAY_H

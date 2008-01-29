@@ -1,6 +1,7 @@
 /*
- * wmnd.h - window maker network devices - wmnd.h
- * common structures and functions
+ * wmnd: main program module, shared header
+ * Copyright(c) 2001-2008 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * Distributed under GNU GPL (v2 or above) WITHOUT ANY WARRANTY.
  */
 
 #ifndef WMND_H

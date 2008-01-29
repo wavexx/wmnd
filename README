@@ -4,28 +4,17 @@ WMND - Window Maker Network Devices
 Description
 -----------
 
-WMND (WindowMaker Network Devices) is a network monitoring dockapp for Window
-Maker (and compatibles) for many operative systems. Improved and based on WMiFS
-1.3b, the version 0.2 of WMND is almost totally written by Timecop, given the
-optimization and flexibility and now consumes less cpu than wmmon. Version >=
-0.3 WMND is now maintained by wave++, which added new display modes and several
-new drivers. Enjoy! WMND can be found at http://www.yuv.info/wmnd/
+WMND (WindowMaker Network Devices) is a highly customizable network monitoring
+dockapp for Window Maker (and compatibles) for many operative systems and
+devices. WMND can be found at http://www.thregr.org/~wavexx/software/wmnd/
 
 
 Copyright
 ---------
 
-Copyright(c) 2000-2001 by Reed "Reed Lai" <reed@wingeer.org>
-http://www.wingeer.org/bv4qo/
-  
-Copyright(c) 2001 by Timecop <timecop@japan.co.jp>
-http://www.ne.jp/asahi/linux/timecop/
-  
-Copyright(c) 2001-2006 by wave++ "Yuri D'Elia" <wavexx@yuv.info>
-http://www.yuv.info/
-
-WMND is licensed under the GNU General Public License. Read the COPYING file
-for the complete GNU license description.
+WMND was originally based on WMiFS, forked around 2001 by Reed Lai. WMND is
+currently maintained by Yuri D'Elia and distributed under GNU GPL v2 or
+above. See AUTHORS and COPYING for detailed licensing details.
 
 
 Bugs

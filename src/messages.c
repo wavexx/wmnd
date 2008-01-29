@@ -1,4 +1,8 @@
-/* messages - generalized information reporting - implementation */
+/*
+ * messages: generalized information reporting - implementation
+ * Copyright(c) 2001-2008 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * Distributed under GNU GPL (v2 or above) WITHOUT ANY WARRANTY.
+ */
 
 /* local headers */
 #include <messages.h>
@@ -57,4 +61,3 @@ msg_drInfo(const char* driver, const char* fmt, ...)
     fprintf(stderr, "\n");
   }
 }
-

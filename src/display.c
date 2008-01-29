@@ -1,7 +1,8 @@
 /*
- * display.c - window maker network devices
- *
- * common drawing functions definitions
+ * display: commod graphic functions
+ * Copyright(c) 1997 by Alfredo K. Kojima
+ * Copyright(c) 2001-2008 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * Distributed under GNU GPL (v2 or above) WITHOUT ANY WARRANTY.
  */
 
 /* local headers */
@@ -34,7 +35,7 @@ getBpp(unsigned size, unsigned long max)
     {
       bpp = max / size;
       if((max % size) > 0)
-        ++bpp;
+	++bpp;
     }
     else
       bpp = 1;
@@ -103,7 +104,7 @@ drwMGraph(unsigned long* hist, unsigned mIn, unsigned mOut,
   /* max scale */
   unsigned int k, txlev, rxlev;
   int bpp = getBpp(size, MAX(tx_max, rx_max));
-  
+
   /* process the whole history */
   for(k = 0; k < 58; ++k)
   {
@@ -154,7 +155,7 @@ drwWaveform(unsigned long* hist, unsigned mIn, unsigned mOut,
     center = 53 - size / 2;
     copy_xpm_area(65, 0, 1, size, k + 3, 53 - size);
     copy_xpm_area(66, 0, 1, txlev, k + 3,
-        (center - rxlev) - txlev);
+	(center - rxlev) - txlev);
     copy_xpm_area(66, 0, 1, txlev, k + 3, (center + rxlev));
     copy_xpm_area(67, 0, 1, rxlev * 2, k + 3, center - rxlev);
     hist += 4;
@@ -174,7 +175,7 @@ drwWmwave(unsigned long* hist, unsigned mIn, unsigned mOut,
   unsigned int k, msize, bpp, txlev, rxlev, center;
   msize = (unsigned)((double)size / 2);
   bpp = getBpp(msize, MAX(tx_max, rx_max));
-  
+
   for(k = 0; k < 58; k++)
   {
     rxlev = hist[mIn] / bpp;
@@ -395,22 +396,22 @@ void drwNeedle(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
     gcval.foreground = dockapp.stdColors.txColor;
     gcval.graphics_exposures = False;
     gcs[0] = XCreateGC(dockapp.d, dockapp.pixmap, GCForeground |
-        GCGraphicsExposures, &gcval);
+	GCGraphicsExposures, &gcval);
     gcval.foreground = dockapp.stdColors.rxColor;
     gcs[1] = XCreateGC(dockapp.d, dockapp.pixmap, GCForeground |
-        GCGraphicsExposures, &gcval);
+	GCGraphicsExposures, &gcval);
     gcval.foreground = dockapp.stdColors.mdColor;
     gcs[2] = XCreateGC(dockapp.d, dockapp.pixmap, GCForeground |
-        GCGraphicsExposures, &gcval);
+	GCGraphicsExposures, &gcval);
     gcinit = 1;
   }
 
   stpos = 53 - size;
   offset = (size - 34) / 2 + 1;
-  
+
   /* background pixmap */
   copy_xpm_area(129, 0, 58, 34, 3, stpos + offset);
-  
+
   /* clean up */
   copy_xpm_area(70, 1, 58, 1, 3, 53 - size);
   for(k = 1; k < offset; k++)
@@ -470,10 +471,10 @@ void drwLines(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
     gcval.foreground = dockapp.stdColors.txColor;
     gcval.graphics_exposures = False;
     gcs[0] = XCreateGC(dockapp.d, dockapp.pixmap, GCForeground |
-        GCGraphicsExposures, &gcval);
+	GCGraphicsExposures, &gcval);
     gcval.foreground = dockapp.stdColors.rxColor;
     gcs[1] = XCreateGC(dockapp.d, dockapp.pixmap, GCForeground |
-        GCGraphicsExposures, &gcval);
+	GCGraphicsExposures, &gcval);
     gcinit = 1;
   }
 
@@ -493,9 +494,9 @@ void drwLines(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
 
     /* tx and rx */
     XDrawLine(dockapp.d, dockapp.pixmap, gcs[0],
-        k + 3, 52 - oTxlev, k + 3, 52 - txlev);
+	k + 3, 52 - oTxlev, k + 3, 52 - txlev);
     XDrawLine(dockapp.d, dockapp.pixmap, gcs[1],
-        k + 3, 52 - oRxlev, k + 3, 52 - rxlev);
+	k + 3, 52 - oRxlev, k + 3, 52 - rxlev);
 
     /* advance */
     hist += 4;
@@ -509,7 +510,7 @@ void drwLines(unsigned long* hist, unsigned mIn, unsigned mOut, unsigned size,
 
 
 /* function's structure list */
-struct drwStruct drwFuncs[] = 
+struct drwStruct drwFuncs[] =
 {
 #ifdef USE_DRW_TRADITIONAL
   { "traditional", drwTraditional },

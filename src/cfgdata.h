@@ -1,5 +1,7 @@
 /*
- * WMND configuration data
+ * cfgdata: WMND configuration data
+ * Copyright(c) 2001-2008 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * Distributed under GNU GPL (v2 or above) WITHOUT ANY WARRANTY.
  */
 
 #ifndef CFGDATA_H

@@ -1,19 +1,8 @@
 /*
- * Original copyright notice:
- *  dock.c - built-in Dock module for WindowMaker WindowMaker window manager
- *  Copyright (c) 1997 Alfredo K. Kojima
- *  This program is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the Free
- *  Software Foundation; either version 2 of the License, or (at your option)
- *  any later version.  This program is distributed in the hope that it will be
- *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
- *  Public License for more details.  You should have received a copy of the
- *  GNU General Public License along with this program; if not, write to the
- *  Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
- *
- * With modifications by Yuri D'Elia
- * Copyright(c) 2004 wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * misc: miscellaneus dockapp routines - implementation
+ * Copyright(c) 1997 by Alfredo K. Kojima
+ * Copyright(c) 2004 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * Distributed under GNU GPL (v2 or above) WITHOUT ANY WARRANTY.
  */
 
 #include <stdlib.h>
@@ -27,7 +16,7 @@
  *----------------------------------------------------------------------
  * parse_command--
  *      Divides a command line into a argv/argc pair.
- *---------------------------------------------------------------------- 
+ *----------------------------------------------------------------------
  */
 #define PRC_ALPHA	0
 #define PRC_BLANK	1
@@ -204,18 +193,18 @@ percsubst(const char* string, const perctbl_t* table, int elements)
     for(it = table; it != table + elements; ++it)
       if(*rptr == it->c)
       {
-        len = strlen(it->value);
-        dist = wptr - buf;
-        if((outlen - dist) >= len)
-        {
-          outlen += len * 2;
-          buf = (char*)realloc(buf, outlen);
-          wptr = buf + dist;
-        }
+	len = strlen(it->value);
+	dist = wptr - buf;
+	if((outlen - dist) >= len)
+	{
+	  outlen += len * 2;
+	  buf = (char*)realloc(buf, outlen);
+	  wptr = buf + dist;
+	}
 
-        memcpy(wptr, it->value, len);
-        wptr += len;
-        break;
+	memcpy(wptr, it->value, len);
+	wptr += len;
+	break;
       }
 
     /* go on */
@@ -225,4 +214,3 @@ percsubst(const char* string, const perctbl_t* table, int elements)
 
   return buf;
 }
-

@@ -1,7 +1,7 @@
 /*
- * bits operators - platform indipendent version operating on chars
- * small header file, by Wave++ <wavexx@users.sourceforge.net>
- * Distributed under GNU GPL
+ * bits: platform indipendent version operating on chars
+ * Copyright(c) 2001 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * Distributed under GNU GPL (v2 or above) WITHOUT ANY WARRANTY.
  */
 
 #ifndef BITS_H
