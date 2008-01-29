@@ -292,7 +292,6 @@ solaris_kstat_list(const char* devname, struct Devices* list)
     {
       kstat_read(solaris_kstat_kc, ksp, NULL);
       if((!devname || (devname && !strcmp(devname,ksp->ks_name))) &&
-	  kstat_data_lookup(ksp, "link_up") &&
 	  kstat_data_lookup(ksp, "ipackets") &&
 	  kstat_data_lookup(ksp, "opackets") &&
 	  kstat_data_lookup(ksp, "rbytes") &&
@@ -326,12 +325,14 @@ solaris_kstat_init(struct Devices* dev)
     (struct solaris_kstat_drvdata*)dev->drvdata;
 
   drvdata->active = (kstat_named_t*)kstat_data_lookup(drvdata->ksp,"link_up");
+  if(!drvdata->active)
+    msg_drInfo(drName, "device %s can't properly detect link status", dev->name);
   drvdata->in_pkt = (kstat_named_t*)kstat_data_lookup(drvdata->ksp,"ipackets");
   drvdata->in_byte = (kstat_named_t*)kstat_data_lookup(drvdata->ksp,"rbytes");
   drvdata->out_pkt = (kstat_named_t*)kstat_data_lookup(drvdata->ksp,"opackets");
   drvdata->out_byte = (kstat_named_t*)kstat_data_lookup(drvdata->ksp,"obytes");
 
-  return !(drvdata->active && drvdata->in_pkt && drvdata->in_byte &&
+  return !(drvdata->in_pkt && drvdata->in_byte &&
       drvdata->out_pkt && drvdata->out_byte);
 }
 
@@ -361,7 +362,7 @@ solaris_kstat_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
     *ob = (drvdata->out_byte->value.KSTAT_WORD_TYPE);
   }
 
-  return !drvdata->active->value.KSTAT_WORD_TYPE;
+  return (drvdata->active? !drvdata->active->value.KSTAT_WORD_TYPE: 0);
 }
 
 void

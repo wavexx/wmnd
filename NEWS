@@ -3,6 +3,7 @@ WMND 0.4.13:
 	* Fixed crash due to buffer overflow on 64bit systems.
 	* Fixed incorrect display on linux for devices having similar names.
 	* Fixed FreeBSD driver on 64bit systems.
+	* Added OpenSolaris support for broken kstat interfaces.
 	* Enhanced trend support with live monitoring (even with multiple
 	  interfaces at once), customizable flags and history.
 	  Trend support is now on by default.
