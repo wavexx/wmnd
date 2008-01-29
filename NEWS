@@ -7,6 +7,7 @@ WMND 0.4.13:
 	  interfaces at once), customizable flags and history.
 	  Trend support is now on by default.
 	* Removed support for "inexact timing".
+	* The enhanced dummy driver is now the default.
 
 
 WMND 0.4.12:

@@ -986,6 +986,7 @@ int main(int argc, char* *argv)
     sigset_t mask;
     struct timeval beat_ctime;
     unsigned long beat_gap;
+    int gap;
 
     /* mask INT/TERM in get_stats */
     sigprocmask(SIG_BLOCK, &masked, &mask);
@@ -1019,12 +1020,12 @@ int main(int argc, char* *argv)
       /* setup leds */
       if(ptr == wmnd.curdev)
       {
-	if(ptr->ip_stat_last == ip)
+	if(ptr->ip_stat_last == ip || ptr->online)
 	  led_control(LED_RX, 0);
 	else
 	  led_control(LED_RX, 1);
 
-	if(ptr->op_stat_last == op)
+	if(ptr->op_stat_last == op || ptr->online)
 	  led_control(LED_TX, 0);
 	else
 	  led_control(LED_TX, 1);
@@ -1053,17 +1054,14 @@ int main(int argc, char* *argv)
     /* fetch current time */
     gettimeofday(&beat_ctime, NULL);
 
-    /* estimate the time gap in tenth of seconds */
-    beat_gap = ((beat_ctime.tv_sec - beat_time.tv_sec) * 10) +
-      ((beat_ctime.tv_usec - beat_time.tv_usec) / 100000);
+    /* estimate the time gap in milliseconds */
+    beat_gap = ((beat_ctime.tv_sec - beat_time.tv_sec) * 1000) +
+      ((beat_ctime.tv_usec - beat_time.tv_usec) / 1000);
+    gap = (wmnd.avgSteps != 1? wmnd.scroll: beat_gap / 100);
 
-    if(beat_gap >= wmnd.scroll)
+    if(beat_gap >= wmnd.scroll * 100)
     {
       beat_time = beat_ctime;
-
-      /* Do not use the instant time gap for averaging, it's useless */
-      if(wmnd.avgSteps != 1)
-	beat_gap = wmnd.scroll;
 
       /* drift the average stats */
       if(!--wmnd.avgRSteps)
@@ -1088,7 +1086,7 @@ int main(int argc, char* *argv)
       beat_event();
 
       /* scroll the statistics */
-      draw_stats(wmnd.curdev, beat_gap);
+      draw_stats(wmnd.curdev, gap);
       for(ptr = devices; ptr; ptr = ptr->next)
       {
 #ifdef USE_TREND
@@ -1154,13 +1152,12 @@ int main(int argc, char* *argv)
 	  {
 	    click_event(rgn, btn);
 	    beat_event();
-	    draw_stats(wmnd.curdev, beat_gap);
+	    draw_stats(wmnd.curdev, gap);
 	  }
 	}
 	break;
       }
     }
-
 
     redraw_window();
     usleep(wmnd.refresh);

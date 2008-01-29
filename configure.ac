@@ -151,16 +151,6 @@ do
 done
 
 
-# creates a new switch (--enable-) with and help string which controls
-# the definition of a conditional.
-AC_DEFUN([ARG_EC],
-[
-	ARG_ENABLE([$1], [AS_HELP_STRING([--enable-$1], [$3])],	[
-		AC_DEFINE([$2],, [$3])
-	])
-])
-
-
 # Dummy driver
 ARG_DISABLE(dummy-driver,
 	[AS_HELP_STRING([--disable-dummy-driver],
@@ -175,10 +165,6 @@ ARG_DISABLE(trend,
 	[AS_HELP_STRING([--disable-trend], [disable trend support])],,
 	[AC_DEFINE(USE_TREND,, [trend support])]
 )
-
-# Simple options
-ARG_EC(sine-dummy, USE_SINE_TESTING_DUMMY,
-	[enhanced dummy driver])
 
 # debugging
 ARG_ENABLE(debug,
@@ -235,7 +221,6 @@ AC_OUTPUT
 AC_MSG_NOTICE([configuration:
 
 disable trend support: ${disable_trend:-no}
-enhanced dummy driver: ${enable_sine_dummy:-no}
 enabled drivers:      ${drivers:- none}
 enabled display modes:${dspmodes:- none}
 ])

@@ -389,11 +389,6 @@ by the driver won't be checked automatically)::
 
   $ ./configure --enable-drivers="linux_proc"
 
-To enchance the dummy driver (shows a sine function instead of a plain empty
-graph)::
-
-  $ ./configure --enable-sine-dummy
-
 The --help flag will show you a complete list of command line flags that the
 configure script supports.
 

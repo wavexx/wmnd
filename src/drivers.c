@@ -377,14 +377,11 @@ solaris_kstat_term(struct Devices* dev)
 #undef drName
 #define drName USE_TESTING_DUMMY
 
-#ifdef USE_SINE_TESTING_DUMMY
 #include <math.h>
 
 /* we need the double of PI, not defined everywhere */
 #undef M_2PI
 #define M_2PI (M_PI * 2)
-
-#endif
 
 int
 testing_dummy_list(const char* devname, struct Devices* list)
@@ -413,7 +410,6 @@ int
 testing_dummy_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
     unsigned long* ib, unsigned long* ob)
 {
-#ifdef USE_SINE_TESTING_DUMMY
   /* some more fun when debugging! */
   static float v = 0.;
   static unsigned long is = 0;
@@ -421,13 +417,9 @@ testing_dummy_get(struct Devices* dev, unsigned long* ip, unsigned long* op,
 
   *ip = *ib = (is += (16384. * cos(v)) + 16384);
   *op = *ob = (os += (16384. * sin(v)) + 16384);
+  if(v >= M_2PI) v = fmodf(v, M_2PI);
   v += 0.05;
 
-  if(v >= M_2PI)
-    v = 0;
-#else
-  *ip = *op = *ib = *ob = 0;
-#endif
   return 1;
 }
 
