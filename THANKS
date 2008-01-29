@@ -1,41 +1,40 @@
-Reed Lai <reed@wingeer.org> http://www.wingeer.org/bv4qo/
+Reed Lai http://bv4qo.wingeer.org/
 
 	* Project initiation.
 
 Arthur Korn <arthur@korn.ch>
 
-	* WMND man page author.
+	* Original WMND man page author.
 	* Old Makefile system maintenance.
 	* Debian package maintenance: http://packages.debian.org/wmnd/
 
-Michael Leuchtenburg <dyfrgi@wingeer.org> http://otter.yi.org/ 
+Michael Leuchtenburg
 
-	* Web site administration: http://wmnd.wingeer.org/
+	* Old web site administration: http://wmnd.wingeer.org/
 	* English refinement of articles
 
 Paul van Tilburg (Mozillion) http://www.utopiamoo.net/
 
-	* Provides ultimate test environment for function and stability
+	* Provided ultimate test environment for function and stability
 	  of WMND.
 
 Timecop <timecop@japan.co.jp> http://www.ne.jp/asahi/linux/timecop/
 
 	* Source code optimization (Re-wrote the source code of WMND 0.2.0)
 
-Yuri D'Elia (wave++) <wavexx@users.sf.net> http://www.yuv.info/
+Yuri D'Elia (wave++) <wavexx@users.sf.net> http://www.thregr.org/~wavexx/
 
 	* Driver architecture, new visualization structs, re-wrote source
 	  code of WMND 0.3 series.
 	* Many minor things (see ChangeLog)
-	* WMND mirror: http://www.yuv.info/wmnd/
 
-Sebastian Liusnea <sebaks@csit-sun.pub.ro> http://www.csit-sun.pub.ro/~sebaks/wm/
+Sebastian Liusnea <sebaks@csit-sun.pub.ro>
 
 	* A different Solaris port of WMND 0.2.0.
 
 Paulo E. Abreu <qtabreu@ci.uc.pt>
 
-	* RPM package maintenance: http://www.wingeer.org/g0sh/
+	* Old RPM package maintenance.
 
 Michael Shigorin:
 
@@ -52,3 +51,6 @@ Jesse Becker:
 Rui Paulo:
 
 	* First NetBSD ioctl driver.
+
+
+And many more...
