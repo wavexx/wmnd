@@ -565,8 +565,9 @@ exec_trend(struct Devices* dev, int bp)
 {
   int d = dev->devnum;
   int i = trend_idx(d, bp);
+  int dead = (!trendFd[i] || check_trend(i));
 
-  if(!trendFd[i] || check_trend(i))
+  if(dead)
   {
     /* new trend instance required */
     char cmd[256];
@@ -587,9 +588,9 @@ exec_trend(struct Devices* dev, int bp)
     }
   }
 
-  /* feed the pipe */
-  if(trendFd[i])
+  if(dead || !trendUpd)
   {
+    /* refill the pipe */
     int x, idx;
     idx = (bp? 0: 2);
     for(x = 0; x != 58; ++x)
