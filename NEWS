@@ -6,7 +6,7 @@ WMND 0.4.13:
 	* Added OpenSolaris support for broken kstat interfaces.
 	* Enhanced trend support with live monitoring (even with multiple
 	  interfaces at once), customizable flags and history.
-	  Trend support is now on by default.
+	  Trend support is now on by default (Rev #68 required).
 	* Removed support for "inexact timing".
 	* The enhanced dummy driver is now the default.
 

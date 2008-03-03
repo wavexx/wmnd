@@ -90,11 +90,11 @@ wave_mode=wmnet
 # fixed_max=12000
 
 # disable live updating of the trend windows (shown when middle-clicking on
-# scale meter (trend must be installed for this to work).
+# the scale meter; trend must be installed for this to work).
 # trend_update=no
 
 # specify any command line flag for the trend window, except for -f or -c.
-# be sure to quote spaces correctly. check the trend(1) man page.
+# be sure to quote spaces correctly. check the trend(1) man page for details.
 # trend_flags=-s
 
 # specify a valid trend hist-spec (history specification).
