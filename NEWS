@@ -1,3 +1,8 @@
+WMND 0.4.14:
+
+	* Fixed build on newer GLIBC versions.
+
+
 WMND 0.4.13:
 
 	* Fixed crash due to buffer overflow on 64bit systems.

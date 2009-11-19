@@ -9,6 +9,9 @@
 #include "drivers.h"
 #include "messages.h"
 
+/* system headers */
+#include <string.h>
+
 
 /* common helper functions */
 struct Devices*
@@ -843,7 +846,6 @@ irix_pcp_term(struct Devices* dev)
 /* NET-SNMP API headers */
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
-#include <string.h>
 
 /* SNMP MIB Definitions (from IF-MIB) and constants */
 #define SNMPMIB_HOST "localhost"
