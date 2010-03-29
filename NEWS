@@ -1,6 +1,8 @@
 WMND 0.4.14:
 
 	* Fixed build on newer GLIBC versions.
+	* Remove spurious black line at the bottom of the pixmap
+	  (Thanks to Mikael Magnusson)
 
 
 WMND 0.4.13:

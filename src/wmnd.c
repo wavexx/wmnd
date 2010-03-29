@@ -1299,7 +1299,7 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
     {
       w = 5;
       sx = 1 + (w * (*r - '0'));
-      sy = 85;
+      sy = 86;
       draw = 1;
     }
     else
@@ -1307,7 +1307,7 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
     {
       w = 2;
       sx = 62;
-      sy = 85;
+      sy = 86;
       draw = 1;
     }
     else
@@ -1315,7 +1315,7 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
     {
       w = 5;
       sx = 1 + (w * (*r - 'A'));
-      sy = 93;
+      sy = 94;
       draw = 1;
     }
     else
@@ -1325,7 +1325,7 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
       if(bit_get(CFG_MAXSCREEN))
       {
 	sx = 133;
-	sy = 93;
+	sy = 94;
       }
       else
       {
@@ -1341,7 +1341,7 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
       if(bit_get(CFG_MAXSCREEN))
       {
 	sx = 139;
-	sy = 93;
+	sy = 94;
       }
       else
       {
@@ -1357,7 +1357,7 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
       if(bit_get(CFG_MAXSCREEN))
       {
 	sx = 145;
-	sy = 93;
+	sy = 94;
       }
       else
       {
@@ -1373,7 +1373,7 @@ draw_string(const char* buf, unsigned int x, unsigned int y)
       if(bit_get(CFG_MAXSCREEN))
       {
 	sx = 151;
-	sy = 93;
+	sy = 94;
       }
       else
       {
@@ -1399,7 +1399,7 @@ draw_rate(unsigned long rx, unsigned long tx, const int gap)
   char tx_buf[8];
 
   /* clear rate bar */
-  copy_xpm_area(100, 85, 58, 7, 3, 54);
+  copy_xpm_area(100, 86, 58, 7, 3, 54);
 
   /* put rx/tx numbers into strings, scaling them */
   scale(rx_buf, tx_buf, rx, tx, gap);
@@ -1417,7 +1417,7 @@ draw_max(unsigned long rx, unsigned long tx)
   char tx_buf[16];
 
   /* clear rate bar */
-  copy_xpm_area(100, 85, 58, 7, 3, 11);
+  copy_xpm_area(100, 86, 58, 7, 3, 11);
 
   /* put rx/tx numbers into strings, scaling them. Scale now acceps the median
    * time in microseconds to scale the values correctly; as we don't have the
@@ -1503,19 +1503,19 @@ led_control(const unsigned char led, const unsigned char mode)
       /* bytes */
       if(mode)
 	/* on-line */
-	copy_xpm_area(116, 64, 5, 7, 55, 4)
+	copy_xpm_area(116, 65, 5, 7, 55, 4)
       else
 	/* off-line */
-	copy_xpm_area(122, 64, 5, 7, 55, 4);
+	copy_xpm_area(122, 65, 5, 7, 55, 4);
       break;
     case 0:
       /* packets */
       if(mode)
 	/* on-line */
-	copy_xpm_area(128, 64, 5, 7, 55, 4)
+	copy_xpm_area(128, 65, 5, 7, 55, 4)
       else
 	/* off-line */
-	copy_xpm_area(134, 64, 5, 7, 55, 4);
+	copy_xpm_area(134, 65, 5, 7, 55, 4);
       break;
     }
     break;
@@ -1528,7 +1528,7 @@ led_control(const unsigned char led, const unsigned char mode)
 	msg_dbg(__POSITION__, "RX led already on");
 	return;
       }
-      copy_xpm_area(86, 69, 5, 4, 41, 4);
+      copy_xpm_area(86, 70, 5, 4, 41, 4);
       bit_set(LED_RX);
       msg_dbg(__POSITION__, "RX led on");
     }
@@ -1540,7 +1540,7 @@ led_control(const unsigned char led, const unsigned char mode)
 	msg_dbg(__POSITION__, "RX led already off");
 	return;
       }
-      copy_xpm_area(92, 69, 5, 4, 41, 4);
+      copy_xpm_area(92, 70, 5, 4, 41, 4);
       bit_off(LED_RX);
       msg_dbg(__POSITION__, "RX led off");
     }
@@ -1554,7 +1554,7 @@ led_control(const unsigned char led, const unsigned char mode)
 	msg_dbg(__POSITION__, "TX led already on");
 	return;
       }
-      copy_xpm_area(86, 64, 5, 4, 48, 4);
+      copy_xpm_area(86, 65, 5, 4, 48, 4);
       bit_set(LED_TX);
       msg_dbg(__POSITION__, "TX led on");
     }
@@ -1566,7 +1566,7 @@ led_control(const unsigned char led, const unsigned char mode)
 	msg_dbg(__POSITION__, "TX led already off");
 	return;
       }
-      copy_xpm_area(92, 64, 5, 4, 48, 4);
+      copy_xpm_area(92, 65, 5, 4, 48, 4);
       bit_off(LED_TX);
       msg_dbg(__POSITION__, "TX led off");
     }
@@ -1612,13 +1612,13 @@ draw_interface(void)
     c = temp[i];
     if(c >= '0' && c <= '9') {
       c -= '0';
-      copy_xpm_area(c * 6, 64, 6, 9, k, 3);
+      copy_xpm_area(c * 6, 65, 6, 9, k, 3);
       k += 6;
     } else {
       if(c >= 'a' && c <= 'z')
 	c = c - 'a' + 'A';
       c -= 'A';
-      copy_xpm_area(c * 6, 74, 6, 9, k, 3);
+      copy_xpm_area(c * 6, 75, 6, 9, k, 3);
       k += 6;
     }
   }
