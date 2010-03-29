@@ -5,11 +5,13 @@
  * Distributed under GNU GPL (v2 or above) WITHOUT ANY WARRANTY.
  */
 
+#include "config.h"
+#include "misc.h"
+#include "list.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "list.h"
-#include "misc.h"
 
 
 /*

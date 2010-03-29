@@ -8,6 +8,9 @@
 #ifndef MISC_H
 #define MISC_H
 
+#include <sys/types.h>
+
+
 /* Tokenize a shell command */
 void
 parse_command(const char*, char***, int*);

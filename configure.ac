@@ -14,6 +14,7 @@ AC_HEADER_STDC
 AC_HEADER_TIME
 AC_CHECK_HEADERS(sys/time.h)
 AC_CHECK_HEADERS(net/ppp_defs.h)
+AC_DEFINE(_XOPEN_SOURCE, 500, [XOPEN function declarations])
 
 # math library
 AC_SEARCH_LIBS(sin, m,, [AC_MSG_ERROR(math library is required)])
