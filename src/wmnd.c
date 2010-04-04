@@ -546,7 +546,7 @@ close_trend(int i)
 void
 close_trends()
 {
-  int i;
+  unsigned i;
   for(i = 0; i != wmnd.nr_devices * 2; ++i)
     close_trend(i);
   free(trendFd);
