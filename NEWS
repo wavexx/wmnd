@@ -1,3 +1,8 @@
+WMND 0.4.15:
+
+	* Fixed build failure of the SNMP driver.
+
+
 WMND 0.4.14:
 
 	* Fixed build on newer GLIBC versions.

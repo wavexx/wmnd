@@ -2,7 +2,7 @@
 # report bugs and comments to wavexx@users.sf.net
 
 # initialization
-AC_INIT(wmnd, 0.4.14, wavexx@users.sf.net)
+AC_INIT(wmnd, 0.4.15, wavexx@users.sf.net)
 AC_CONFIG_SRCDIR(src/wmnd.c)
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
