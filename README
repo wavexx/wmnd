@@ -20,9 +20,7 @@ above. See AUTHORS and COPYING for detailed licensing details.
 Bugs
 ----
 
-A list of wishes and bugs can be found at the Debian WMND bugs page[1]. Special
-thanks goes to Arthur Korn for updating this list and mantaining the WMND
-Debian package.
+A list of wishes and bugs can be found at the Debian WMND bugs page[1].
 
 [1] http://bugs.debian.org/cgi-bin/pkgreport.cgi?src=wmnd
 
