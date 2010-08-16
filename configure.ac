@@ -2,7 +2,7 @@
 # report bugs and comments to wavexx@users.sf.net
 
 # initialization
-AC_INIT(wmnd, 0.4.15, wavexx@users.sf.net)
+AC_INIT(wmnd, 0.4.16, wavexx@users.sf.net)
 AC_CONFIG_SRCDIR(src/wmnd.c)
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
@@ -14,8 +14,15 @@ AC_HEADER_STDC
 AC_HEADER_TIME
 AC_CHECK_HEADERS(sys/time.h)
 AC_CHECK_HEADERS(net/ppp_defs.h)
-AC_DEFINE(_XOPEN_SOURCE, 500, [XOPEN function declarations])
-AC_DEFINE(_BSD_SOURCE,, [BSD function declarations])
+
+# extend the namespace when building with strict c99 but do so conditionally,
+# since it breaks FreeBSD's 8.1 which hasn't proper namespace separation.
+AC_CHECK_TYPE([u_int],, [
+  AC_DEFINE(_BSD_SOURCE,, [BSD function declarations])
+])
+AC_CHECK_DECLS([strdup, getopt],, [
+  AC_DEFINE(_XOPEN_SOURCE, 600, [XOPEN function declarations])
+])
 
 # math library
 AC_SEARCH_LIBS(sin, m,, [AC_MSG_ERROR(math library is required)])

@@ -1,3 +1,8 @@
+WMND 0.4.16:
+
+	* Fixed build failure on FreeBSD 8.1.
+
+
 WMND 0.4.15:
 
 	* Fixed build failure of the SNMP driver.
