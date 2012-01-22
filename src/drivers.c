@@ -257,7 +257,15 @@ solaris_fpppd_get(struct Devices* dev, unsigned long* ip,
 /* basic kstat header */
 #include <kstat.h>
 
+#ifdef USE_SOLARIS_DLADM
+#include <libdladm.h>
+#include <libdllink.h>
+#endif
+
 static kstat_ctl_t* solaris_kstat_kc = NULL;
+#ifdef USE_SOLARIS_DLADM
+dladm_handle_t solaris_dladm_handle = NULL;
+#endif
 
 /* driver data in Devices, used for coding style */
 struct solaris_kstat_drvdata
@@ -270,6 +278,56 @@ struct solaris_kstat_drvdata
   kstat_named_t* out_byte;
 };
 
+#ifdef USE_SOLARIS_DLADM
+struct dladm_link
+{
+  struct dladm_link* next_link;
+  char* link_name;
+  datalink_id_t link_id;
+  char* module_name;
+  int module_instance;
+};
+
+int link_walker(dladm_handle_t handle, datalink_id_t link_id, void* link_list)
+{
+  char link_name[MAXLINKNAMELEN];
+  datalink_class_t link_class;
+  uint32_t link_media;
+  uint32_t link_flags;
+  dladm_status_t status;
+  dladm_phys_attr_t physical_attributes;
+  struct dladm_link* last_link;
+  char module[DLPI_LINKNAME_MAX];
+  uint_t instance;
+
+  /* Retrieve the link's name */
+  status = dladm_datalink_id2info(handle, link_id, &link_flags, &link_class,
+      &link_media, link_name, MAXLINKNAMELEN);
+  if(status != DLADM_STATUS_OK)
+    return status;
+
+  /* Retrieve the link's driver module and instance */
+  status = dladm_parselink(link_name, module, &instance);
+  if(status != DLADM_STATUS_OK)
+    return status;
+
+  /* Walk the list to the last element*/
+  last_link = (struct dladm_link*)link_list;
+  for(link_list; last_link->next_link; last_link = last_link->next_link);
+
+  /* Append the link's properties to the last element in the list */
+  last_link->link_id = link_id;
+  last_link->link_name = strdup(link_name);
+  last_link->module_name = strdup(module);
+  last_link->module_instance = instance;
+
+  last_link->next_link = (struct dladm_link*)malloc(sizeof(struct dladm_link));
+  last_link->next_link->next_link = NULL;
+
+  return DLADM_WALK_CONTINUE;
+}
+#endif
+
 int
 solaris_kstat_list(const char* devname, struct Devices* list)
 {
@@ -278,6 +336,11 @@ solaris_kstat_list(const char* devname, struct Devices* list)
   struct Devices* ptr;
   kstat_t* ksp;
   int dta = 0;
+#ifdef USE_SOLARIS_DLADM
+  dladm_status_t status;
+  struct dladm_link link_names;
+  struct dladm_link* link;
+#endif
 
   /* opening /dev/kstat */
   solaris_kstat_kc = kstat_open();
@@ -287,6 +350,55 @@ solaris_kstat_list(const char* devname, struct Devices* list)
     return 0;
   }
 
+#ifdef USE_SOLARIS_DLADM
+  if(status = dladm_open(&solaris_dladm_handle) != DLADM_STATUS_OK)
+  {
+    msg_drInfo(drName, "couldn't open dladm handle");
+    return 0;
+  }
+
+  ptr = list;
+  link_names.next_link = NULL;
+
+  /*
+   * dladm_walk_datalink_id() will loop across all datalinks in one go and run
+   * a Function on each. We'll use link_walker() to ensure that each link's
+   * name is Appended to a list so we can use them later.
+  */
+  dladm_walk_datalink_id(link_walker, solaris_dladm_handle, &link_names,
+    DATALINK_CLASS_PHYS | DATALINK_CLASS_VLAN | DATALINK_CLASS_AGGR,
+    DATALINK_ANY_MEDIATYPE, DLADM_OPT_ACTIVE | DLADM_OPT_PERSIST);
+
+  for(link = &link_names; link; link = link->next_link)
+  {
+    if (!devname || (devname && !strcmp(devname,link->link_name)))
+    {
+      /* find a kstat for this link */
+      ksp = kstat_lookup(solaris_kstat_kc, link->module_name,
+	  link->module_instance, "mac");
+      if(!ksp)
+      {
+        msg_drInfo(drName, "can't get kstat for link %s", link->link_name);
+        continue;
+      }
+
+      kstat_read(solaris_kstat_kc, ksp, NULL);
+      ndev = (struct Devices*)malloc(sizeof(struct Devices));
+      ndev->devstart = 0;
+      ndev->name = strdup(link->link_name);
+      ndata = (struct solaris_kstat_drvdata*)
+	malloc(sizeof(struct solaris_kstat_drvdata));
+      ndata->ksp = ksp;
+      ptr->next = ndev;
+      ndev->next = NULL;
+      ndev->drvdata = ndata;
+      ptr = ndev;
+
+      msg_drInfo(drName, "detected %s",ndev->name);
+      dta++;
+    }
+  }
+#else
   /* check all devices of class net */
   ptr = list;
   for(ksp = solaris_kstat_kc->kc_chain; ksp; ksp = ksp->ks_next)
@@ -317,6 +429,7 @@ solaris_kstat_list(const char* devname, struct Devices* list)
       }
     }
   }
+#endif
 
   return dta;
 }

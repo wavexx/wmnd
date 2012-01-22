@@ -171,7 +171,8 @@ devices handling is buggy, support needed!)
 Read statistics through the NetBSD ioctl call.
 .TP
 .B solaris_kstat
-Gather all devices of class net from the kstat library.
+Gathers device statistics through kstat counters. Uses libdladm for device
+enumeration if available.
 .TP
 .B irix_pcp
 Reads metrics from the IRIX Performance Co-Pilot daemon.

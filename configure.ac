@@ -105,9 +105,12 @@ AS_IF([test "$ac_drivers" = "auto"],
 	
 	# solaris_kstat
 	AC_CHECK_HEADER(kstat.h,
-		[AC_SEARCH_LIBS(kstat_open, kstat,
-			[ac_drivers="$ac_drivers solaris_kstat"]
-		)]
+		[
+			AC_SEARCH_LIBS(kstat_open, kstat,
+				[ac_drivers="$ac_drivers solaris_kstat"])
+			AC_SEARCH_LIBS(dladm_walk_datalink_id, dladm,
+				[AC_DEFINE(USE_SOLARIS_DLADM, "solaris_dladm", [enable solaris dladm support])])
+		]
 	)
 
 	# netbsd_ioctl
