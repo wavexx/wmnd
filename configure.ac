@@ -9,6 +9,7 @@ AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
 
 # C compiler rules
+AC_LANG([C])
 AC_PROG_CC
 AC_HEADER_STDC
 AC_HEADER_TIME
@@ -84,11 +85,11 @@ AS_IF([test "$ac_drivers" = "auto"],
 	
 	# freebsd_sysctl
 	AC_MSG_CHECKING(for FreeBSD sysctl availability)
-	AC_PREPROC_IFELSE(
+	AC_PREPROC_IFELSE([AC_LANG_SOURCE(
 	[
 		#include <net/if_mib.h>
 		#include <sys/sysctl.h>
-	], [
+	])], [
 		ac_drivers="$ac_drivers freebsd_sysctl"
 		AC_MSG_RESULT(yes)
 	], [
@@ -111,7 +112,7 @@ AS_IF([test "$ac_drivers" = "auto"],
 
 	# netbsd_ioctl
 	AC_MSG_CHECKING(for NetBSD ioctl availability)
-	AC_COMPILE_IFELSE(
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE(
 	[
 		#include <sys/types.h>
 		#include <sys/sockio.h>
@@ -120,7 +121,7 @@ AS_IF([test "$ac_drivers" = "auto"],
 		#include <ifaddrs.h>
 
 		void aFunc() { ioctl(0, SIOCGIFDATA, NULL); }
-	], [
+	])], [
 		ac_drivers="$ac_drivers netbsd_ioctl"
 		AC_MSG_RESULT(yes)
 	], [
