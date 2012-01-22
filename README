@@ -1,43 +1,11 @@
 WMND - Window Maker Network Devices
 ===================================
 
-Description
------------
-
 WMND (WindowMaker Network Devices) is a highly customizable network monitoring
 dockapp for Window Maker (and compatibles) for many operative systems and
 devices. WMND can be found at http://www.thregr.org/~wavexx/software/wmnd/
 
-
-Copyright
----------
-
-WMND was originally based on WMiFS, forked around 2001 by Reed Lai. WMND is
-currently maintained by Yuri D'Elia and distributed under GNU GPL v2 or
-above. See AUTHORS and COPYING for detailed licensing details.
-
-
-Bugs
-----
-
-A list of wishes and bugs can be found at the Debian WMND bugs page[1].
-
-[1] http://bugs.debian.org/cgi-bin/pkgreport.cgi?src=wmnd
-
-The FreeBSD driver is known to have problems on laptop systems where you can
-dynamically insert/remove addictional PCMCIA interfaces. This is rather a
-design problem of the driver. A developer with FreeBSD's MIB knowledge would be
-helpful.
-
-Certainly there are more. I actually test WMND only on Solaris, Linux and IRIX
-boxes. You can report bugs to the current maintainer's email:
-<wavexx@users.sf.net>. Please be as descriptive as possible and always include
-at least:
-
-* WMND version
-* your host/target operating system
-* compiler used
-* A backtrace of the crash would be helpful, but less essential.
+.. contents::
 
 
 Hints for WMND
@@ -416,3 +384,34 @@ You will need trend[1] to be installed for this feature to work.
 Any version of trend starting with Rev #68 02/11/2007 should work.
 
 [1] http://www.thregr.org/~wavexx/software/trend/
+
+
+Copyright
+---------
+
+WMND was originally based on WMiFS, forked around 2001 by Reed Lai. WMND is
+currently maintained by Yuri D'Elia and distributed under GNU GPL v2 or
+above. See AUTHORS and COPYING for detailed licensing details.
+
+
+Bugs
+----
+
+A list of wishes and bugs can be found at the Debian WMND bugs page[1].
+
+[1] http://bugs.debian.org/cgi-bin/pkgreport.cgi?src=wmnd
+
+The FreeBSD driver is known to have problems on laptop systems where you can
+dynamically insert/remove addictional PCMCIA interfaces. This is rather a
+design problem of the driver. A developer with FreeBSD's MIB knowledge would be
+helpful.
+
+Certainly there are more. I actually test WMND only on Solaris, Linux and IRIX
+boxes. You can report bugs to the current maintainer's email:
+<wavexx@users.sf.net>. Please be as descriptive as possible and always include
+at least:
+
+* WMND version
+* your host/target operating system
+* compiler used
+* A backtrace of the crash would be helpful, but less essential.
