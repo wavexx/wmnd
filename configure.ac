@@ -5,7 +5,7 @@
 AC_INIT(wmnd, 0.4.17, wavexx@users.sf.net)
 AC_CONFIG_SRCDIR(src/wmnd.c)
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign])
 AM_CONFIG_HEADER(config.h)
 
 # C compiler rules

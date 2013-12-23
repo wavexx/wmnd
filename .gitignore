@@ -9,6 +9,7 @@
 /config.*
 /configure
 /depcomp
+/compile
 /install-sh
 /missing
 /src/.deps/

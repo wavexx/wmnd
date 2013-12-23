@@ -5,4 +5,5 @@ SUBDIRS = src
 man_MANS = doc/wmnd.1
 examplesdir = $(docdir)/examples
 dist_examples_DATA = examples/wmndrc
-EXTRA_DIST = $(man_MANS) $(data_DATA) ChangeLog.0
+EXTRA_DIST = $(man_MANS) $(data_DATA) ChangeLog.0 \
+	README.rst NEWS.rst THANKS.rst TODO.rst
