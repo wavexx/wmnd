@@ -1,6 +1,6 @@
 /*
  * bits: platform indipendent version operating on chars
- * Copyright(c) 2001 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * Copyright(c) 2001 by wave++ "Yuri D'Elia" <wavexx@thregr.org>
  * Distributed under GNU GPL (v2 or above) WITHOUT ANY WARRANTY.
  */
 

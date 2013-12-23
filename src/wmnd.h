@@ -1,6 +1,6 @@
 /*
  * wmnd: main program module, shared header
- * Copyright(c) 2001-2008 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * Copyright(c) 2001-2008 by wave++ "Yuri D'Elia" <wavexx@thregr.org>
  * Distributed under GNU GPL (v2 or above) WITHOUT ANY WARRANTY.
  */
 

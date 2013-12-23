@@ -3,7 +3,7 @@
  *
  * Copyright(c) 2000-2001 by Reed Lai
  * Copyright(c) 2001 by Timecop <timecop@japan.co.jp>
- * Copyright(c) 2001-2008 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * Copyright(c) 2001-2008 by wave++ "Yuri D'Elia" <wavexx@thregr.org>
  *
  * Distributed under GNU GPL (v2 or above) WITHOUT ANY WARRANTY.
  */

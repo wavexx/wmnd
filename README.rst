@@ -408,7 +408,7 @@ helpful.
 
 Certainly there are more. I actually test WMND only on Solaris, Linux and IRIX
 boxes. You can report bugs to the current maintainer's email:
-<wavexx@users.sf.net>. Please be as descriptive as possible and always include
+<wavexx@thregr.org>. Please be as descriptive as possible and always include
 at least:
 
 * WMND version

@@ -1,7 +1,7 @@
 /*
  * misc: miscellaneus dockapp routines
  * Copyright(c) 1997 by Alfredo K. Kojima
- * Copyright(c) 2004 by wave++ "Yuri D'Elia" <wavexx@users.sf.net>
+ * Copyright(c) 2004 by wave++ "Yuri D'Elia" <wavexx@thregr.org>
  * Distributed under GNU GPL (v2 or above) WITHOUT ANY WARRANTY.
  */
 

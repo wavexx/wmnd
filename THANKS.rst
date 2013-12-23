@@ -22,7 +22,7 @@ Timecop <timecop@japan.co.jp> http://www.ne.jp/asahi/linux/timecop/:
 
 	* Source code optimization (Re-wrote the source code of WMND 0.2.0)
 
-Yuri D'Elia (wave++) <wavexx@users.sf.net> http://www.thregr.org/~wavexx/:
+Yuri D'Elia (wave++) <wavexx@thregr.org> http://www.thregr.org/~wavexx/:
 
 	* Driver architecture, new visualization structs, re-wrote source
 	  code of WMND 0.3 series.
